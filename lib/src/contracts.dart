@@ -10,3 +10,12 @@ abstract class Serializable {
 abstract class Cloneable<T> {
   T copyWith();
 }
+
+/// Interface provides a method which is used for realese of unmanaged
+/// resources and finalizing some instances.
+///
+/// For example this interface can be implemented by classes which use
+/// [StreamController]s. The `dispose` method can be used for close sink.
+abstract class Disposable {
+  void dispose();
+}
