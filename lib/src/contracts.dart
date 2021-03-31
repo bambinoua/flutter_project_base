@@ -19,3 +19,30 @@ abstract class Cloneable<T> {
 abstract class Disposable {
   void dispose();
 }
+
+/// Default implementation of [Serializable] interface.
+abstract class DefaultSerializable extends Serializable {
+  @override
+  Map<String, dynamic> toJson() {
+    return asMap().map((key, value) {
+      var effectiveValue;
+      if (value is DateTime) {
+        effectiveValue = value.toIso8601String();
+      } else {
+        /// This is a trick to serialize `enum`. If value implements
+        /// `index` property than it is potentially `enum`eration and
+        /// there will not be exception. Otherwise the original value is taken.
+        try {
+          effectiveValue = value.index;
+        } catch (_) {
+          effectiveValue = value;
+        }
+      }
+      return MapEntry(key, effectiveValue);
+    });
+  }
+
+  /// Returns a [Map] which is used by method `toJson`
+  /// of `Serializable` interface.
+  Map<String, dynamic> asMap();
+}
