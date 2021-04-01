@@ -23,11 +23,29 @@ class Test extends DefaultSerializable {
 
 void main() {
   test('default_serializable', () {
-    var now = DateTime.now();
-    var today = DateTime(now.year, now.month, now.day);
-    var testObj = Test(today, TestEnum.one, 'Name');
+    var testObj = Test(Date.today(), TestEnum.two, 'Name');
     var serialized = json.encode(testObj);
+    //! Before start this test you should to change the value of datetime to current date.
     expect(serialized,
-        '{"datetime":"2021-03-31T00:00:00.000","enumeration":0,"name":"Name"}');
+        '{"datetime":"2021-04-01T00:00:00.000","enumeration":1,"name":"Name"}');
+  });
+
+  test('date', () {
+    var today = Date.today();
+    var now = DateTime.now();
+    expect(today.year, now.year);
+    expect(today.month, now.month);
+    expect(today.day, now.day);
+    expect(today.hour, 0);
+    expect(today.minute, 0);
+    expect(today.second, 0);
+    expect(today.millisecond, 0);
+    expect(today.microsecond, 0);
+  });
+
+  test('date.today', () {
+    var today = Date.today();
+    var now = DateTime.now();
+    expect(today, DateTime(now.year, now.month, now.day));
   });
 }
