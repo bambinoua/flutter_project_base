@@ -48,4 +48,10 @@ void main() {
     var now = DateTime.now();
     expect(today, DateTime(now.year, now.month, now.day));
   });
+
+  test('date.isToday', () {
+    var today1 = Date.today();
+    var today2 = Date.today();
+    expect(today1 == today2, true);
+  });
 }

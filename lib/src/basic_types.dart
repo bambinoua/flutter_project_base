@@ -36,9 +36,12 @@ class Date extends DateTime {
   /// The constructed [Date] represents
   /// 1970-01-01T00:00:00Z + [millisecondsSinceEpoch] ms in the given
   /// time zone (local or UTC).
-  Date.fromMillisecondsSinceEpoch(int millisecondsSinceEpoch,
-      {bool isUtc = false})
-      : super.fromMillisecondsSinceEpoch(millisecondsSinceEpoch, isUtc: isUtc);
+  factory Date.fromMillisecondsSinceEpoch(int millisecondsSinceEpoch,
+      {bool isUtc = false}) {
+    var datetime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+        isUtc: isUtc);
+    return Date(datetime.year, datetime.month, datetime.day);
+  }
 
   /// Constructs a new [Date] instance with the given [microsecondsSinceEpoch].
   ///
@@ -47,9 +50,38 @@ class Date extends DateTime {
   /// The constructed [Date] represents
   /// 1970-01-01T00:00:00Z + [microsecondsSinceEpoch] us in the given
   /// time zone (local or UTC).
-  Date.fromMicrosecondsSinceEpoch(int microsecondsSinceEpoch,
-      {bool isUtc = false})
-      : super.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch, isUtc: isUtc);
+  factory Date.fromMicrosecondsSinceEpoch(int microsecondsSinceEpoch,
+      {bool isUtc = false}) {
+    var datetime = DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
+        isUtc: isUtc);
+    return Date(datetime.year, datetime.month, datetime.day);
+  }
+
+  /// Constructs a new [Date] instance based on `formattedString`.
+  ///
+  /// Throws a [FormatException] if the input string cannot be parsed.
+  ///
+  /// The function parses a subset of ISO 8601
+  /// which includes the subset accepted by RFC 3339.
+  static Date parse(String formattedString) {
+    var datetime = DateTime.parse(formattedString);
+    return Date(datetime.year, datetime.month, datetime.day);
+  }
+
+  /// Constructs a new [Date] instance based on `formattedString`.
+  ///
+  /// Works like [parse] except that this function returns `null`
+  /// where [parse] would throw a [FormatException].
+  static Date? tryParse(String formattedString) {
+    try {
+      return parse(formattedString);
+    } on FormatException {
+      return null;
+    }
+  }
+
+  /// Returns `true` if `date` is today.
+  static bool isToday(Date date) => date == Date.today();
 
   @override
   String toString() => "$year-$month-$day";
