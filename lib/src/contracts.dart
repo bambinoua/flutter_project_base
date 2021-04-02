@@ -20,6 +20,12 @@ abstract class Disposable {
   void dispose();
 }
 
+/// Provides base interface for classes which may be used as `enum`s.
+abstract class Enum {
+  /// Returns index of enumeration.
+  int get index;
+}
+
 /// Default implementation of [Serializable] interface.
 abstract class DefaultSerializable extends Serializable {
   @override
