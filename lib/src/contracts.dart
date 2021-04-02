@@ -34,6 +34,8 @@ abstract class DefaultSerializable extends Serializable {
       var effectiveValue;
       if (value is DateTime) {
         effectiveValue = value.toIso8601String();
+      } else if (value is Enum) {
+        effectiveValue = value.index;
       } else {
         /// This is a trick to serialize `enum`. If value implements
         /// `index` property than it is potentially `enum`eration and
