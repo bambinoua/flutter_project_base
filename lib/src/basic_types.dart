@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 /// Signature for a function that creates an instance of type T.
 typedef InstanceBuilder<T> = T Function();
 
@@ -56,6 +58,28 @@ class Date extends DateTime {
         isUtc: isUtc);
     return Date(datetime.year, datetime.month, datetime.day);
   }
+
+  /// Returns `true` if this [Date] is a weekend.
+  bool get isWeekend =>
+      DateFormat().dateSymbols.WEEKENDRANGE.contains(weekday - 1);
+
+  /// Returns the ordinal number of this [Date] in this year.
+  ///
+  /// The number may vary from 1 to 365/366 days.
+  int get ordinalDay => int.parse(DateFormat('D').format(this));
+
+  /// Returns the week number to which this [Date] belongs.
+  ///
+  /// The value may vary from 1 to 52/53.
+  int get weekNumber => (ordinalDay - weekday + 10) ~/ 7;
+
+  /// Returns the number of week in this `year`.
+  int get lastWeekNumber => Date(year, DateTime.december, 31).weekNumber;
+
+  /// Returns the quarter to which this [Date] belongs.
+  ///
+  /// The value may vary from 1 to 4.
+  int get quarter => ((month - 1) / 3).floor() + 1;
 
   /// Constructs a new [Date] instance based on `formattedString`.
   ///
