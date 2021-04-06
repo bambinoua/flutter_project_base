@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Provides internationalization and localization facilities.
+  intl: ^0.17.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
