@@ -1,3 +1,4 @@
+import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 
 /// Signature for a function that creates an instance of type T.
@@ -106,6 +107,42 @@ class Date extends DateTime {
 
   /// Returns `true` if `date` is today.
   static bool isToday(Date date) => date == Date.today();
+
+  /// Returns full names of months, e.g. 'January' or short names of months,
+  /// e.g. 'Jan' depending of `shortNames` boolean.
+  static Map<int, String> getMonths({bool shortNames = true, String? locale}) {
+    final dateSymbols = Date.getDateSymbols(locale);
+    return (shortNames ? dateSymbols.SHORTMONTHS : dateSymbols.MONTHS)
+        .asMap()
+        .map((index, name) => MapEntry(index + 1, name));
+  }
+
+  /// Return the days of the week, starting with Sunday or short names for
+  /// days of the week, starting with Sunday, e.g. 'Sun'.
+  static Map<int, String> getDaysOfWeek(
+      {bool shortNames = true, String? locale}) {
+    final dateSymbols = Date.getDateSymbols(locale);
+    var daysOfWeek =
+        (shortNames ? dateSymbols.SHORTWEEKDAYS : dateSymbols.WEEKDAYS)
+            .asMap()
+            .map((index, name) =>
+                MapEntry(index == 0 ? DateTime.sunday : index, name));
+    if (dateSymbols.FIRSTDAYOFWEEK == 0) {
+      daysOfWeek = Map.fromEntries(daysOfWeek.entries.toList()
+        ..sort((dow1, dow2) => dow1.key.compareTo(dow2.key)));
+    }
+    return daysOfWeek;
+  }
+
+  /// Return the [DateSymbols] information for the locale.
+  ///
+  /// This can be useful to find lists like the names of weekdays or months in a
+  /// locale, but the structure of this data may change, and it's generally
+  /// better to go through the [format] and [parse] APIs.
+  ///
+  /// If the locale isn't present, or is uninitialized, throws.
+  static DateSymbols getDateSymbols(String? locale) =>
+      DateFormat(null, locale).dateSymbols;
 
   @override
   String toString() => "$year-$month-$day";
