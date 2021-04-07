@@ -134,6 +134,15 @@ class Date extends DateTime {
     return daysOfWeek;
   }
 
+  /// Returns the last day of the specified `month`.
+  ///
+  /// If `year` is omitted than the current year is assumed.
+  static int getLastDayOfMonth(int month, [int? year]) {
+    assert(month >= DateTime.january && month <= DateTime.december);
+    assert(year == null || year > 1900 && year <= 9999);
+    return Date(year ?? Date.today().year, month + 1, 0).day;
+  }
+
   /// Return the [DateSymbols] information for the locale.
   ///
   /// This can be useful to find lists like the names of weekdays or months in a
