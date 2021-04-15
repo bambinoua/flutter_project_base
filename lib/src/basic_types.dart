@@ -7,6 +7,18 @@ typedef InstanceBuilder<T> = T Function();
 /// Signature for a function that creates an instance of type T from `map`.
 typedef InstanceMapBuilder<T> = T Function(Map<String, dynamic> map);
 
+/// Defines a key/value pair that can be set or retrieved.
+class KeyValuePair<K, V> {
+  /// Creates an instance of a key/value pair.
+  const KeyValuePair(this.key, this.value);
+
+  /// An unique identifier for a key.
+  final K key;
+
+  /// An data of any type for this key.
+  final V value;
+}
+
 /// The `Date` type is used for values with a date part but no time part.
 /// Dates can represent time values that are at a distance of at most
 /// 100,000,000 days from epoch (1970-01-01 UTC): -271821-04-20 to 275760-09-13.
