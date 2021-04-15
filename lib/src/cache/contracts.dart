@@ -20,7 +20,8 @@ class CacheItemPolicy implements Cloneable<CacheItemPolicy> {
     this.expiredAt,
     this.expiredAfter,
     this.onRemove,
-  });
+  }) : assert(expiredAt == null || expiredAfter == null,
+            'Either `expiredAt` or `expiredAfter` can be initialized.');
 
   /// Priority setting that is used to determine whether to evict a
   /// cache entry.
@@ -40,13 +41,12 @@ class CacheItemPolicy implements Cloneable<CacheItemPolicy> {
 
   @override
   CacheItemPolicy copyWith({
-    CacheItemPriority? priority,
     DateTime? expiredAt,
     Duration? expiredAfter,
     VoidCallback? onRemove,
   }) =>
       CacheItemPolicy(
-        priority: priority ?? this.priority,
+        priority: priority,
         expiredAt: expiredAt ?? this.expiredAt,
         expiredAfter: expiredAfter ?? this.expiredAfter,
         onRemove: onRemove ?? this.onRemove,
@@ -58,7 +58,7 @@ class CacheItemPolicy implements Cloneable<CacheItemPolicy> {
 }
 
 /// Represents an individual cache entry in the cache.
-class CacheItem<T> {
+class CacheItem<T> implements Cloneable<CacheItem<T>> {
   /// Initializes a new CacheItem instance using the specified
   /// `key` and a `value` of the cache entry.
   const CacheItem({
@@ -86,6 +86,13 @@ class CacheItem<T> {
 
   ///Gets or sets the data for a CacheItem instance.
   final T value;
+
+  @override
+  CacheItem<T> copyWith({T? value}) => CacheItem<T>(
+        key: key,
+        value: value ?? this.value,
+        policy: policy,
+      );
 
   @override
   String toString() => 'CacheItem (key: $key, value: $value)';
