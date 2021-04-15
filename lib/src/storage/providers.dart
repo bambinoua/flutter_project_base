@@ -9,30 +9,38 @@ import 'package:flutter_project_base/src/storage/contracts.dart';
 String _debugUnsupportedMessage(type) =>
     'Only `bool`,`int`,`double`,`String` and `List<String>` are supported';
 
-mixin PersistentStorageKeyMonitor<T extends Storage> {
-  final List<StorageKey> _keys = [];
+mixin StorageController<T extends IStorage> {
+  /// Contains all storage items.
+  final Set<StorageItem> _items = {};
 
-  List<StorageKey> get persistentKeys =>
-      _keys.where((key) => key.persistent).toList();
+  /// Returns list of storage items which will not be evicted after
+  /// session close.
+  List<StorageItem> get persistentKeys => _items
+      .where((key) => key.priority == StorageItemPriority.notRemovable)
+      .toList();
 
-  List<StorageKey> get sessionKeys =>
-      _keys.where((key) => !key.persistent).toList();
+  /// Returns list of storage items which will be evicted after
+  /// session close.
+  List<StorageItem> get sessionKeys => _items
+      .where((key) => key.priority == StorageItemPriority.standard)
+      .toList();
 
-  void saveKey(StorageKey key) {
-    _keys.add(key);
+  /// Puts item into inner controller storage.
+  void put(StorageItem item) {
+    _items.add(item);
   }
 
-  void removeKey(StorageKey key) {
-    _keys.remove(key);
+  /// Removes item from inner controller storage.
+  void remove(StorageItem item) {
+    _items.remove(item);
   }
 
+  /// Removes keys which are not marked as `not removable`.
   void removeSessionKeys();
 }
 
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage
-    with PersistentStorageKeyMonitor
-    implements Storage {
+class SharedPreferencesStorage with StorageController implements IStorage {
   SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
@@ -41,52 +49,59 @@ class SharedPreferencesStorage
   }
 
   @override
-  T? getItem<T>(StorageKey key) {
+  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
+    _debugAssert();
+    T value;
+    switch (T) {
+      case bool:
+        value = _sharedPreferences!.getBool(key) as T;
+        break;
+      case double:
+        value = _sharedPreferences!.getDouble(key) as T;
+        break;
+      case int:
+        value = _sharedPreferences!.getInt(key) as T;
+        break;
+      case String:
+        value = _sharedPreferences!.getString(key) as T;
+        break;
+      case List:
+        value = _sharedPreferences!.getStringList(key) as T;
+        break;
+      default:
+        throw UnsupportedError(_debugUnsupportedMessage(T));
+    }
+    return StorageItem(key: key, value: value);
+  }
+
+  @override
+  void putItem<T>(StorageItem<T> item) {
     _debugAssert();
     switch (T) {
       case bool:
-        return _sharedPreferences!.getBool(key.value) as T?;
+        _sharedPreferences!.setBool(item.key, item.value as bool);
+        break;
       case double:
-        return _sharedPreferences!.getDouble(key.value) as T?;
+        _sharedPreferences!.setDouble(item.key, item.value as double);
+        break;
       case int:
-        return _sharedPreferences!.getInt(key.value) as T?;
+        _sharedPreferences!.setInt(item.key, item.value as int);
+        break;
       case String:
-        return _sharedPreferences!.getString(key.value) as T?;
+        _sharedPreferences!.setString(item.key, item.value as String);
+        break;
       case List:
-        return _sharedPreferences!.getStringList(key.value) as T?;
+        _sharedPreferences!.setStringList(item.key, item.value as List<String>);
+        break;
       default:
         throw UnsupportedError(_debugUnsupportedMessage(T));
     }
   }
 
   @override
-  void putItem<T>(StorageKey key, T value) {
+  void removeItem(String key) {
     _debugAssert();
-    switch (T) {
-      case bool:
-        _sharedPreferences!.setBool(key.value, value as bool);
-        break;
-      case double:
-        _sharedPreferences!.setDouble(key.value, value as double);
-        break;
-      case int:
-        _sharedPreferences!.setInt(key.value, value as int);
-        break;
-      case String:
-        _sharedPreferences!.setString(key.value, value as String);
-        break;
-      case List:
-        _sharedPreferences!.setStringList(key.value, value as List<String>);
-        break;
-      default:
-        throw UnsupportedError(_debugUnsupportedMessage(T));
-    }
-  }
-
-  @override
-  void removeItem(StorageKey key) {
-    _debugAssert();
-    _sharedPreferences!.remove(key.value);
+    _sharedPreferences!.remove(key);
   }
 
   @override
@@ -96,17 +111,17 @@ class SharedPreferencesStorage
   }
 
   @override
-  List<StorageKey> get keys {
+  List<String> get keys {
     _debugAssert();
-    return _sharedPreferences!.getKeys().map((key) => StorageKey(key)).toList();
+    return _sharedPreferences!.getKeys().toList();
   }
 
   @override
-  int get length => _keys.length;
+  int get length => _items.length;
 
   @override
   void removeSessionKeys() {
-    sessionKeys.forEach(removeItem);
+    //sessionKeys.forEach(removeItem);
   }
 
   void _debugAssert() {
@@ -116,14 +131,14 @@ class SharedPreferencesStorage
 }
 
 /// Provides implementation of web session storage.
-class WebSessionStorage implements Storage {
+class WebSessionStorage implements IStorage {
   const WebSessionStorage()
       : assert(kIsWeb, 'WebSessionStorage available only in web environment');
 
   @override
-  T? getItem<T>(StorageKey key) {
-    final encodedValue = window.sessionStorage[key.value];
-    if (encodedValue == null) return encodedValue as T;
+  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
+    final encodedValue = window.sessionStorage[key];
+    if (encodedValue == null) return StorageItem(key: key, value: '' as T);
     final value = json.decode(encodedValue) as T;
     switch (T) {
       case bool:
@@ -131,21 +146,22 @@ class WebSessionStorage implements Storage {
       case int:
       case String:
       case List:
-        return value;
+        return StorageItem(key: key, value: value);
       default:
         throw UnsupportedError(_debugUnsupportedMessage(T));
     }
   }
 
   @override
-  void putItem<T>(StorageKey key, T value) {
-    window.sessionStorage.update(key.value, (oldValue) => json.encode(value),
-        ifAbsent: () => json.encode(value));
+  void putItem<T>(StorageItem<T> item) {
+    window.sessionStorage.update(
+        item.key, (oldValue) => json.encode(item.value),
+        ifAbsent: () => json.encode(item.value));
   }
 
   @override
-  void removeItem(StorageKey key) {
-    window.sessionStorage.remove(key.value);
+  void removeItem(String key) {
+    window.sessionStorage.remove(key);
   }
 
   @override
@@ -154,9 +170,48 @@ class WebSessionStorage implements Storage {
   }
 
   @override
-  List<StorageKey> get keys =>
-      window.sessionStorage.keys.map((key) => StorageKey(key)).toList();
+  List<String> get keys => window.sessionStorage.keys.toList();
 
   @override
   int get length => keys.length;
+}
+
+/// Provides implementation of in-memory storage.
+class MemoryStorage with StorageController implements IStorage {
+  /// Memory map.
+  final Map<String, dynamic> _storage = {};
+
+  @override
+  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
+    final value = _storage[key];
+    return value == null
+        ? StorageItem(key: key, value: defaultValue!)
+        : StorageItem(key: key, value: value);
+  }
+
+  @override
+  void putItem<T>(StorageItem<T> item) {
+    _storage[item.key] = item.value;
+  }
+
+  @override
+  void removeItem(String key) {
+    _storage.remove(key);
+  }
+
+  @override
+  void clear() {
+    _storage.clear();
+  }
+
+  @override
+  List<String> get keys => _storage.keys.toList();
+
+  @override
+  int get length => _storage.length;
+
+  @override
+  void removeSessionKeys() {
+    print('removed');
+  }
 }
