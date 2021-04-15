@@ -9,38 +9,8 @@ import 'package:flutter_project_base/src/storage/contracts.dart';
 String _debugUnsupportedMessage(type) =>
     'Only `bool`,`int`,`double`,`String` and `List<String>` are supported';
 
-mixin StorageController<T extends IStorage> {
-  /// Contains all storage items.
-  final Set<StorageItem> _items = {};
-
-  /// Returns list of storage items which will not be evicted after
-  /// session close.
-  List<StorageItem> get persistentKeys => _items
-      .where((key) => key.priority == StorageItemPriority.notRemovable)
-      .toList();
-
-  /// Returns list of storage items which will be evicted after
-  /// session close.
-  List<StorageItem> get sessionKeys => _items
-      .where((key) => key.priority == StorageItemPriority.standard)
-      .toList();
-
-  /// Puts item into inner controller storage.
-  void put(StorageItem item) {
-    _items.add(item);
-  }
-
-  /// Removes item from inner controller storage.
-  void remove(StorageItem item) {
-    _items.remove(item);
-  }
-
-  /// Removes keys which are not marked as `not removable`.
-  void removeSessionKeys();
-}
-
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage with StorageController implements IStorage {
+class SharedPreferencesStorage implements IStorage {
   SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
@@ -117,12 +87,7 @@ class SharedPreferencesStorage with StorageController implements IStorage {
   }
 
   @override
-  int get length => _items.length;
-
-  @override
-  void removeSessionKeys() {
-    //sessionKeys.forEach(removeItem);
-  }
+  int get length => keys.length;
 
   void _debugAssert() {
     assert(_sharedPreferences != null,
@@ -177,16 +142,14 @@ class WebSessionStorage implements IStorage {
 }
 
 /// Provides implementation of in-memory storage.
-class MemoryStorage with StorageController implements IStorage {
+class MemoryStorage implements IStorage {
   /// Memory map.
   final Map<String, dynamic> _storage = {};
 
   @override
   StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
     final value = _storage[key];
-    return value == null
-        ? StorageItem(key: key, value: defaultValue!)
-        : StorageItem(key: key, value: value);
+    return StorageItem(key: key, value: value ?? defaultValue!);
   }
 
   @override
@@ -209,9 +172,35 @@ class MemoryStorage with StorageController implements IStorage {
 
   @override
   int get length => _storage.length;
+}
 
-  @override
-  void removeSessionKeys() {
-    print('removed');
+/// Storage controller mixin allows to manipulate by priority of cache items.
+mixin SharedPreferencesMixin<T> on SharedPreferencesStorage {
+  /// Contains all storage items.
+  final Map<String, StorageItem<T>> _items = {};
+
+  /// Returns list of storage items which will not be evicted after
+  /// session close.
+  List<StorageItem<T>> get persistentKeys => _items.values
+      .where((item) => item.priority == StorageItemPriority.notRemovable)
+      .toList();
+
+  /// Returns list of storage items which will be evicted after
+  /// session close.
+  List<StorageItem> get sessionKeys => _items.values
+      .where((item) => item.priority == StorageItemPriority.standard)
+      .toList();
+
+  /// Puts item into inner controller storage.
+  void put(StorageItem<T> item) {
+    _items[item.key] = item;
   }
+
+  /// Removes item from inner controller storage.
+  void remove(StorageItem item) {
+    _items.remove(item);
+  }
+
+  /// Removes keys which are not marked as `not removable`.
+  void removeSessionKeys();
 }
