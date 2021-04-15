@@ -26,8 +26,14 @@ abstract class Enum {
   int get index;
 }
 
-/// Default implementation of [Serializable] interface.
-abstract class DefaultSerializable extends Serializable {
+/// This interface is designed to provide a common protocol for objects
+/// that wish to execute code while they are active.
+abstract class Runnable<T> {
+  void run();
+}
+
+/// JSON implementation of [Serializable] interface.
+abstract class JsonSerializable extends Serializable {
   @override
   Map<String, dynamic> toJson() {
     return asMap().map((key, value) {
@@ -50,7 +56,7 @@ abstract class DefaultSerializable extends Serializable {
     });
   }
 
-  /// Returns a [Map] which is used by method `toJson`
-  /// of `Serializable` interface.
+  /// Returns a [Map] which is used as data for method `toJson` of
+  /// [Serializable] interface.
   Map<String, dynamic> asMap();
 }
