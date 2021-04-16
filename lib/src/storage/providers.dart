@@ -10,13 +10,12 @@ String _debugUnsupportedMessage(type) =>
     'Only `bool`,`int`,`double`,`String` and `List<String>` are supported';
 
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage implements IStorage {
+class SharedPreferencesStorage implements StoragePool {
   SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
-  Future<void> init() async {
-    _sharedPreferences ??= await SharedPreferences.getInstance();
-  }
+  Future<SharedPreferences> init() async =>
+      _sharedPreferences ??= await SharedPreferences.getInstance();
 
   @override
   StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
@@ -96,7 +95,7 @@ class SharedPreferencesStorage implements IStorage {
 }
 
 /// Provides implementation of web session storage.
-class WebSessionStorage implements IStorage {
+class WebSessionStorage implements StoragePool {
   const WebSessionStorage()
       : assert(kIsWeb, 'WebSessionStorage available only in web environment');
 
@@ -142,7 +141,7 @@ class WebSessionStorage implements IStorage {
 }
 
 /// Provides implementation of in-memory storage.
-class MemoryStorage implements IStorage {
+class MemoryStorage implements StoragePool {
   /// Memory map.
   final Map<String, dynamic> _storage = {};
 
