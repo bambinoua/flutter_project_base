@@ -24,19 +24,19 @@ class SharedPreferencesStorage implements Storage {
     T? value;
     switch (T) {
       case bool:
-        value = _sharedPreferences!.getBool(key) as T;
+        value = _sharedPreferences!.getBool(key) as T?;
         break;
       case double:
-        value = _sharedPreferences!.getDouble(key) as T;
+        value = _sharedPreferences!.getDouble(key) as T?;
         break;
       case int:
-        value = _sharedPreferences!.getInt(key) as T;
+        value = _sharedPreferences!.getInt(key) as T?;
         break;
       case String:
-        value = _sharedPreferences!.getString(key) as T;
+        value = _sharedPreferences!.getString(key) as T?;
         break;
       case List:
-        value = _sharedPreferences!.getStringList(key) as T;
+        value = _sharedPreferences!.getStringList(key) as T?;
         break;
       default:
         throw UnsupportedError(_debugUnsupportedMessage(T));
