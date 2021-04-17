@@ -12,21 +12,6 @@ enum StorageItemPriority {
   notRemovable
 }
 
-/// Defines list of available storage providers.
-enum StorageProvider {
-  /// Mobile device storage (usually SharedPreferences)
-  mobile,
-
-  /// Simple memory storage like PageStorage.
-  memory,
-
-  /// Web domain local storage.
-  webLocal,
-
-  /// Web domain session storage.
-  webSession,
-}
-
 /// A key that uses as parameter for [Storage].
 class StorageItem<T> extends KeyValuePair<String, T>
     implements Cloneable<StorageItem<T>> {
@@ -67,7 +52,7 @@ abstract class Storage {
 
   /// Retrieves the value of the item from the storage associated with this
   /// object's `key`, or `null` if the key does not exist.
-  StorageItem<T> getItem<T>(String key, {T? defaultValue});
+  StorageItem<T>? getItem<T>(String key);
 
   /// Returns list of item keys of this storage.
   List<String> get keys;

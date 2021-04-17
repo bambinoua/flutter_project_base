@@ -9,7 +9,8 @@ void main() {
     final memory = MemoryStorage();
     const key = 'test.key';
 
-    final item1 = memory.getItem(key, defaultValue: 1);
+    final item1 =
+        memory.getItem<int>(key) ?? StorageItem<int>(key: key, value: 1);
     expect(item1.runtimeType, typeOf<StorageItem<int>>());
     expect(item1.key, key);
     expect(item1.value, 1);
@@ -18,7 +19,7 @@ void main() {
 
     final item2 = memory.getItem<int>(key);
     expect(item2.runtimeType, typeOf<StorageItem<int>>());
-    expect(item2.key, key);
+    expect(item2!.key, key);
     expect(item2.value, 2);
   });
 }

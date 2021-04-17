@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter_project_base/src/storage/contracts.dart';
 
@@ -19,9 +19,9 @@ class SharedPreferencesStorage implements Storage {
       _sharedPreferences ??= await SharedPreferences.getInstance();
 
   @override
-  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
+  StorageItem<T>? getItem<T>(String key) {
     _debugAssert();
-    T value;
+    T? value;
     switch (T) {
       case bool:
         value = _sharedPreferences!.getBool(key) as T;
@@ -41,7 +41,7 @@ class SharedPreferencesStorage implements Storage {
       default:
         throw UnsupportedError(_debugUnsupportedMessage(T));
     }
-    return StorageItem<T>(key: key, value: value);
+    return value != null ? StorageItem<T>(key: key, value: value) : null;
   }
 
   @override
@@ -91,7 +91,7 @@ class SharedPreferencesStorage implements Storage {
 
   void _debugAssert() {
     assert(_sharedPreferences != null,
-        'Before using `SharedPreferencesStorage` call its method `init()`');
+        "Before using 'SharedPreferencesStorage' call its method async 'init()'");
   }
 }
 
@@ -100,11 +100,13 @@ class WebSessionStorage implements Storage {
   const WebSessionStorage()
       : assert(kIsWeb, 'WebSessionStorage available only in web environment');
 
+  html.Storage get _storage => html.window.sessionStorage;
+
   @override
-  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
-    final encodedValue = window.sessionStorage[key];
-    if (encodedValue == null) return StorageItem(key: key, value: '' as T);
-    final value = json.decode(encodedValue) as T;
+  StorageItem<T>? getItem<T>(String key) {
+    final jsonValue = _storage[key];
+    if (jsonValue == null) return null;
+    final value = json.decode(jsonValue) as T;
     switch (T) {
       case bool:
       case double:
@@ -119,23 +121,22 @@ class WebSessionStorage implements Storage {
 
   @override
   void putItem<T>(StorageItem<T> item) {
-    window.sessionStorage.update(
-        item.key, (oldValue) => json.encode(item.value),
+    _storage.update(item.key, (oldValue) => json.encode(item.value),
         ifAbsent: () => json.encode(item.value));
   }
 
   @override
   void removeItem(String key) {
-    window.sessionStorage.remove(key);
+    _storage.remove(key);
   }
 
   @override
   void clear() {
-    window.sessionStorage.clear();
+    _storage.clear();
   }
 
   @override
-  List<String> get keys => window.sessionStorage.keys.toList();
+  List<String> get keys => _storage.keys.toList();
 
   @override
   int get length => keys.length;
@@ -147,9 +148,9 @@ class MemoryStorage implements Storage {
   final Map<String, dynamic> _storage = {};
 
   @override
-  StorageItem<T> getItem<T>(String key, {T? defaultValue}) {
-    final value = _storage[key];
-    return StorageItem(key: key, value: value ?? defaultValue!);
+  StorageItem<T>? getItem<T>(String key) {
+    final T? value = _storage[key];
+    return value != null ? StorageItem<T>(key: key, value: value) : null;
   }
 
   @override

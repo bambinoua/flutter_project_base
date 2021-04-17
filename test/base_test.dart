@@ -22,7 +22,7 @@ class Test extends JsonSerializable {
 }
 
 void main() {
-  test('jsonserializable', () {
+  test('json_serializable', () {
     var testObj = Test(Date.today(), TestEnum.two, 'Name');
     var serialized = json.encode(testObj);
     var now = DateTime.now();
