@@ -7,7 +7,8 @@ import 'package:universal_html/html.dart';
 import 'package:flutter_project_base/src/storage/contracts.dart';
 
 String _debugUnsupportedMessage(type) =>
-    'Only `bool`,`int`,`double`,`String` and `List<String>` are supported';
+    "Expected value of types 'bool', 'int', 'double', 'String' " +
+    "or 'List<String>' but got '$type'";
 
 /// Provides implementation of [SharedPreferences] storage.
 class SharedPreferencesStorage implements Storage {
@@ -40,7 +41,7 @@ class SharedPreferencesStorage implements Storage {
       default:
         throw UnsupportedError(_debugUnsupportedMessage(T));
     }
-    return StorageItem(key: key, value: value);
+    return StorageItem<T>(key: key, value: value);
   }
 
   @override
@@ -174,7 +175,7 @@ class MemoryStorage implements Storage {
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.
-mixin SharedPreferencesMixin<T> on SharedPreferencesStorage {
+mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Contains all storage items.
   final Map<String, StorageItem<T>> _items = {};
 
@@ -191,12 +192,12 @@ mixin SharedPreferencesMixin<T> on SharedPreferencesStorage {
       .toList();
 
   /// Puts item into inner controller storage.
-  void put(StorageItem<T> item) {
+  void saveKey(StorageItem<T> item) {
     _items[item.key] = item;
   }
 
   /// Removes item from inner controller storage.
-  void remove(StorageItem item) {
+  void removeKey(StorageItem<T> item) {
     _items.remove(item);
   }
 
