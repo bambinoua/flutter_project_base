@@ -10,7 +10,7 @@ String _debugUnsupportedMessage(type) =>
     'Only `bool`,`int`,`double`,`String` and `List<String>` are supported';
 
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage implements StoragePool {
+class SharedPreferencesStorage implements Storage {
   SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
@@ -95,7 +95,7 @@ class SharedPreferencesStorage implements StoragePool {
 }
 
 /// Provides implementation of web session storage.
-class WebSessionStorage implements StoragePool {
+class WebSessionStorage implements Storage {
   const WebSessionStorage()
       : assert(kIsWeb, 'WebSessionStorage available only in web environment');
 
@@ -141,7 +141,7 @@ class WebSessionStorage implements StoragePool {
 }
 
 /// Provides implementation of in-memory storage.
-class MemoryStorage implements StoragePool {
+class MemoryStorage implements Storage {
   /// Memory map.
   final Map<String, dynamic> _storage = {};
 

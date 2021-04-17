@@ -1,11 +1,13 @@
 import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
+import 'package:meta/meta.dart';
 
-/// Signature for a function that creates an instance of type T.
-typedef InstanceBuilder<T> = T Function();
+/// Signature for a function which providdes an instance of type T.
+typedef TypeProvider<T> = T Function();
 
-/// Signature for a function that creates an instance of type T from `map`.
-typedef InstanceMapBuilder<T> = T Function(Map<String, dynamic> map);
+/// Signature for a function which creates an instance of type T
+/// using `value` of type V.
+typedef GenericTypeProvider<T, V> = T Function(V value);
 
 /// Defines a key/value pair that can be set or retrieved.
 class KeyValuePair<K, V> {
@@ -17,6 +19,16 @@ class KeyValuePair<K, V> {
 
   /// An data of any type for this key.
   final V value;
+}
+
+/// Supports a value type that can be assigned null.
+/// This class cannot be inherited.
+@sealed
+class Nullable<T> {
+  const Nullable([this.value]);
+
+  /// The underlying value of the Nullable<T> generic type.
+  final T? value;
 }
 
 /// The `Date` type is used for values with a date part but no time part.

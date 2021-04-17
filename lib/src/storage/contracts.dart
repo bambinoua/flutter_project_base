@@ -27,7 +27,7 @@ enum StorageProvider {
   webSession,
 }
 
-/// A key that uses as parameter for [StoragePool].
+/// A key that uses as parameter for [Storage].
 class StorageItem<T> extends KeyValuePair<String, T>
     implements Cloneable<StorageItem<T>> {
   /// Construct a [StorageItem] with optional persistence.
@@ -56,11 +56,11 @@ class StorageItem<T> extends KeyValuePair<String, T>
       'StorageItem (key: $key, value: $value, priority: ${describeEnum(priority)})';
 }
 
-/// The StoragePool interface provides access to a particular mobile, memory,
+/// The Storage interface provides access to a particular mobile, memory,
 /// domain's session or local storage. It allows, for example, the addition,
 /// modification, or deletion of stored data items.
-abstract class StoragePool {
-  StoragePool._();
+abstract class Storage {
+  Storage._();
 
   /// When invoked, will empty all keys out of the storage.
   void clear();

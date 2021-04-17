@@ -98,12 +98,12 @@ class CacheItem<T> implements Cloneable<CacheItem<T>> {
   String toString() => 'CacheItem (key: $key, value: $value)';
 }
 
-/// The primary purpose of CachePool interface is to accept a key from the calling
+/// The primary purpose of Cache interface is to accept a key from the calling
 /// library and return the associated [CacheItem] object. It is also the primary
 /// point of interaction with the entire cache collection. All configuration
 /// and initialization of the pool is left up to an implementing library.
-abstract class CachePool {
-  CachePool._();
+abstract class Cache {
+  Cache._();
 
   /// Deletes all items in the cache pool.
   ///
