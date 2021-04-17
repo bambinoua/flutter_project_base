@@ -22,11 +22,17 @@ class Test extends JsonSerializable {
 }
 
 void main() {
-  test('default_serializable', () {
+  test('jsonserializable', () {
     var testObj = Test(Date.today(), TestEnum.two, 'Name');
     var serialized = json.encode(testObj);
+    var now = DateTime.now();
+    var todayString = [
+      now.year.toString(),
+      now.month.toString().padLeft(2, '0'),
+      now.day.toString().padLeft(2, '0')
+    ].join('-');
     //! Before start this test you should to change the value of datetime to current date.
     expect(serialized,
-        '{"datetime":"2021-04-07T00:00:00.000","enumeration":1,"name":"Name"}');
+        '{"datetime":"${todayString}T00:00:00.000","enumeration":1,"name":"Name"}');
   });
 }
