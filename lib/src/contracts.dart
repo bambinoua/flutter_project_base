@@ -29,6 +29,7 @@ abstract class Enum {
 /// This interface is designed to provide a common protocol for objects
 /// that wish to execute code while they are active.
 abstract class Runnable<T> {
+  /// Runs statements.
   void run();
 }
 

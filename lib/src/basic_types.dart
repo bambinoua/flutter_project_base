@@ -2,6 +2,9 @@ import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 
+/// Primitive value which can be used as sign that value is undefined.
+const undefined = Object();
+
 /// Signature for a function which providdes an instance of type T.
 typedef TypeProvider<T> = T Function();
 
@@ -29,6 +32,52 @@ class Nullable<T> {
 
   /// The underlying value of the Nullable<T> generic type.
   final T? value;
+}
+
+/// Provides a helper instances for using with [StreamBuilder]'s.
+@sealed
+class ResourceState<T extends Object> {
+  const ResourceState._(
+    this.state, {
+    this.data,
+    this.message,
+  });
+
+  /// The resource is idle.
+  const ResourceState.idle() : this._(ResourceStates.idle);
+
+  /// The resource is waiting.
+  const ResourceState.waiting() : this._(ResourceStates.waiting);
+
+  /// The resource is ready with the `data`.
+  const ResourceState.ready(T data) : this._(ResourceStates.ready, data: data);
+
+  /// The resource is failed with the `message`.
+  const ResourceState.error(String message)
+      : this._(ResourceStates.ready, message: message);
+
+  /// Contains resource state value.
+  final ResourceStates state;
+
+  /// Contains data when resource is ready.
+  final T? data;
+
+  /// Contains error message when resource is failed.
+  final String? message;
+
+  /// Returns `true` if this state contains a `data`.
+  bool get hasData => data != null;
+
+  /// Returns `true` if this state is errorneous.
+  bool get hasError => message != null && message!.isNotEmpty;
+}
+
+/// Resource state values.
+enum ResourceStates {
+  idle,
+  waiting,
+  ready,
+  error,
 }
 
 /// The `Date` type is used for values with a date part but no time part.
