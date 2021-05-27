@@ -4,7 +4,7 @@ version: 0.0.1
 homepage: https://github.com/bambinoua/flutter_project_base.git
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.13.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
@@ -16,7 +16,7 @@ dependencies:
 
   # Wraps platform-specific persistent storage for simple data
   # (NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.).
-  shared_preferences: ^2.0.5
+  shared_preferences: ^2.0.6
 
   # A 'dart:html' that works in all platforms, including Flutter and server-side.
   universal_html: ^2.0.7

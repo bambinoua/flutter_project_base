@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
 abstract class Serializable {
@@ -31,6 +33,11 @@ abstract class Enum {
 abstract class Runnable<T> {
   /// Runs statements.
   void run();
+}
+
+/// Interface provides a method to initialize implementing instance.
+abstract class Initiable {
+  FutureOr<void> init();
 }
 
 /// JSON implementation of [Serializable] interface.

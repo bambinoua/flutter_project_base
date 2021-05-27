@@ -5,6 +5,9 @@ import 'package:meta/meta.dart';
 /// Primitive value which can be used as sign that value is undefined.
 const undefined = Object();
 
+/// Just an alias for `[Map]<String,dynamic>`
+typedef Json = Map<String, dynamic>;
+
 /// Signature for a function which providdes an instance of type T.
 typedef TypeProvider<T> = T Function();
 
@@ -36,7 +39,7 @@ class Nullable<T> {
 
 /// Provides a helper instances for using with [StreamBuilder]'s.
 @sealed
-class ResourceState<T extends Object> {
+class ResourceState {
   const ResourceState._(
     this.state, {
     this.data,
@@ -50,17 +53,18 @@ class ResourceState<T extends Object> {
   const ResourceState.waiting() : this._(ResourceStates.waiting);
 
   /// The resource is ready with the `data`.
-  const ResourceState.ready(T data) : this._(ResourceStates.ready, data: data);
+  const ResourceState.ready({Object? data})
+      : this._(ResourceStates.ready, data: data);
 
   /// The resource is failed with the `message`.
   const ResourceState.error(String message)
-      : this._(ResourceStates.ready, message: message);
+      : this._(ResourceStates.error, message: message);
 
   /// Contains resource state value.
   final ResourceStates state;
 
   /// Contains data when resource is ready.
-  final T? data;
+  final Object? data;
 
   /// Contains error message when resource is failed.
   final String? message;
