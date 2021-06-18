@@ -44,24 +44,33 @@ abstract class Initiable {
 abstract class JsonSerializable extends Serializable {
   @override
   Map<String, dynamic> toJson() {
-    return asMap().map((key, value) {
+    return Map<String, dynamic>.fromEntries(asMap()
+        .entries
+        .where((entry) => entry.value != null)
+        .where((entry) =>
+            entry.value is List && (entry.value as List).isNotEmpty ||
+            entry.value is! List)
+        .where((entry) =>
+            entry.value is String && (entry.value as String).isNotEmpty ||
+            entry.value is! String)
+        .map((entry) {
       var effectiveValue;
-      if (value is DateTime) {
-        effectiveValue = value.toIso8601String();
-      } else if (value is Enum) {
-        effectiveValue = value.index;
+      if (entry.value is DateTime) {
+        effectiveValue = (entry.value as DateTime).toUtc().toIso8601String();
+      } else if (entry.value is Enum) {
+        effectiveValue = (entry.value as Enum).index;
       } else {
         /// This is a trick to serialize `enum`. If value implements
         /// `index` property than it is potentially `enum`eration and
         /// there will not be exception. Otherwise the original value is taken.
         try {
-          effectiveValue = value.index;
+          effectiveValue = entry.value.index;
         } catch (_) {
-          effectiveValue = value;
+          effectiveValue = entry.value;
         }
       }
-      return MapEntry(key, effectiveValue);
-    });
+      return MapEntry(entry.key, effectiveValue);
+    }));
   }
 
   /// Returns a [Map] which is used as data for method `toJson` of
