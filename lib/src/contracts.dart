@@ -23,6 +23,28 @@ abstract class Disposable {
 }
 
 /// Provides base interface for classes which may be used as `enum`s.
+///
+/// For example,
+/// ```dart
+/// class Gender implements Enum {
+///   const Gender._(this._index);
+///
+///   final int _index;
+///
+///   static const none = Gender._(0);
+///   static const male = Gender._(1);
+///   static const female = Gender._(2);
+///
+///   static const List<Gender> values = [
+///     none,
+///     male,
+///     female,
+///   ];
+///
+///   @override
+///   int get index => _index;
+/// }
+/// ```
 abstract class Enum {
   /// Returns index of enumeration.
   int get index;
@@ -44,19 +66,13 @@ abstract class Initiable {
 abstract class JsonSerializable extends Serializable {
   @override
   Map<String, dynamic> toJson() {
-    return Map<String, dynamic>.fromEntries(asMap()
-        .entries
-        .where((entry) => entry.value != null)
-        .where((entry) =>
-            entry.value is List && (entry.value as List).isNotEmpty ||
-            entry.value is! List)
-        .where((entry) =>
-            entry.value is String && (entry.value as String).isNotEmpty ||
-            entry.value is! String)
-        .map((entry) {
+    return Map<String, dynamic>.fromEntries(
+        asMap().entries.where((entry) => entry.value != null).map((entry) {
       var effectiveValue;
       if (entry.value is DateTime) {
-        effectiveValue = (entry.value as DateTime).toUtc().toIso8601String();
+        effectiveValue = convertTimeToUtc
+            ? (entry.value as DateTime).toUtc().toIso8601String()
+            : (entry.value as DateTime).toIso8601String();
       } else if (entry.value is Enum) {
         effectiveValue = (entry.value as Enum).index;
       } else {
@@ -76,4 +92,9 @@ abstract class JsonSerializable extends Serializable {
   /// Returns a [Map] which is used as data for method `toJson` of
   /// [Serializable] interface.
   Map<String, dynamic> asMap();
+
+  /// Indicates whether [DateTime] values must be converted to UTC.
+  ///
+  /// Default value is `false`.
+  bool get convertTimeToUtc => false;
 }
