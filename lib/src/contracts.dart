@@ -75,6 +75,8 @@ abstract class JsonSerializable extends Serializable {
             : (entry.value as DateTime).toIso8601String();
       } else if (entry.value is Enum) {
         effectiveValue = (entry.value as Enum).index;
+      } else if (entry.value is JsonSerializable) {
+        effectiveValue = (entry.value as JsonSerializable).toJson();
       } else {
         /// This is a trick to serialize `enum`. If value implements
         /// `index` property than it is potentially `enum`eration and
