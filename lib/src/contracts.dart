@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/painting.dart';
+
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
 abstract class Serializable {
@@ -73,6 +75,8 @@ abstract class JsonSerializable extends Serializable {
         effectiveValue = convertTimeToUtc
             ? (entry.value as DateTime).toUtc().toIso8601String()
             : (entry.value as DateTime).toIso8601String();
+      } else if (entry.value is Color) {
+        effectiveValue = (entry.value as Color).value;
       } else if (entry.value is Enum) {
         effectiveValue = (entry.value as Enum).index;
       } else if (entry.value is JsonSerializable) {
