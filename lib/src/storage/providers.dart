@@ -134,13 +134,13 @@ class WebStorage implements Storage {
     if (jsonValue == null) return null;
     final value = json.decode(jsonValue) as T;
     assert(
-        T.runtimeType is bool ||
-            T.runtimeType is num ||
-            T.runtimeType is double ||
-            T.runtimeType is int ||
-            T.runtimeType is String ||
-            T.runtimeType is List ||
-            T.runtimeType is Map,
+        T is bool ||
+            T is num ||
+            T is double ||
+            T is int ||
+            T is String ||
+            T is List ||
+            T is Map,
         'Stored and requested value types mismatched');
     switch (T) {
       case bool:
