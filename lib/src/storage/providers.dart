@@ -8,7 +8,7 @@ import 'package:flutter_project_base/src/storage/contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
 class SharedPreferencesStorage implements Storage {
-  late SharedPreferences? _sharedPreferences;
+  SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
   Future<SharedPreferences> init() async =>
