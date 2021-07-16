@@ -6,13 +6,9 @@ import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter_project_base/src/storage/contracts.dart';
 
-String _debugUnsupportedMessage(type) =>
-    "Expected value of types 'bool', 'int', 'double', 'String' " +
-    "or 'List<String>' but got '$type'";
-
 /// Provides implementation of [SharedPreferences] storage.
 class SharedPreferencesStorage implements Storage {
-  SharedPreferences? _sharedPreferences;
+  late SharedPreferences? _sharedPreferences;
 
   /// Initializes storage.
   Future<SharedPreferences> init() async =>
@@ -20,7 +16,8 @@ class SharedPreferencesStorage implements Storage {
 
   @override
   StorageItem<T>? getItem<T>(String key) {
-    _debugAssert();
+    _debugAssertNotInitialized();
+    assert(key.isNotEmpty);
     T? value;
     switch (T) {
       case bool:
@@ -39,14 +36,14 @@ class SharedPreferencesStorage implements Storage {
         value = _sharedPreferences!.getStringList(key) as T?;
         break;
       default:
-        throw UnsupportedError(_debugUnsupportedMessage(T));
+        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
     }
     return value != null ? StorageItem<T>(key: key, value: value) : null;
   }
 
   @override
   void putItem<T>(StorageItem<T> item) {
-    _debugAssert();
+    _debugAssertNotInitialized();
     switch (T) {
       case bool:
         _sharedPreferences!.setBool(item.key, item.value as bool);
@@ -64,69 +61,104 @@ class SharedPreferencesStorage implements Storage {
         _sharedPreferences!.setStringList(item.key, item.value as List<String>);
         break;
       default:
-        throw UnsupportedError(_debugUnsupportedMessage(T));
+        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
     }
   }
 
   @override
   void removeItem(String key) {
-    _debugAssert();
+    _debugAssertNotInitialized();
+    assert(key.isNotEmpty);
     _sharedPreferences!.remove(key);
   }
 
   @override
   void clear() {
-    _debugAssert();
+    _debugAssertNotInitialized();
     _sharedPreferences!.clear();
   }
 
   @override
   List<String> get keys {
-    _debugAssert();
+    _debugAssertNotInitialized();
     return _sharedPreferences!.getKeys().toList();
   }
 
   @override
   int get length => keys.length;
 
-  void _debugAssert() {
+  void _debugAssertNotInitialized() {
     assert(_sharedPreferences != null,
-        "Before using 'SharedPreferencesStorage' call its method async 'init()'");
+        "Before using 'SharedPreferencesStorage' call its method 'init()'");
   }
+
+  String _debugErrorUnsupportedMessage(type) => '''
+    Expected value of stored types is 'bool', 'int', 'double',
+    'String', 'List<String>' but got '$type'
+  ''';
+}
+
+/// Available type of web storages.
+enum WebStorageType {
+  /// The stored data is cleared when the page session ends.
+  session,
+
+  /// The stored data is saved across browser sessions.
+  local,
 }
 
 /// Provides implementation of web session storage.
-class WebSessionStorage implements Storage {
-  const WebSessionStorage()
-      : assert(kIsWeb, 'WebSessionStorage available only in web environment');
+///
+/// The descriptions of interfaces are on
+///
+/// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
+///
+/// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+class WebStorage implements Storage {
+  const WebStorage({WebStorageType type = WebStorageType.session})
+      : _type = type,
+        assert(kIsWeb, 'WebStorage is available only in web environment');
 
-  html.Storage get _storage => html.window.sessionStorage;
+  /// The type of used web storage.
+  final WebStorageType _type;
+
+  /// Shortness for web storage.
+  html.Storage get _storage => _type == WebStorageType.session
+      ? html.window.sessionStorage
+      : html.window.localStorage;
 
   @override
   StorageItem<T>? getItem<T>(String key) {
+    assert(key.isNotEmpty);
     final jsonValue = _storage[key];
     if (jsonValue == null) return null;
     final value = json.decode(jsonValue) as T;
+    assert(
+        T == value.runtimeType, 'Stored and requested value types mismatched');
     switch (T) {
       case bool:
+      case num:
       case double:
       case int:
       case String:
       case List:
+      case Map:
         return StorageItem(key: key, value: value);
       default:
-        throw UnsupportedError(_debugUnsupportedMessage(T));
+        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
     }
   }
 
   @override
   void putItem<T>(StorageItem<T> item) {
-    _storage.update(item.key, (oldValue) => json.encode(item.value),
-        ifAbsent: () => json.encode(item.value));
+    final jsonValue = json.encode(item.value);
+    _storage.update(item.key, (oldValue) => jsonValue,
+        ifAbsent: () => jsonValue);
   }
 
   @override
   void removeItem(String key) {
+    assert(key.isNotEmpty);
     _storage.remove(key);
   }
 
@@ -140,6 +172,11 @@ class WebSessionStorage implements Storage {
 
   @override
   int get length => keys.length;
+
+  String _debugErrorUnsupportedMessage(type) => '''
+    Expected value of stored types is 'bool', 'num', 'int', 'double',
+    'String', 'List<String>' but got '$type'
+  ''';
 }
 
 /// Provides implementation of in-memory storage.
@@ -149,6 +186,7 @@ class MemoryStorage implements Storage {
 
   @override
   StorageItem<T>? getItem<T>(String key) {
+    assert(key.isNotEmpty);
     final T? value = _storage[key];
     return value != null ? StorageItem<T>(key: key, value: value) : null;
   }
@@ -160,6 +198,7 @@ class MemoryStorage implements Storage {
 
   @override
   void removeItem(String key) {
+    assert(key.isNotEmpty);
     _storage.remove(key);
   }
 
