@@ -52,7 +52,7 @@ abstract class Storage {
 
   /// Retrieves the value of the item from the storage associated with this
   /// object's `key`, or `null` if the key does not exist.
-  StorageItem<T>? getItem<T>(String key);
+  String? getItem(String key);
 
   /// Returns list of item keys of this storage.
   List<String> get keys;
@@ -62,7 +62,7 @@ abstract class Storage {
 
   /// Adds the passed storage item to the storage, or update that `item`
   /// if it already exists.
-  void putItem<T>(StorageItem<T> item);
+  void putItem(String key, String value);
 
   /// Removes the `key` from the given storage object if it exists.
   /// If there is no item associated with the given key, this method

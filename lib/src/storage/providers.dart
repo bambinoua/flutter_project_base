@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
@@ -15,54 +13,17 @@ class SharedPreferencesStorage implements Storage {
       _sharedPreferences ??= await SharedPreferences.getInstance();
 
   @override
-  StorageItem<T>? getItem<T>(String key) {
+  String? getItem(String key) {
     _debugAssertNotInitialized();
     assert(key.isNotEmpty);
-    T? value;
-    switch (T) {
-      case bool:
-        value = _sharedPreferences!.getBool(key) as T?;
-        break;
-      case double:
-        value = _sharedPreferences!.getDouble(key) as T?;
-        break;
-      case int:
-        value = _sharedPreferences!.getInt(key) as T?;
-        break;
-      case String:
-        value = _sharedPreferences!.getString(key) as T?;
-        break;
-      case List:
-        value = _sharedPreferences!.getStringList(key) as T?;
-        break;
-      default:
-        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
-    }
-    return value != null ? StorageItem<T>(key: key, value: value) : null;
+    return _sharedPreferences!.getString(key);
   }
 
   @override
-  void putItem<T>(StorageItem<T> item) {
+  void putItem(String key, String value) {
     _debugAssertNotInitialized();
-    switch (T) {
-      case bool:
-        _sharedPreferences!.setBool(item.key, item.value as bool);
-        break;
-      case double:
-        _sharedPreferences!.setDouble(item.key, item.value as double);
-        break;
-      case int:
-        _sharedPreferences!.setInt(item.key, item.value as int);
-        break;
-      case String:
-        _sharedPreferences!.setString(item.key, item.value as String);
-        break;
-      case List:
-        _sharedPreferences!.setStringList(item.key, item.value as List<String>);
-        break;
-      default:
-        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
-    }
+    assert(key.isNotEmpty);
+    _sharedPreferences!.setString(key, value);
   }
 
   @override
@@ -91,11 +52,6 @@ class SharedPreferencesStorage implements Storage {
     assert(_sharedPreferences != null,
         "Before using 'SharedPreferencesStorage' call its method 'init()'");
   }
-
-  String _debugErrorUnsupportedMessage(type) => '''
-    Expected value of stored types is 'bool', 'int', 'double',
-    'String', 'List<String>' but got '$type'
-  ''';
 }
 
 /// Available type of web storages.
@@ -128,39 +84,15 @@ class WebStorage implements Storage {
       : html.window.localStorage;
 
   @override
-  StorageItem<T>? getItem<T>(String key) {
+  String? getItem(String key) {
     assert(key.isNotEmpty);
-    final jsonValue = _storage[key];
-    if (jsonValue == null) return null;
-    final value = json.decode(jsonValue) as T;
-    assert(
-        T is bool ||
-            T is num ||
-            T is double ||
-            T is int ||
-            T is String ||
-            T is List ||
-            T is Map,
-        'Stored and requested value types mismatched');
-    switch (T) {
-      case bool:
-      case num:
-      case double:
-      case int:
-      case String:
-      case List:
-      case Map:
-        return StorageItem(key: key, value: value);
-      default:
-        throw UnsupportedError(_debugErrorUnsupportedMessage(T));
-    }
+    return _storage[key];
   }
 
   @override
-  void putItem<T>(StorageItem<T> item) {
-    final jsonValue = json.encode(item.value);
-    _storage.update(item.key, (oldValue) => jsonValue,
-        ifAbsent: () => jsonValue);
+  void putItem(String key, String value) {
+    assert(key.isNotEmpty);
+    _storage.update(key, (oldValue) => value, ifAbsent: () => value);
   }
 
   @override
@@ -179,28 +111,23 @@ class WebStorage implements Storage {
 
   @override
   int get length => keys.length;
-
-  String _debugErrorUnsupportedMessage(type) => '''
-    Expected value of stored types is 'bool', 'num', 'int', 'double',
-    'String', 'List<String>' but got '$type'
-  ''';
 }
 
 /// Provides implementation of in-memory storage.
 class MemoryStorage implements Storage {
   /// Memory map.
-  final Map<String, dynamic> _storage = {};
+  final Map<String, String> _storage = {};
 
   @override
-  StorageItem<T>? getItem<T>(String key) {
+  String? getItem(String key) {
     assert(key.isNotEmpty);
-    final T? value = _storage[key];
-    return value != null ? StorageItem<T>(key: key, value: value) : null;
+    return _storage[key];
   }
 
   @override
-  void putItem<T>(StorageItem<T> item) {
-    _storage[item.key] = item.value;
+  void putItem(String key, String value) {
+    assert(key.isNotEmpty);
+    _storage[key] = value;
   }
 
   @override
@@ -210,9 +137,7 @@ class MemoryStorage implements Storage {
   }
 
   @override
-  void clear() {
-    _storage.clear();
-  }
+  void clear() => _storage.clear();
 
   @override
   List<String> get keys => _storage.keys.toList();
