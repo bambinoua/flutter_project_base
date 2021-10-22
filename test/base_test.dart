@@ -19,6 +19,9 @@ class Test extends JsonSerializable {
       'name': name,
     };
   }
+
+  @override
+  List<Object?> get props => [];
 }
 
 void main() {

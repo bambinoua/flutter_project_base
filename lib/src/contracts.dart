@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/painting.dart';
 
 /// Interface provides a set of methods to allow class which implement it
@@ -65,11 +66,14 @@ abstract class Initiable {
 }
 
 /// JSON implementation of [Serializable] interface.
-abstract class JsonSerializable extends Serializable {
+abstract class JsonSerializable extends Serializable with EquatableMixin {
   @override
   Map<String, dynamic> toJson() {
-    return Map<String, dynamic>.fromEntries(
-        asMap().entries.where((entry) => entry.value != null).map((entry) {
+    return Map<String, dynamic>.fromEntries(asMap()
+        .entries
+        .where((entry) => entry.value != null)
+        .where((entry) => removedKeys.contains(entry.key))
+        .map((entry) {
       var effectiveValue;
       if (entry.value is DateTime) {
         effectiveValue = convertTimeToUtc
@@ -103,4 +107,20 @@ abstract class JsonSerializable extends Serializable {
   ///
   /// Default value is `false`.
   bool get convertTimeToUtc => false;
+
+  /// The list of property names which will be removed while JSON encoding
+  /// this [Serializable].
+  ///
+  /// By default no instance properties removed.
+  List<String> get removedKeys => <String>[];
+
+  @override
+  String toString() {
+    final propString = asMap()
+        .entries
+        .where((prop) => prop.value != null)
+        .map((prop) => '${prop.key}: ${prop.value}')
+        .join(', ');
+    return '$runtimeType($propString)';
+  }
 }

@@ -11,6 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Being able to compare objects in Dart often involves having to override the
+  # == operator as well as hashCode.
+  equatable: ^2.0.3
+
   # Provides internationalization and localization facilities.
   intl: ^0.17.0
 
