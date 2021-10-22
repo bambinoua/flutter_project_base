@@ -16,10 +16,10 @@ dependencies:
 
   # Wraps platform-specific persistent storage for simple data
   # (NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.).
-  shared_preferences: ^2.0.6
+  shared_preferences: ^2.0.8
 
   # A 'dart:html' that works in all platforms, including Flutter and server-side.
-  universal_html: ^2.0.7
+  universal_html: ^2.0.8
 
 dev_dependencies:
   flutter_test:

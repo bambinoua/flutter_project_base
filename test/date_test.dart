@@ -30,14 +30,12 @@ void main() {
   test('date.getMonths', () async {
     await initializeDateFormatting();
     var months = Date.getMonths();
-    expect(months is Map, true);
     expect(months.keys.length, 12);
     expect(months.values.length, 12);
   });
   test('date.getDaysOfWeek', () async {
     await initializeDateFormatting();
     var daysOfWeek = Date.getDaysOfWeek();
-    expect(daysOfWeek is Map, true);
     expect(daysOfWeek.keys.length, 7);
     expect(daysOfWeek.values.length, 7);
   });
