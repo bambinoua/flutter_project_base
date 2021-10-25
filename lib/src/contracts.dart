@@ -60,13 +60,8 @@ abstract class Runnable<T> {
   void run();
 }
 
-/// Interface provides a method to initialize implementing instance.
-abstract class Initiable {
-  FutureOr<void> init();
-}
-
 /// JSON implementation of [Serializable] interface.
-abstract class JsonSerializable extends Serializable with EquatableMixin {
+abstract class JsonSerializable extends Equatable implements Serializable {
   @override
   Map<String, dynamic> toJson() {
     return Map<String, dynamic>.fromEntries(asMap()
