@@ -61,13 +61,16 @@ abstract class Runnable<T> {
 }
 
 /// JSON implementation of [Serializable] interface.
-abstract class JsonSerializable extends Equatable implements Serializable {
+///
+/// This class use `EquatableMixin` instead of extending `Equatable` because
+/// derived classed may be not `@immutable`.
+abstract class JsonSerializable extends Serializable with EquatableMixin {
   @override
   Map<String, dynamic> toJson() {
     return Map<String, dynamic>.fromEntries(asMap()
         .entries
         .where((entry) => entry.value != null)
-        .where((entry) => removedKeys.contains(entry.key))
+        .where((entry) => removedJSONKeys.contains(entry.key))
         .map((entry) {
       var effectiveValue;
       if (entry.value is DateTime) {
@@ -107,7 +110,7 @@ abstract class JsonSerializable extends Equatable implements Serializable {
   /// this [Serializable].
   ///
   /// By default no instance properties removed.
-  List<String> get removedKeys => <String>[];
+  List<String> get removedJSONKeys => <String>[];
 
   @override
   String toString() {
