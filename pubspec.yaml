@@ -11,6 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # This plugin allows Flutter apps to discover network connectivity and configure
+  # themselves accordingly. It can distinguish between cellular vs WiFi connection.
+  connectivity_plus: ^2.0.2
+
   # Being able to compare objects in Dart often involves having to override the
   # == operator as well as hashCode.
   equatable: ^2.0.3
