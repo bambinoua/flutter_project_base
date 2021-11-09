@@ -1,0 +1,35 @@
+import 'dart:math';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_project_base/src/basic_types.dart';
+import 'package:flutter_project_base/src/services/helpers.dart';
+
+void main() {
+  test('file_size_as_integer', () {
+    FileSize fileSize = 2350555;
+    String formattedFileSize = fileSize.formatSizeInBytesToScaledSize();
+    if (fileSize <= 1024) {
+      expect(RegExp('^\\d+\\sbytes\$').hasMatch(formattedFileSize), true);
+    } else if (fileSize <= pow(1024, 2)) {
+      expect(RegExp('^\\d+\\sKb\$').hasMatch(formattedFileSize), true);
+    } else if (fileSize <= pow(1024, 3)) {
+      expect(RegExp('^\\d+\\sMb\$').hasMatch(formattedFileSize), true);
+    }
+  });
+
+  test('file_size_as_float', () {
+    FileSize fileSize = 32350555;
+    final decimals = 2;
+    final formattedFileSize =
+        fileSize.formatSizeInBytesToScaledSize(decimals: decimals);
+    if (fileSize <= pow(1024, 2)) {
+      expect(
+          RegExp('^\\d+\\.\\d{$decimals}\\sKb\$').hasMatch(formattedFileSize),
+          true);
+    } else if (fileSize <= pow(1024, 3)) {
+      expect(
+          RegExp('^\\d+\\.\\d{$decimals}\\sMb\$').hasMatch(formattedFileSize),
+          true);
+    }
+  });
+}

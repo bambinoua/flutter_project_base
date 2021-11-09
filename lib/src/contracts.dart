@@ -53,13 +53,6 @@ abstract class Enum {
   int get index;
 }
 
-/// This interface is designed to provide a common protocol for objects
-/// that wish to execute code while they are active.
-abstract class Runnable<T> {
-  /// Runs statements.
-  void run();
-}
-
 /// JSON implementation of [Serializable] interface.
 ///
 /// This class use `EquatableMixin` instead of extending `Equatable` because
@@ -70,7 +63,7 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
     return Map<String, dynamic>.fromEntries(asMap()
         .entries
         .where((entry) => entry.value != null)
-        .where((entry) => removedJSONKeys.contains(entry.key))
+        .where((entry) => !removedJsonKeys.contains(entry.key))
         .map((entry) {
       var effectiveValue;
       if (entry.value is DateTime) {
@@ -110,7 +103,7 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
   /// this [Serializable].
   ///
   /// By default no instance properties removed.
-  List<String> get removedJSONKeys => <String>[];
+  List<String> get removedJsonKeys => <String>[];
 
   @override
   String toString() {
@@ -121,4 +114,28 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
         .join(', ');
     return '$runtimeType($propString)';
   }
+}
+
+/// An interface for objects that are aware of some task execution.
+///
+/// This is used to make a widget aware of changes to the tasks's execution state.
+abstract class TaskAware {
+  /// Called when the current task has been completed.
+  void onTaskCompleted([TaskResult? result]);
+
+  /// Called when the current task has been failed.
+  void onTaskFailed([Exception? exception]) {}
+
+  /// Called when the current task has changed `isBusy` status.
+  void onTaskStatusChanged(bool isBusy) {}
+}
+
+/// An interface for objects that are result of [TaskAware] execution.
+abstract class TaskResult {
+  /// Defince no task result.
+  static const empty = _EmptyTaskResult();
+}
+
+class _EmptyTaskResult implements TaskResult {
+  const _EmptyTaskResult();
 }

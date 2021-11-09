@@ -46,6 +46,13 @@ class InternetConnectivity extends ChangeNotifier {
   /// Returns `true` if there is a connectivitiy is unavailable.
   bool get isDisonnected => !isConnected;
 
+  /// Returns `true` if there is a connectivitiy to mobile network.
+  bool get isMobileNetworkConnected =>
+      state == InternetConnectivityState.mobile;
+
+  /// Returns `true` if there is a connectivitiy to WiFi network.
+  bool get isWiFiNetworkConnected => state == InternetConnectivityState.wifi;
+
   /// Returns the current Internet connectivity state.
   InternetConnectivityState get state => _stateMap[_connectivityResult]!;
 

@@ -5,8 +5,11 @@ import 'package:meta/meta.dart';
 /// Primitive value which can be used as sign that value is undefined.
 const undefined = Object();
 
-/// Just an alias for `[Map]<String,dynamic>`
+/// An alias for `[Map]<String,dynamic>`
 typedef Json = Map<String, dynamic>;
+
+/// An alias for file size (in bytes).
+typedef FileSize = num;
 
 /// Signature for a function which providdes an instance of type T.
 typedef TypeProvider<T> = T Function();
@@ -232,4 +235,16 @@ class Date extends DateTime {
 
   @override
   String toString() => "$year-$month-$day";
+}
+
+/// A marker interface implemented by app exceptions.
+abstract class BaseException implements Exception {
+  /// Creates a new `BaseException` with an optional error `message`.
+  const BaseException([this.message]);
+
+  /// The associated error message.
+  final String? message;
+
+  @override
+  String toString() => message == null ? 'Exception' : message!;
 }
