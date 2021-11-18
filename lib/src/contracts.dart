@@ -25,6 +25,13 @@ abstract class Disposable {
   void dispose();
 }
 
+/// Interface provides a method that allows to implement `Builder` pattern.
+/// The `Builder` pattern is a design pattern designed to provide a flexible
+/// solution to various object creation problems in object-oriented programming.
+abstract class Builder<T> {
+  T build();
+}
+
 /// Provides base interface for classes which may be used as `enum`s.
 ///
 /// For example,
@@ -132,7 +139,7 @@ abstract class TaskAware {
 
 /// An interface for objects that are result of [TaskAware] execution.
 abstract class TaskResult {
-  /// Defince no task result.
+  /// Defines no task result.
   static const empty = _EmptyTaskResult();
 }
 
