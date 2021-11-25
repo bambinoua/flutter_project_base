@@ -16,7 +16,7 @@ abstract class Cloneable<T> {
   T copyWith();
 }
 
-/// Interface provides a method which is used for realese of unmanaged
+/// Interface provides a method which is used for release of unmanaged
 /// resources and finalizing some instances.
 ///
 /// For example this interface can be implemented by classes which use
@@ -84,9 +84,9 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
       } else if (entry.value is JsonSerializable) {
         effectiveValue = (entry.value as JsonSerializable).toJson();
       } else {
-        /// This is a trick to serialize `enum`. If value implements
-        /// `index` property than it is potentially `enum`eration and
-        /// there will not be exception. Otherwise the original value is taken.
+        // This is a trick to serialize `enum`. If value implements
+        // `index` property than it is potentially enumeration and
+        // there will not be exception. Otherwise the original value is taken.
         try {
           effectiveValue = entry.value.index;
         } catch (_) {
@@ -125,7 +125,7 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
 
 /// An interface for objects that are aware of some task execution.
 ///
-/// This is used to make a widget aware of changes to the tasks's execution state.
+/// This is used to make a widget aware of changes to the task's execution state.
 abstract class TaskAware {
   /// Called when the current task has been completed.
   void onTaskCompleted([TaskResult? result]);
