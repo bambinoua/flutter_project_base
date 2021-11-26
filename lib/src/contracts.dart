@@ -32,6 +32,12 @@ abstract class Builder<T> {
   T build();
 }
 
+/// Mixin provides getters which defines if the mixed object is empty or not.
+mixin Emptiable {
+  bool get isEmpty;
+  bool get isNotEmpty => !isEmpty;
+}
+
 /// Provides base interface for classes which may be used as `enum`s.
 ///
 /// For example,
