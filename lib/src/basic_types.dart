@@ -30,16 +30,6 @@ class KeyValuePair<K, V> {
   final V value;
 }
 
-/// Supports a value type that can be assigned null.
-/// This class cannot be inherited.
-@sealed
-class Nullable<T> {
-  const Nullable([this.value]);
-
-  /// The underlying value of the Nullable<T> generic type.
-  final T? value;
-}
-
 /// Provides a helper instances for using with [StreamBuilder]'s.
 @sealed
 class ResourceState {

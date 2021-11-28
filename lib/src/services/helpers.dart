@@ -1,8 +1,9 @@
 import 'package:charcode/charcode.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_project_base/src/basic_types.dart';
 
 /// Provides some helper functions.
-abstract class Helper {
+class Helper {
   Helper._();
 
   /// Returns the `list` of type T from dynamic list safely.
@@ -46,23 +47,46 @@ abstract class Helper {
   }
 
   static const abbreviations = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb'];
+
+  /// Generates the list from `length` colors which starts from
+  /// `startColor` and ends with `endColor`.
+  ///
+  /// The length must be greater than 0.
+  static List<Color> generate(Color startColor, Color endColor, int length) {
+    assert(length > 0, 'The length of gradient pallette cannot be zero.');
+    return List.generate(length, (index) {
+      final grade = index / length;
+      return Color.fromARGB(
+          255,
+          (startColor.red * (1 - grade) + grade * endColor.red).round(),
+          (startColor.green * (1 - grade) + grade * endColor.green).round(),
+          (startColor.blue * (1 - grade) + grade * endColor.blue).round());
+    });
+  }
 }
 
-/// Provides some usefull HTML entities
-class Char {
-  Char._();
+/// HTML entities.
+class HtmlEntity {
+  HtmlEntity._();
 
-  /// bullet (black small circle) ('•')
   static final bull = String.fromCharCode($bull);
-
-  /// copyright symbol ('©')
   static final copy = String.fromCharCode($copy);
-
-  /// black diamond suit ('♦')
   static final diamond = String.fromCharCode($diams);
-
-  /// em dash ('—')
   static final mdash = String.fromCharCode($mdash);
+}
+
+/// Colos ANSI codes.
+class ColorAnsiCode {
+  ColorAnsiCode._();
+
+  static const reset = '\x1B[0m';
+  static const black = '\x1B[30m';
+  static const white = '\x1B[37m';
+  static const red = '\x1B[31m';
+  static const green = '\x1B[32m';
+  static const yellow = '\x1B[33m';
+  static const blue = '\x1B[34m';
+  static const cyan = '\x1B[36m';
 }
 
 extension FileSizeExtension on FileSize {

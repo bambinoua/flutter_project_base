@@ -4,7 +4,7 @@ import 'package:flutter_project_base/src/contracts.dart';
 
 /// Inherited widget which composes the path to the specific widget in the widget tree.
 class WidgetPathProvider extends InheritedWidget {
-  WidgetPathProvider({
+  const WidgetPathProvider({
     Key? key,
     required Widget child,
     this.userId = '',

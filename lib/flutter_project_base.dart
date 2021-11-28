@@ -1,9 +1,9 @@
 library flutter_project_base;
 
 export 'src/cache/contracts.dart';
-export 'src/colors.dart';
-export 'src/contracts.dart';
 export 'src/basic_types.dart';
+export 'src/constants.dart';
+export 'src/contracts.dart';
 export 'src/material/functions.dart';
 export 'src/material/textfield.dart';
 export 'src/material/widgets.dart';
