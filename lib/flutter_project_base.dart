@@ -10,4 +10,5 @@ export 'src/material/widgets.dart';
 export 'src/services/helpers.dart';
 export 'src/services/internet_connectivity.dart';
 export 'src/storage/contracts.dart';
+export 'src/storage/firebase/errors.dart';
 export 'src/storage/providers.dart';
