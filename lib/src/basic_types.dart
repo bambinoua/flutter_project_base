@@ -2,14 +2,16 @@ import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 
+import 'extensions.dart';
+
 /// Primitive value which can be used as sign that value is undefined.
 const undefined = Object();
 
 /// An alias for `[Map]<String,dynamic>`
 typedef Json = Map<String, dynamic>;
 
-/// An alias for file size (in bytes).
-typedef FileSize = num;
+/// An alias for file `int` size (in bytes).
+typedef FileSize = int;
 
 /// Signature for a function which providdes an instance of type T.
 typedef TypeProvider<T> = T Function();
@@ -32,7 +34,8 @@ class KeyValuePair<K, V> {
 
 /// Provides a helper instances for using with [StreamBuilder]'s.
 @sealed
-class ResourceState {
+@immutable
+class ResourceState<T> {
   const ResourceState._(
     this.state, {
     this.data,
@@ -40,41 +43,42 @@ class ResourceState {
   });
 
   /// The resource is idle.
-  const ResourceState.idle() : this._(ResourceStates.idle);
+  const ResourceState.idle() : this._(_ResourceStates.idle);
 
   /// The resource is waiting.
-  const ResourceState.waiting() : this._(ResourceStates.waiting);
+  const ResourceState.waiting() : this._(_ResourceStates.waiting);
 
-  /// The resource is ready with the `data`.
-  const ResourceState.ready({Object? data})
-      : this._(ResourceStates.ready, data: data);
+  /// The resource is ready with the optional `data`.
+  const ResourceState.ready({T? data})
+      : this._(_ResourceStates.ready, data: data);
 
   /// The resource is failed with the `message`.
   const ResourceState.error(String message)
-      : this._(ResourceStates.error, message: message);
+      : this._(_ResourceStates.failed, message: message);
 
   /// Contains resource state value.
-  final ResourceStates state;
+  final _ResourceStates state;
 
   /// Contains data when resource is ready.
-  final Object? data;
+  final T? data;
 
   /// Contains error message when resource is failed.
   final String? message;
 
-  /// Returns `true` if this state contains a `data`.
   bool get hasData => data != null;
-
-  /// Returns `true` if this state is errorneous.
   bool get hasError => message != null && message!.isNotEmpty;
+  bool get isIdle => state == _ResourceStates.idle;
+  bool get isWaiting => state == _ResourceStates.waiting;
+  bool get isReady => state == _ResourceStates.ready;
+  bool get isFailed => state == _ResourceStates.failed;
 }
 
 /// Resource state values.
-enum ResourceStates {
+enum _ResourceStates {
   idle,
   waiting,
   ready,
-  error,
+  failed,
 }
 
 /// The `Date` type is used for values with a date part but no time part.
@@ -98,7 +102,7 @@ class Date extends DateTime {
   /// var thisInstant = Date.today();
   /// ```
   factory Date.today() {
-    var now = DateTime.now();
+    final now = DateTime.now();
     return Date(now.year, now.month, now.day);
   }
 
@@ -111,7 +115,7 @@ class Date extends DateTime {
   /// time zone (local or UTC).
   factory Date.fromMillisecondsSinceEpoch(int millisecondsSinceEpoch,
       {bool isUtc = false}) {
-    var datetime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
+    final datetime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch,
         isUtc: isUtc);
     return Date(datetime.year, datetime.month, datetime.day);
   }
@@ -125,7 +129,7 @@ class Date extends DateTime {
   /// time zone (local or UTC).
   factory Date.fromMicrosecondsSinceEpoch(int microsecondsSinceEpoch,
       {bool isUtc = false}) {
-    var datetime = DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
+    final datetime = DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
         isUtc: isUtc);
     return Date(datetime.year, datetime.month, datetime.day);
   }
@@ -159,7 +163,7 @@ class Date extends DateTime {
   /// The function parses a subset of ISO 8601
   /// which includes the subset accepted by RFC 3339.
   static Date parse(String formattedString) {
-    var datetime = DateTime.parse(formattedString);
+    final datetime = DateTime.parse(formattedString);
     return Date(datetime.year, datetime.month, datetime.day);
   }
 
@@ -224,7 +228,11 @@ class Date extends DateTime {
       DateFormat(null, locale).dateSymbols;
 
   @override
-  String toString() => "$year-$month-$day";
+  String toString() => <String>[
+        year.toString(),
+        month.withLeadingZeros(2),
+        day.withLeadingZeros(2)
+      ].join('-');
 }
 
 /// A marker interface implemented by app exceptions.

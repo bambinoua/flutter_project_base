@@ -5,7 +5,7 @@ import 'package:flutter_project_base/src/basic_types.dart';
 import 'package:flutter_project_base/src/services/helpers.dart';
 
 void main() {
-  test('file_size_as_integer', () {
+  test('Format file size as integer', () {
     FileSize fileSize = 2350555;
     String formattedFileSize = fileSize.formatSizeInBytesToScaledSize();
     if (fileSize <= 1024) {
@@ -17,7 +17,7 @@ void main() {
     }
   });
 
-  test('file_size_as_float', () {
+  test('Format file size as integer float with 2 decimals', () {
     FileSize fileSize = 32350555;
     final decimals = 2;
     final formattedFileSize =

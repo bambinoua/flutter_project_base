@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:equatable/equatable.dart';
 import 'package:flutter/painting.dart';
 
 /// Interface provides a set of methods to allow class which implement it
@@ -70,7 +69,7 @@ abstract class Enum {
 ///
 /// This class use `EquatableMixin` instead of extending `Equatable` because
 /// derived classed may be not `@immutable`.
-abstract class JsonSerializable extends Serializable with EquatableMixin {
+mixin SerializableMixin implements Serializable {
   @override
   Map<String, dynamic> toJson() {
     return Map<String, dynamic>.fromEntries(asMap()
@@ -87,8 +86,8 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
         effectiveValue = (entry.value as Color).value;
       } else if (entry.value is Enum) {
         effectiveValue = (entry.value as Enum).index;
-      } else if (entry.value is JsonSerializable) {
-        effectiveValue = (entry.value as JsonSerializable).toJson();
+      } else if (entry.value is Serializable) {
+        effectiveValue = (entry.value as Serializable).toJson();
       } else {
         // This is a trick to serialize `enum`. If value implements
         // `index` property than it is potentially enumeration and
@@ -125,7 +124,7 @@ abstract class JsonSerializable extends Serializable with EquatableMixin {
         .where((prop) => prop.value != null)
         .map((prop) => '${prop.key}: ${prop.value}')
         .join(', ');
-    return '$runtimeType($propString)';
+    return '$runtimeType {$propString}';
   }
 }
 

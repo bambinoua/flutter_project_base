@@ -2,7 +2,7 @@ import 'package:flutter_project_base/src/storage/providers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('memory_storage_test', () {
+  test('Memory storage read and write', () {
     final memory = MemoryStorage();
     const key = 'test.key';
 
