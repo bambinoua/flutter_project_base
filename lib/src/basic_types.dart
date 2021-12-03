@@ -14,11 +14,11 @@ typedef Json = Map<String, dynamic>;
 typedef FileSize = int;
 
 /// Signature for a function which providdes an instance of type T.
-typedef TypeProvider<T> = T Function();
+typedef InstanceProvider<T> = T Function();
 
 /// Signature for a function which creates an instance of type T
 /// using `value` of type V.
-typedef GenericTypeProvider<T, V> = T Function(V value);
+typedef InstanceProviderV<T, V> = T Function(V value);
 
 /// Defines a key/value pair that can be set or retrieved.
 class KeyValuePair<K, V> {
@@ -236,13 +236,23 @@ class Date extends DateTime {
 }
 
 /// A marker interface implemented by app exceptions.
-abstract class BaseException implements Exception {
-  /// Creates a new `BaseException` with an optional error `message`.
-  const BaseException([this.message]);
+class GenericException implements Exception {
+  /// Creates a new exception with an optional error `message`.
+  GenericException({this.message, this.code = ''})
+      : stackTrace = StackTrace.current;
 
-  /// The associated error message.
+  /// The long form message of the exception.
   final String? message;
 
+  /// The optional code to accommodate the message.
+  ///
+  /// Allows users to identify the exception from a short code-name.
+  final String code;
+
+  /// The stack trace which provides information to the user about the call
+  /// sequence that triggered an exception
+  final StackTrace stackTrace;
+
   @override
-  String toString() => message == null ? 'Exception' : message!;
+  String toString() => message == null ? 'GenericException' : message!;
 }
