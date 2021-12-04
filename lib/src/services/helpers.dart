@@ -15,7 +15,7 @@ class Helper {
   ///
   /// If `map` is null than null is returned.
   static T? safeInstance<T>(Map<String, dynamic>? map,
-          GenericTypeProvider<T, Map<String, dynamic>> constructor,
+          InstanceProviderV<T, Map<String, dynamic>> constructor,
           [T? defaultInstance]) =>
       map != null ? constructor(map) : defaultInstance;
 
