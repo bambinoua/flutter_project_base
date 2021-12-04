@@ -1,4 +1,4 @@
-import 'package:flutter_project_base/src/storage/providers.dart';
+import 'package:flutter_project_base/src/services/storage/providers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

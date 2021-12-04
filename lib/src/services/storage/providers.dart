@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'package:flutter_project_base/src/storage/contracts.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_project_base/src/services/storage/contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
 class SharedPreferencesStorage implements Storage {
