@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_project_base/src/basic_types.dart';
-import 'package:flutter_project_base/src/services/helpers.dart';
+import 'package:flutter_project_base/src/helpers.dart';
 
 void main() {
   test('Format file size as integer', () {

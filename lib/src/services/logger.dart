@@ -60,9 +60,6 @@ abstract class Logger {
 
   /// Log an WARNING message.
   void warning(String msg);
-
-  /// The name for the global logger.
-  static final globalLoggerName = 'GlobalLogger';
 }
 
 /// The Level class defines a set of standard logging levels that can be used
