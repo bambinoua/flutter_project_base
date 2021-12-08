@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 
 /// [int] extensions.
@@ -22,4 +25,14 @@ void forTimes(int times, VoidCallback body) {
     body();
     forTimes(times - 1, body);
   }
+}
+
+/// Measures performance of `procedure`.
+FutureOr<T> meter<T>(ValueGetter<FutureOr<T>> procedure, [String? name]) async {
+  final stopwatch = Stopwatch()..start();
+  final result = await procedure();
+  stopwatch.stop();
+  final duration = (stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(3);
+  log('Duration: $duration sec', name: name ?? 'meter');
+  return result;
 }

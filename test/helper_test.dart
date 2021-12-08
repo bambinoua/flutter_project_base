@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter_project_base/src/extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_project_base/src/basic_types.dart';
 import 'package:flutter_project_base/src/helpers.dart';
@@ -31,5 +32,12 @@ void main() {
           RegExp('^\\d+\\.\\d{$decimals}\\sMb\$').hasMatch(formattedFileSize),
           true);
     }
+  });
+
+  test('Procedure performance meter', () async {
+    await meter(() {
+      final value = Future.delayed(Duration(seconds: 3), () => 2);
+      return value;
+    }, 'Future.delayed');
   });
 }
