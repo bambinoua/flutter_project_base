@@ -12,6 +12,13 @@ class SharedPreferencesStorage implements Storage {
   Future<SharedPreferences> init() async =>
       _sharedPreferences ??= await SharedPreferences.getInstance();
 
+  /// Creates an instance of already initialized storage.
+  static Future<SharedPreferencesStorage> create() async {
+    final storage = SharedPreferencesStorage();
+    await storage.init();
+    return storage;
+  }
+
   @override
   String? getItem(String key) {
     _debugAssertNotInitialized();
