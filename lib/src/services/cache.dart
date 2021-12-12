@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_project_base/src/contracts.dart';
+
+import '../core/contracts.dart';
 
 /// Specifies a priority setting that is used to decide whether
 /// to evict a cache entry.

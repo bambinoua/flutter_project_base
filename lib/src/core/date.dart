@@ -1,6 +1,7 @@
-import 'package:flutter_project_base/src/extensions.dart';
 import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
+
+import 'extensions.dart';
 
 /// The `Date` type is used for values with a date part but no time part.
 /// Dates can represent time values that are at a distance of at most

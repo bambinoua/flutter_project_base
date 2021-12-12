@@ -1,55 +1,52 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_project_base/src/services/storage/contracts.dart';
+import 'contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
 class SharedPreferencesStorage implements Storage {
-  SharedPreferences? _sharedPreferences;
+  const SharedPreferencesStorage._();
 
-  /// Initializes storage.
-  Future<SharedPreferences> init() async =>
-      _sharedPreferences ??= await SharedPreferences.getInstance();
+  static late SharedPreferences _sharedPreferences;
 
   /// Creates an instance of already initialized storage.
   static Future<SharedPreferencesStorage> create() async {
-    final storage = SharedPreferencesStorage();
-    await storage.init();
-    return storage;
+    _sharedPreferences = await SharedPreferences.getInstance();
+    return const SharedPreferencesStorage._();
   }
 
   @override
   String? getItem(String key) {
     _debugAssertNotInitialized();
     assert(key.isNotEmpty);
-    return _sharedPreferences!.getString(key);
+    return _sharedPreferences.getString(key);
   }
 
   @override
   void putItem(String key, String value) {
     _debugAssertNotInitialized();
     assert(key.isNotEmpty);
-    _sharedPreferences!.setString(key, value);
+    _sharedPreferences.setString(key, value);
   }
 
   @override
   void removeItem(String key) {
     _debugAssertNotInitialized();
     assert(key.isNotEmpty);
-    _sharedPreferences!.remove(key);
+    _sharedPreferences.remove(key);
   }
 
   @override
   void clear() {
     _debugAssertNotInitialized();
-    _sharedPreferences!.clear();
+    _sharedPreferences.clear();
   }
 
   @override
   List<String> get keys {
     _debugAssertNotInitialized();
-    return _sharedPreferences!.getKeys().toList();
+    return _sharedPreferences.getKeys().toList();
   }
 
   @override
@@ -62,7 +59,7 @@ class SharedPreferencesStorage implements Storage {
 }
 
 /// Available type of web storages.
-enum WebStorageType {
+enum _WebStorageType {
   /// The stored data is cleared when the page session ends.
   session,
 
@@ -78,15 +75,17 @@ enum WebStorageType {
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 class WebStorage implements Storage {
-  const WebStorage({WebStorageType type = WebStorageType.session})
-      : _type = type,
-        assert(kIsWeb, 'WebStorage is available only in web environment');
+  const WebStorage._(this._type)
+      : assert(kIsWeb, 'WebStorage is available only in web environment');
+
+  const WebStorage.session() : this._(_WebStorageType.session);
+  const WebStorage.local() : this._(_WebStorageType.local);
 
   /// The type of used web storage.
-  final WebStorageType _type;
+  final _WebStorageType _type;
 
   /// Shortness for web storage.
-  html.Storage get _storage => _type == WebStorageType.session
+  html.Storage get _storage => _type == _WebStorageType.session
       ? html.window.sessionStorage
       : html.window.localStorage;
 

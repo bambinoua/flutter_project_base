@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_project_base/src/basic_types.dart';
-import 'package:flutter_project_base/src/contracts.dart';
+
+import '../../core/basic_types.dart';
+import '../../core/contracts.dart';
 
 /// Specifies a priority setting that is used to decide whether
 /// to evict a storafe entry.

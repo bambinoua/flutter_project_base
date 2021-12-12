@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_project_base/src/contracts.dart';
+
+import '../core/contracts.dart';
 
 /// Widget that builds itself based on the latest snapshot of interaction with
 /// a [Stream].

@@ -1,7 +1,8 @@
 // ignore_for_file: comment_references
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_project_base/src/contracts.dart';
+
+import '../core/contracts.dart';
 
 /// A helper class which can be used for management of [TextField] widgets.
 ///

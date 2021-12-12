@@ -1,4 +1,4 @@
-import 'package:flutter_project_base/src/basic_types.dart';
+import 'basic_types.dart';
 
 /// Base class for internal Firebase errors.
 class FirebaseInternalError {
