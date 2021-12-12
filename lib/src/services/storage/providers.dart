@@ -18,44 +18,34 @@ class SharedPreferencesStorage implements Storage {
 
   @override
   String? getItem(String key) {
-    _debugAssertNotInitialized();
     assert(key.isNotEmpty);
     return _sharedPreferences.getString(key);
   }
 
   @override
   void putItem(String key, String value) {
-    _debugAssertNotInitialized();
     assert(key.isNotEmpty);
     _sharedPreferences.setString(key, value);
   }
 
   @override
   void removeItem(String key) {
-    _debugAssertNotInitialized();
     assert(key.isNotEmpty);
     _sharedPreferences.remove(key);
   }
 
   @override
   void clear() {
-    _debugAssertNotInitialized();
     _sharedPreferences.clear();
   }
 
   @override
   List<String> get keys {
-    _debugAssertNotInitialized();
     return _sharedPreferences.getKeys().toList();
   }
 
   @override
   int get length => keys.length;
-
-  void _debugAssertNotInitialized() {
-    assert(_sharedPreferences != null,
-        "Before using 'SharedPreferencesStorage' call its method 'init()'");
-  }
 }
 
 /// Available type of web storages.
