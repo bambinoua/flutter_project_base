@@ -16,7 +16,8 @@ class Helper {
   /// Returns the value of type T from JSON encoded `map` safely.
   ///
   /// If `map` is null than null is returned.
-  static T? safeValue<T>(Json? map, ValueProvider2<T, Json> valueProvider,
+  static T? safeValue<T>(
+          Json? map, DependendValueProvider<T, Json> valueProvider,
           [T? defaultValue]) =>
       map != null ? valueProvider(map) : defaultValue;
 

@@ -7,12 +7,12 @@ typedef Json = Map<String, dynamic>;
 /// An alias for file `int` size (in bytes).
 typedef FileSize = int;
 
-/// Signature for a function which providdes a value of type V.
-typedef ValueProvider<V> = V Function();
+/// Signature for a function which providdes a value of type T.
+typedef ValueProvider<T> = T Function();
 
-/// Signature for a function which creates a value of type V
-/// using `parameter` of type P.
-typedef ValueProvider2<V, P> = V Function(P parameter);
+/// Signature for a function which creates a value of type T
+/// using `value` of type V.
+typedef DependendValueProvider<T, V> = T Function(V value);
 
 /// Defines a key/value pair that can be set or retrieved.
 @immutable
