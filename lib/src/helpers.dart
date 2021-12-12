@@ -13,13 +13,12 @@ class Helper {
   /// If `list` is null than empty list is returned.
   static List<T> safeList<T>(List? list) => List<T>.from(list ?? <T>[]);
 
-  /// Returns the instance of type T from `map` safely.
+  /// Returns the value of type T from JSON encoded `map` safely.
   ///
   /// If `map` is null than null is returned.
-  static T? safeInstance<T>(Map<String, dynamic>? map,
-          InstanceProviderV<T, Map<String, dynamic>> constructor,
-          [T? defaultInstance]) =>
-      map != null ? constructor(map) : defaultInstance;
+  static T? safeValue<T>(Json? map, ValueProvider2<T, Json> valueProvider,
+          [T? defaultValue]) =>
+      map != null ? valueProvider(map) : defaultValue;
 
   /// Returns the instance of [Date] type from `formattedString` safely.
   ///
