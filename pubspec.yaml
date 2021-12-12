@@ -13,7 +13,7 @@ dependencies:
 
   # This plugin allows Flutter apps to discover network connectivity and configure
   # themselves accordingly. It can distinguish between cellular vs WiFi connection.
-  connectivity_plus: ^2.0.2
+  connectivity_plus: ^2.1.0
 
   # Being able to compare objects in Dart often involves having to override the
   # == operator as well as hashCode.
@@ -24,7 +24,7 @@ dependencies:
 
   # Wraps platform-specific persistent storage for simple data
   # (NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.).
-  shared_preferences: ^2.0.8
+  shared_preferences: ^2.0.11
 
   # A 'dart:html' that works in all platforms, including Flutter and server-side.
   universal_html: ^2.0.8
