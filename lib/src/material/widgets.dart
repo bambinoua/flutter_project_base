@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../core/contracts.dart';
@@ -153,4 +157,118 @@ mixin WidgetPathProviderMixin<T extends StatefulWidget> on State<T> {
     _pathProvider = WidgetPathProvider.of(context,
         suppressError: suppressProviderNotFoundError)!;
   }
+}
+
+/// Custom `dual ring` circular progress indicator.
+class DualRingProgressIndicator extends StatefulWidget {
+  const DualRingProgressIndicator({
+    Key? key,
+    this.duration = const Duration(seconds: 1),
+    this.color = const Color(0xff3b82f6),
+    this.diameter = 36.0,
+    this.text,
+  })  : assert(duration != Duration.zero),
+        assert(diameter > 0),
+        super(key: key);
+
+  /// The duration of progress animation.
+  final Duration duration;
+
+  /// The color of the progress indicator.
+  final Color color;
+
+  /// The ring diameter of the progress indicator.
+  final double diameter;
+
+  /// Optional [Text] widget which is under the ring.
+  final Widget? text;
+
+  @override
+  _DualRingProgressIndicatorState createState() =>
+      _DualRingProgressIndicatorState();
+}
+
+class _DualRingProgressIndicatorState extends State<DualRingProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          RotationTransition(
+            turns: Tween(begin: 0.0, end: 1.0).animate(controller),
+            child: CustomPaint(
+              painter: _DualRingPainter(
+                widget.color,
+                widget.diameter,
+              ),
+            ),
+          ),
+          if (widget.text != null) ...[
+            const SizedBox(height: 20.0),
+            widget.text!,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Custom painter which draws the "dual ring".
+class _DualRingPainter extends CustomPainter {
+  _DualRingPainter(this.color, this.diameter) : assert(diameter > 0);
+
+  /// The color of paint.
+  final Color color;
+
+  /// The diameter of dual ring.
+  final double diameter;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true
+      ..strokeWidth = 6.0;
+    _drawArc(canvas, 2.0, paint);
+    _drawArc(canvas, math.pi, paint);
+  }
+
+  void _drawArc(Canvas canvas, double sweepAngle, Paint paint) {
+    canvas.drawArc(
+        Rect.fromCenter(center: Offset.zero, width: diameter, height: diameter),
+        0.0,
+        sweepAngle,
+        false,
+        paint);
+  }
+
+  @override
+  bool shouldRepaint(_DualRingPainter oldDelegate) => false;
+
+  @override
+  bool shouldRebuildSemantics(_DualRingPainter oldDelegate) => false;
+}
+
+/// [Widget] extensions.
+extension Widgets on Widget {
+  /// Returns class name of the widget.
+  String get className => objectRuntimeType(this, '');
 }
