@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../core/basic_types.dart';
 import '../../core/contracts.dart';
 
 /// Specifies a priority setting that is used to decide whether
@@ -14,14 +13,19 @@ enum StorageItemPriority {
 }
 
 /// A key that uses as parameter for [Storage].
-class StorageItem<T> extends KeyValuePair<String, T>
-    implements Cloneable<StorageItem<T>> {
+class StorageItem<T> implements Cloneable<StorageItem<T>> {
   /// Construct a [StorageItem] with optional persistence.
-  const StorageItem({
-    required String key,
-    required T value,
+  const StorageItem(
+    this.key,
+    this.value, {
     this.priority = StorageItemPriority.standard,
-  }) : super(key, value);
+  });
+
+  /// An unique identifier for a key.
+  final String key;
+
+  /// An data of any type for this key.
+  final T value;
 
   /// Priority setting that is used to determine whether to evict
   /// a storage entry.
@@ -32,14 +36,14 @@ class StorageItem<T> extends KeyValuePair<String, T>
     T? value,
   }) =>
       StorageItem<T>(
-        key: key,
-        value: value ?? this.value,
+        key,
+        value ?? this.value,
         priority: priority,
       );
 
   @override
-  String toString() =>
-      'StorageItem (key: $key, value: $value, priority: ${describeEnum(priority)})';
+  String toString() => 'StorageItem (key: $key, value: $value, '
+      'priority: ${describeEnum(priority)})';
 }
 
 /// The Storage interface provides access to a particular mobile, memory,

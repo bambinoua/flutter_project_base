@@ -60,7 +60,7 @@ mixin Emptiable {
 ///   int get index => _index;
 /// }
 /// ```
-abstract class Enum {
+abstract class CustomEnum {
   /// Returns index of enumeration.
   int get index;
 }
@@ -75,15 +75,17 @@ mixin SerializableMixin implements Serializable {
     return Map<String, dynamic>.fromEntries(asMap()
         .entries
         .where((entry) => entry.value != null)
-        .where((entry) => !removedJsonKeys.contains(entry.key))
+        .where((entry) => !removedKeys.contains(entry.key))
         .map((entry) {
       var effectiveValue;
       if (entry.value is DateTime) {
-        effectiveValue = convertTimeToUtc
+        effectiveValue = useUtc
             ? (entry.value as DateTime).toUtc().toIso8601String()
             : (entry.value as DateTime).toIso8601String();
       } else if (entry.value is Color) {
         effectiveValue = (entry.value as Color).value;
+      } else if (entry.value is CustomEnum) {
+        effectiveValue = (entry.value as CustomEnum).index;
       } else if (entry.value is Enum) {
         effectiveValue = (entry.value as Enum).index;
       } else if (entry.value is Serializable) {
@@ -109,13 +111,13 @@ mixin SerializableMixin implements Serializable {
   /// Indicates whether [DateTime] values must be converted to UTC.
   ///
   /// Default value is `false`.
-  bool get convertTimeToUtc => false;
+  bool get useUtc => false;
 
   /// The list of property names which will be removed while JSON encoding
   /// this [Serializable].
   ///
   /// By default no instance properties removed.
-  List<String> get removedJsonKeys => <String>[];
+  List<String> get removedKeys => <String>[];
 
   @override
   String toString() {

@@ -10,16 +10,20 @@ class Helper {
 
   /// Returns the `list` of type T from dynamic list safely.
   ///
-  /// If `list` is null than empty list is returned.
+  /// If `list` is null than empty [List] is returned.
   static List<T> safeList<T>(List? list) => List<T>.from(list ?? <T>[]);
+
+  /// Returns the `map` of type T from dynamic list safely.
+  ///
+  /// If `map` is null than empty [Map] is returned.
+  static Map<K, V> safeMap<K, V>(Map? map) => Map<K, V>.from(map ?? <K, V>{});
 
   /// Returns the value of type T from JSON encoded `map` safely.
   ///
   /// If `map` is null than null is returned.
-  static T? safeValue<T>(
-          Json? map, DependendValueProvider<T, Json> valueProvider,
+  static T? safeValue<T, V>(V? source, ConvertibleBuilder<T?, V?> builder,
           [T? defaultValue]) =>
-      map != null ? valueProvider(map) : defaultValue;
+      source != null ? builder(source) : defaultValue;
 
   /// Returns the instance of [Date] type from `formattedString` safely.
   ///

@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 /// An alias for `[Map]<String,dynamic>`
@@ -8,32 +7,16 @@ typedef Json = Map<String, dynamic>;
 typedef FileSize = int;
 
 /// Signature for a function which providdes a value of type T.
-typedef ValueProvider<T> = T Function();
+typedef ValueBuilder<T> = T Function();
 
 /// Signature for a function which creates a value of type T
 /// using `value` of type V.
-typedef DependendValueProvider<T, V> = T Function(V value);
-
-/// Defines a key/value pair that can be set or retrieved.
-@immutable
-class KeyValuePair<K, V> extends Equatable {
-  /// Creates an instance of a key/value pair.
-  const KeyValuePair(this.key, this.value);
-
-  /// An unique identifier for a key.
-  final K key;
-
-  /// An data of any type for this key.
-  final V value;
-
-  @override
-  List<Object?> get props => [key, value];
-}
+typedef ConvertibleBuilder<T, V> = T Function(V value);
 
 /// Provides a helper instances for using with [StreamBuilder]'s.
 @sealed
 @immutable
-class ResourceState<T> {
+class ResourceState {
   const ResourceState._(
     this.state, {
     this.data,
@@ -41,34 +24,35 @@ class ResourceState<T> {
   });
 
   /// The resource is idle.
-  const ResourceState.idle() : this._(_ResourceStates.idle);
+  static const idle = ResourceState._(_ResourceStates.idle);
 
   /// The resource is waiting.
-  const ResourceState.waiting() : this._(_ResourceStates.waiting);
+  static const waiting = ResourceState._(_ResourceStates.waiting);
 
   /// The resource is ready with the optional `data`.
-  const ResourceState.ready({T? data})
+  const ResourceState.ready({Object? data})
       : this._(_ResourceStates.ready, data: data);
 
   /// The resource is failed with the `message`.
   const ResourceState.error(String message)
-      : this._(_ResourceStates.failed, message: message);
+      : this._(_ResourceStates.error, message: message);
 
   /// Contains resource state value.
   final _ResourceStates state;
 
   /// Contains data when resource is ready.
-  final T? data;
+  final Object? data;
 
   /// Contains error message when resource is failed.
   final String? message;
 
+  /// Whether data is available. Applicable for `ready` state.
   bool get hasData => data != null;
-  bool get hasError => message != null && message!.isNotEmpty;
+
   bool get isIdle => state == _ResourceStates.idle;
   bool get isWaiting => state == _ResourceStates.waiting;
   bool get isReady => state == _ResourceStates.ready;
-  bool get isFailed => state == _ResourceStates.failed;
+  bool get isError => state == _ResourceStates.error;
 }
 
 /// Resource state values.
@@ -76,5 +60,5 @@ enum _ResourceStates {
   idle,
   waiting,
   ready,
-  failed,
+  error,
 }
