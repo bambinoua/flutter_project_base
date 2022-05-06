@@ -8,6 +8,7 @@ export 'src/core/errors.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/extensions.dart';
 export 'src/core/helpers.dart';
+export 'src/core/math.dart';
 
 export 'src/material/functions.dart';
 export 'src/material/textfield.dart';

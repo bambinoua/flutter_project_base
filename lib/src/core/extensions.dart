@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 
 /// [int] extensions.
-extension ints on int {
+extension IntFormatters on int {
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
     assert(!pad.isNegative);
