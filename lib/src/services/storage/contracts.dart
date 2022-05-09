@@ -74,3 +74,17 @@ abstract class Storage {
   /// will do nothing.
   void removeItem(String key);
 }
+
+/// Provices interface for building values which cen be persisted in undrlyiing storage.
+abstract class StorageKey<T> extends ValueNotifier<T> {
+  StorageKey(this.name, this.storage, T initialValue) : super(initialValue);
+
+  /// Name of this storage key.
+  final String name;
+
+  /// Underlying storage interface.
+  final Storage storage;
+
+  /// Removes this key from storage.
+  void remove();
+}

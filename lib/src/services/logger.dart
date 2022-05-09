@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 /// A Logger object is used to log messages for
 /// a specific system or application component.
 abstract class Logger {
-  const Logger(this.name);
+  Logger({this.name = '', this.level = LoggerLevel.off});
 
   /// The name for this logger.
   final String name;
@@ -16,57 +16,54 @@ abstract class Logger {
   void addHandler(VoidCallback handler);
 
   /// Log a CONFIG message.
-  void config(String msg);
+  void config(String message);
 
   /// Log an FINE message.
-  void fine(String msg);
+  void fine(String message);
 
   /// Log an FINER message.
-  void finer(String msg);
+  void finer(String message);
 
   /// Log an FINEST message.
-  void finest(String msg);
+  void finest(String message);
 
   /// Log an INFO message.
-  void info(String msg);
+  void info(String message);
 
   /// Check if a message of the given level would actually be logged by
   /// this logger.
-  bool isLoggable(Level level);
+  bool isLoggable(LoggerLevel level);
 
   /// Get the handlers associated with this logger.
   List<VoidCallback> get handlers;
 
-  /// Get the log Level that has been specified for this Logger.
-  /// The result may be null.
-  Level get level;
-
   /// Log a message, with optional argument.
-  void log(Level level, String msg, [Object argument]);
+  @protected
+  void log(LoggerLevel level, String message, [Object? argument]);
 
   /// Remove a log handler.
   void removeHandler(VoidCallback handler);
 
-  /// Set the log level specifying which message levels will be logged by this
-  /// logger. Message levels lower than this value will be discarded. The level
-  /// value Level.off can be used to turn off logging.
+  /// Gets or set the log level specifying which message levels will be logged
+  /// by this logger. Message levels lower than this value will be discarded.
+  /// The level value Level.off can be used to turn off logging.
   ///
   ///If the new level is null, it means that this node should inherit its level
   ///from its nearest ancestor with a specific (non-null) level value.
-  void setLevel(Level newLevel);
+  LoggerLevel? level;
 
   /// Log an SEVERE message.
-  void severe(String msg);
+  void severe(String message);
 
   /// Log an WARNING message.
-  void warning(String msg);
+  void warning(String message);
 }
 
 /// The Level class defines a set of standard logging levels that can be used
 /// to control logging output. The logging Level objects are ordered and are
 /// specified by ordered integers.
 /// Enabling logging at a given level also enables logging at all higher levels.
-enum Level {
+enum LoggerLevel {
   off,
   finest,
   finer,

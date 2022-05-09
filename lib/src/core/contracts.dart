@@ -41,7 +41,7 @@ mixin Emptiable {
 ///
 /// For example,
 /// ```dart
-/// class Gender implements Enum {
+/// class Gender implements CustomEnum {
 ///   const Gender._(this._index);
 ///
 ///   final int _index;
@@ -61,8 +61,24 @@ mixin Emptiable {
 /// }
 /// ```
 abstract class CustomEnum {
-  /// Returns index of enumeration.
+  /// A numeric identifier for the enumerated value.
+  ///
+  /// The values of a single enumeration are numbered
+  /// consecutively from zero to one less than the
+  /// number of values.
+  /// This is also the index of the value in the
+  /// enumerated type's static `values` list.
   int get index;
+
+  /// The value's "name".
+  ///
+  /// The name of a value is a string containing the
+  /// source identifier used to declare the value.
+  ///
+  String? get name => null;
+
+  @override
+  String toString() => '$runtimeType {$index: $name}';
 }
 
 /// JSON implementation of [Serializable] interface.
@@ -91,6 +107,7 @@ mixin SerializableMixin implements Serializable {
       } else if (entry.value is Serializable) {
         effectiveValue = (entry.value as Serializable).toJson();
       } else {
+        //! Deprecated since @dart 2.14
         // This is a trick to serialize `enum`. If value implements
         // `index` property than it is potentially enumeration and
         // there will not be exception. Otherwise the original value is taken.
