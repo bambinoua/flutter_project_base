@@ -1,11 +1,11 @@
 /// A marker interface implemented by app exceptions.
 ///
-/// The CustomException class is the superclass of all exceptions which will be
+/// The `GeneralException class is the superclass of all exceptions which will be
 /// created using the package. Only objects that are instances of this class
 /// (or one of its subclasses) can be thrown by the Dart `throw` statement.
-class CustomException implements Exception {
+class GeneralException implements Exception {
   /// Creates a new exception with an optional error `message`.
-  CustomException({this.message, this.code = ''})
+  GeneralException({this.message, this.code = ''})
       : stackTrace = StackTrace.current;
 
   /// The long form message of the exception.
@@ -22,5 +22,5 @@ class CustomException implements Exception {
 
   @override
   String toString() =>
-      message == null ? 'CommonException ($code)' : '${message!} ($code)';
+      message == null ? 'GeneralException ($code)' : '${message!} ($code)';
 }
