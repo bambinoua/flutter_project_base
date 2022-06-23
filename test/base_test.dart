@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_project_base/src/core/basic_types.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,7 +9,7 @@ import 'package:flutter_project_base/src/core/date.dart';
 
 enum TestEnum { one, two }
 
-class TestObject with SerializableMixin {
+class TestObject implements Serializable<TestObject> {
   TestObject(
     this.datetime,
     this.enumeration,
@@ -20,11 +21,16 @@ class TestObject with SerializableMixin {
   final String name;
 
   @override
-  Map<String, dynamic> asMap() => {
+  Map<String, dynamic> toJson() => {
         'datetime': datetime,
         'enumeration': enumeration,
         'name': name,
       };
+
+  @override
+  TestObject fromJson(Json json) {
+    throw UnimplementedError();
+  }
 }
 
 void main() {

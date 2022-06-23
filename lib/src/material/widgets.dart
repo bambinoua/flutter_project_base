@@ -18,31 +18,15 @@ import '../core/contracts.dart';
 class StreamBuilderWithCallback<T> extends StreamBuilder<T> {
   StreamBuilderWithCallback({
     Key? key,
-    this.initialData,
+    T? initialData,
     Stream<T>? stream,
-    required this.builder,
+    required AsyncWidgetBuilder<T> builder,
     required this.onData,
   }) : super(
             key: key,
             initialData: initialData,
             stream: stream,
             builder: builder);
-
-  /// The build strategy currently used by this builder.
-  ///
-  /// This builder must only return a widget and should not have any side
-  /// effects as it may be called multiple times.
-  final AsyncWidgetBuilder<T> builder;
-
-  /// The data that will be used to create the initial snapshot.
-  ///
-  /// Providing this value (presumably obtained synchronously somehow when the
-  /// [Stream] was created) ensures that the first frame will show useful data.
-  /// Otherwise, the first frame will be built with the value null, regardless
-  /// of whether a value is available on the stream: since streams are
-  /// asynchronous, no events from the stream can be obtained before the initial
-  /// build.
-  final T? initialData;
 
   /// Called back when StreamBuilder has a data.
   final ValueChanged<T> onData;
@@ -184,7 +168,7 @@ class DualRingProgressIndicator extends StatefulWidget {
   final Widget? text;
 
   @override
-  _DualRingProgressIndicatorState createState() =>
+  State<DualRingProgressIndicator> createState() =>
       _DualRingProgressIndicatorState();
 }
 

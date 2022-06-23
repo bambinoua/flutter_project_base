@@ -1,17 +1,23 @@
 import 'dart:async';
 
-import 'package:flutter/painting.dart';
+import 'basic_types.dart';
 
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
-abstract class Serializable {
+abstract class Serializable<T> {
+  const Serializable();
+
+  /// Creates instance of [Serializable] from `json`.
+  T fromJson(Json json);
+
   /// Returns a [Map] which represents this object.
-  Map<String, dynamic> toJson();
+  Json toJson();
 }
 
 /// Interface provides a method that it is legal for make a field-for-field
 /// copy of instances of that class.
 abstract class Cloneable<T> {
+  /// Returns new instance of type T with optionally modified properties.
   T copyWith();
 }
 
@@ -28,12 +34,16 @@ abstract class Disposable {
 /// The `Builder` pattern is a design pattern designed to provide a flexible
 /// solution to various object creation problems in object-oriented programming.
 abstract class Builder<T> {
+  /// Builds an instance of type T.
   T build();
 }
 
 /// Mixin provides getters which defines if the mixed object is empty or not.
 mixin Emptiable {
+  /// Whether this [Emptiable] is empty.
   bool get isEmpty;
+
+  /// Whether this [Emptiable] is not empty.
   bool get isNotEmpty => !isEmpty;
 }
 
@@ -61,6 +71,8 @@ mixin Emptiable {
 /// }
 /// ```
 abstract class CustomEnum {
+  const CustomEnum();
+
   /// A numeric identifier for the enumerated value.
   ///
   /// The values of a single enumeration are numbered
@@ -75,76 +87,10 @@ abstract class CustomEnum {
   /// The name of a value is a string containing the
   /// source identifier used to declare the value.
   ///
-  String? get name => null;
+  String get name;
 
   @override
   String toString() => '$runtimeType {$index: $name}';
-}
-
-/// JSON implementation of [Serializable] interface.
-///
-/// This class use `EquatableMixin` instead of extending `Equatable` because
-/// derived classed may be not `@immutable`.
-mixin SerializableMixin implements Serializable {
-  @override
-  Map<String, dynamic> toJson() {
-    return Map<String, dynamic>.fromEntries(asMap()
-        .entries
-        .where((entry) => entry.value != null)
-        .where((entry) => !removedKeys.contains(entry.key))
-        .map((entry) {
-      var effectiveValue;
-      if (entry.value is DateTime) {
-        effectiveValue = useUtc
-            ? (entry.value as DateTime).toUtc().toIso8601String()
-            : (entry.value as DateTime).toIso8601String();
-      } else if (entry.value is Color) {
-        effectiveValue = (entry.value as Color).value;
-      } else if (entry.value is CustomEnum) {
-        effectiveValue = (entry.value as CustomEnum).index;
-      } else if (entry.value is Enum) {
-        effectiveValue = (entry.value as Enum).index;
-      } else if (entry.value is Serializable) {
-        effectiveValue = (entry.value as Serializable).toJson();
-      } else {
-        //! Deprecated since @dart 2.14
-        // This is a trick to serialize `enum`. If value implements
-        // `index` property than it is potentially enumeration and
-        // there will not be exception. Otherwise the original value is taken.
-        try {
-          effectiveValue = entry.value.index;
-        } catch (_) {
-          effectiveValue = entry.value;
-        }
-      }
-      return MapEntry(entry.key, effectiveValue);
-    }));
-  }
-
-  /// Returns a [Map] which is used as data for method `toJson` of
-  /// [Serializable] interface.
-  Map<String, dynamic> asMap();
-
-  /// Indicates whether [DateTime] values must be converted to UTC.
-  ///
-  /// Default value is `false`.
-  bool get useUtc => false;
-
-  /// The list of property names which will be removed while JSON encoding
-  /// this [Serializable].
-  ///
-  /// By default no instance properties removed.
-  List<String> get removedKeys => <String>[];
-
-  @override
-  String toString() {
-    final propString = asMap()
-        .entries
-        .where((prop) => prop.value != null)
-        .map((prop) => '${prop.key}: ${prop.value}')
-        .join(', ');
-    return '$runtimeType {$propString}';
-  }
 }
 
 /// An interface for objects that are aware of some task execution.

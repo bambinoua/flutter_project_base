@@ -86,7 +86,9 @@ class InternetConnectivity extends ChangeNotifier {
   };
 
   @override
-  String toString() =>
-      'Internet ' +
-      (isConnected ? 'connected via ${describeEnum(state)}' : 'disconnected');
+  String toString() {
+    final message =
+        isConnected ? 'connected via ${state.name}' : 'disconnected';
+    return 'Internet $message';
+  }
 }

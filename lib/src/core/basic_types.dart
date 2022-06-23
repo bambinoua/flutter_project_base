@@ -24,21 +24,21 @@ class ResourceState {
   });
 
   /// The resource is idle.
-  static const idle = ResourceState._(_ResourceStates.idle);
+  static const idle = ResourceState._(ResourceStates.idle);
 
   /// The resource is waiting.
-  static const waiting = ResourceState._(_ResourceStates.waiting);
+  static const waiting = ResourceState._(ResourceStates.waiting);
 
   /// The resource is ready with the optional `data`.
   const ResourceState.ready({Object? data})
-      : this._(_ResourceStates.ready, data: data);
+      : this._(ResourceStates.ready, data: data);
 
   /// The resource is failed with the `message`.
   const ResourceState.error(String message)
-      : this._(_ResourceStates.error, message: message);
+      : this._(ResourceStates.error, message: message);
 
   /// Contains resource state value.
-  final _ResourceStates state;
+  final ResourceStates state;
 
   /// Contains data when resource is ready.
   final Object? data;
@@ -49,14 +49,14 @@ class ResourceState {
   /// Whether data is available. Applicable for `ready` state.
   bool get hasData => data != null;
 
-  bool get isIdle => state == _ResourceStates.idle;
-  bool get isWaiting => state == _ResourceStates.waiting;
-  bool get isReady => state == _ResourceStates.ready;
-  bool get isError => state == _ResourceStates.error;
+  bool get isIdle => state == ResourceStates.idle;
+  bool get isWaiting => state == ResourceStates.waiting;
+  bool get isReady => state == ResourceStates.ready;
+  bool get isError => state == ResourceStates.error;
 }
 
 /// Resource state values.
-enum _ResourceStates {
+enum ResourceStates {
   idle,
   waiting,
   ready,

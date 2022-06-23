@@ -3,26 +3,26 @@ import 'basic_types.dart';
 /// Base class for internal Firebase errors.
 class FirebaseInternalError {
   FirebaseInternalError.fromJson(Json json)
-      : error = _FirebaseError.fromJson(json['error']);
+      : error = FirebaseError.fromJson(json['error']);
 
-  final _FirebaseError error;
+  final FirebaseError error;
 }
 
-class _FirebaseError {
-  _FirebaseError.fromJson(Json map)
+class FirebaseError {
+  FirebaseError.fromJson(Json map)
       : code = map['code'],
         message = map['message'],
         errors = List.of(map['errors'])
-            .map((json) => _FirebaseErrorItem.fromJson(json))
+            .map((json) => FirebaseErrorItem.fromJson(json))
             .toList();
 
   final int code;
   final String message;
-  final List<_FirebaseErrorItem> errors;
+  final List<FirebaseErrorItem> errors;
 }
 
-class _FirebaseErrorItem {
-  _FirebaseErrorItem.fromJson(Json json)
+class FirebaseErrorItem {
+  FirebaseErrorItem.fromJson(Json json)
       : domain = json['domain'],
         reason = json['reason'],
         message = json['message'];
