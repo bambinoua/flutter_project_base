@@ -15,6 +15,7 @@ export 'src/material/widgets.dart';
 
 export 'src/services/cache.dart';
 export 'src/services/internet_connectivity.dart';
+export 'src/services/http.dart';
 export 'src/services/logger.dart';
 export 'src/services/storage/contracts.dart';
 export 'src/services/storage/providers.dart';
