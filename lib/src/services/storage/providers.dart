@@ -7,11 +7,15 @@ class SharedPreferencesStorage implements Storage {
   const SharedPreferencesStorage._();
 
   static late SharedPreferences _sharedPreferences;
+  static SharedPreferencesStorage? _instance;
 
-  /// Creates an instance of already initialized storage.
+  /// Creates an instance of storage.
   static Future<SharedPreferencesStorage> create() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-    return const SharedPreferencesStorage._();
+    if (_instance == null) {
+      _sharedPreferences = await SharedPreferences.getInstance();
+      _instance = const SharedPreferencesStorage._();
+    }
+    return _instance!;
   }
 
   @override
@@ -49,7 +53,7 @@ class SharedPreferencesStorage implements Storage {
 /// Provides implementation of in-memory storage.
 class MemoryStorage implements Storage {
   /// Memory map.
-  final Map<String, String> _storage = {};
+  final Map<String, String> _storage = <String, String>{};
 
   @override
   String? getItem(String key) {
@@ -87,13 +91,13 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Returns list of storage items which will not be evicted after
   /// session close.
   List<StorageItem<T>> get persistentKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.notRemovable)
+      .where((item) => item.priority == StoragePriority.persistent)
       .toList();
 
   /// Returns list of storage items which will be evicted after
   /// session close.
   List<StorageItem> get sessionKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.standard)
+      .where((item) => item.priority == StoragePriority.session)
       .toList();
 
   /// Puts item into inner controller storage.

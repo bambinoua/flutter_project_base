@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -7,7 +5,7 @@ import '../../../core/basic_types.dart';
 import '../contracts.dart';
 
 /// Available type of web storages.
-enum _WebStorageType {
+enum WebStorageType {
   /// The stored data is cleared when the page session ends.
   session,
 
@@ -26,14 +24,14 @@ class WebStorage implements Storage {
   const WebStorage._(this._type)
       : assert(kIsWeb, 'WebStorage is available only in web environment');
 
-  static const WebStorage local = WebStorage._(_WebStorageType.local);
-  static const WebStorage session = WebStorage._(_WebStorageType.session);
+  static const WebStorage local = WebStorage._(WebStorageType.local);
+  static const WebStorage session = WebStorage._(WebStorageType.session);
 
   /// The type of used web storage.
-  final _WebStorageType _type;
+  final WebStorageType _type;
 
   /// Shortness for web storage.
-  html.Storage get _storage => _type == _WebStorageType.session
+  html.Storage get _storage => _type == WebStorageType.session
       ? html.window.sessionStorage
       : html.window.localStorage;
 
@@ -67,47 +65,16 @@ class WebStorage implements Storage {
   int get length => keys.length;
 }
 
-/// Base class for web [StorageKey].
-abstract class _WebStorageKey<T, V> extends StorageKey<T> {
-  _WebStorageKey(String name, Storage storage, T initialValue, this.builder)
-      : assert(name.isNotEmpty),
-        super(name, storage, initialValue);
-
-  final ConvertibleBuilder<T, V>? builder;
-
-  @override
-  T get value {
-    final jsonValue = storage.getItem(name);
-    if (jsonValue == null) {
-      return super.value;
-    }
-    final decodedValue = json.decode(jsonValue);
-    return builder != null ? builder!(decodedValue) : decodedValue;
-  }
-
-  @override
-  set value(T newValue) {
-    final encodedValue = json.encode(newValue);
-    storage.putItem(name, encodedValue);
-    super.value = newValue;
-  }
-
-  @override
-  void remove() {
-    storage.removeItem(name);
-  }
-}
-
 /// Creates persistent key which stores its value in web local storage.
-class WebLocalStorageKey<T, V> extends _WebStorageKey<T, V> {
+class WebLocalStorageKey<T, V> extends BaseStorageKey<T, V> {
   WebLocalStorageKey(String name, T initialValue,
       {ConvertibleBuilder<T, V>? builder})
-      : super(name, WebStorage.local, initialValue, builder);
+      : super(name, initialValue, WebStorage.local, builder: builder);
 }
 
 /// Creates persistent key which stores its value in web session storage.
-class WebSessionStorageKey<T, V> extends _WebStorageKey<T, V> {
+class WebSessionStorageKey<T, V> extends BaseStorageKey<T, V> {
   WebSessionStorageKey(String name, T initialValue,
       {ConvertibleBuilder<T, V>? builder})
-      : super(name, WebStorage.session, initialValue, builder);
+      : super(name, initialValue, WebStorage.session, builder: builder);
 }
