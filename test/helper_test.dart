@@ -19,7 +19,7 @@ void main() {
 
   test('Format file size as integer float with 2 decimals', () {
     FileSize fileSize = 32350555;
-    final decimals = 2;
+    const decimals = 2;
     final formattedFileSize =
         fileSize.formatSizeInBytesToScaledSize(decimals: decimals);
     if (fileSize <= pow(1024, 2)) {
@@ -35,7 +35,7 @@ void main() {
 
   test('Procedure performance meter', () async {
     await meter(() {
-      final value = Future.delayed(Duration(seconds: 3), () => 2);
+      final value = Future.delayed(const Duration(seconds: 3), () => 2);
       return value;
     }, 'Future.delayed');
   });

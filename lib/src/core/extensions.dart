@@ -55,12 +55,14 @@ class Helper {
   /// Returns the `list` of type T from dynamic list safely.
   ///
   /// If `list` is null than empty [List] is returned.
-  static List<T> safeList<T>(List? list) => List<T>.from(list ?? <T>[]);
+  static List<T> safeList<T>(List<Object?>? list) =>
+      List<T>.from(list ?? <T>[]);
 
   /// Returns the `map` of type T from dynamic list safely.
   ///
   /// If `map` is null than empty [Map] is returned.
-  static Map<K, V> safeMap<K, V>(Map? map) => Map<K, V>.from(map ?? <K, V>{});
+  static Map<K, V> safeMap<K, V>(Map<Object, Object?>? map) =>
+      Map<K, V>.from(map ?? <K, V>{});
 
   /// Returns the value of type T from JSON encoded `map` safely.
   ///

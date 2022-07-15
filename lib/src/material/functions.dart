@@ -14,7 +14,7 @@ Future<T?> showModalRoundedBottomSheet<T>({
   assert(maxScreenFraction > 0.0 && maxScreenFraction <= 1.0);
   final size = MediaQuery.of(context).size;
   final effectiveBorderRadius = borderRadius ??
-      BorderRadius.only(
+      const BorderRadius.only(
         topLeft: Radius.circular(20.0),
         topRight: Radius.circular(20.0),
       );

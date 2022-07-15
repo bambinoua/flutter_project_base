@@ -1,4 +1,4 @@
-import 'basic_types.dart';
+import '../data/contracts.dart';
 
 /// Base class for internal Firebase errors.
 class FirebaseInternalError {

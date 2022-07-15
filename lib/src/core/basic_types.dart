@@ -1,8 +1,5 @@
 import 'package:meta/meta.dart';
 
-/// An alias for `[Map]<String,dynamic>`
-typedef Json = Map<String, dynamic>;
-
 /// An alias for file `int` size (in bytes).
 typedef FileSize = int;
 
@@ -18,7 +15,7 @@ typedef ConvertibleBuilder<T, V> = T Function(V value);
 @immutable
 class ResourceState {
   const ResourceState._(
-    this.state, {
+    this._value, {
     this.data,
     this.message,
   });
@@ -38,7 +35,7 @@ class ResourceState {
       : this._(ResourceStates.error, message: message);
 
   /// Contains resource state value.
-  final ResourceStates state;
+  final ResourceStates _value;
 
   /// Contains data when resource is ready.
   final Object? data;
@@ -49,10 +46,10 @@ class ResourceState {
   /// Whether data is available. Applicable for `ready` state.
   bool get hasData => data != null;
 
-  bool get isIdle => state == ResourceStates.idle;
-  bool get isWaiting => state == ResourceStates.waiting;
-  bool get isReady => state == ResourceStates.ready;
-  bool get isError => state == ResourceStates.error;
+  bool get isIdle => _value == ResourceStates.idle;
+  bool get isWaiting => _value == ResourceStates.waiting;
+  bool get isReady => _value == ResourceStates.ready;
+  bool get isError => _value == ResourceStates.error;
 }
 
 /// Resource state values.

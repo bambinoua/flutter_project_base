@@ -96,7 +96,7 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
 
   /// Returns list of storage items which will be evicted after
   /// session close.
-  List<StorageItem> get sessionKeys => _items.values
+  List<StorageItem<T>> get sessionKeys => _items.values
       .where((item) => item.priority == StoragePriority.session)
       .toList();
 

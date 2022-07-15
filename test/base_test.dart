@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_project_base/src/core/basic_types.dart';
+import 'package:flutter_project_base/src/data/contracts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -7,7 +7,7 @@ import '../core/contracts.dart';
 /// A helper class which can be used for management of [TextField] widgets.
 ///
 /// Combines `focusNode` and text editing `controller` in single object.
-class TextFieldHelper implements Disposable {
+class TextFieldHelper<T> implements Disposable {
   TextFieldHelper({
     FocusNode? focusNode,
     TextEditingController? controller,
@@ -21,7 +21,7 @@ class TextFieldHelper implements Disposable {
   final TextEditingController? controller;
 
   /// A [FormFieldState] [Key] identifier for [TextField].
-  Key get key => _key ??= GlobalKey<FormFieldState>();
+  Key get key => _key ??= GlobalKey<FormFieldState<T>>();
   Key? _key;
 
   /// The current string the user is editing.

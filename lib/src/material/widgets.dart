@@ -16,7 +16,7 @@ import '../core/contracts.dart';
 /// timing-dependent sub-sequence of the snapshots that represent the
 /// interaction with the stream.
 class StreamBuilderWithCallback<T> extends StreamBuilder<T> {
-  StreamBuilderWithCallback({
+  const StreamBuilderWithCallback({
     Key? key,
     T? initialData,
     Stream<T>? stream,
