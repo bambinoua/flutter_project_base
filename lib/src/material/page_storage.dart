@@ -1,35 +1,37 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_project_base/src/services/storage/web/providers.dart';
 
 import '../core/contracts.dart';
+import '../data/contracts.dart';
+import '../services/storage/contracts.dart';
 
-class PageStateKey extends ValueKey<String> {
-  /// Creates a [ValueKey] that defines where [PageStorage] values will be saved.
-  const PageStateKey(String value) : super(value);
-}
-
-@immutable
-class _PageStateIdentifier extends Equatable with Emptiable {
-  const _PageStateIdentifier(this.keys);
-
-  final List<PageStateKey> keys;
-
-  @override
-  bool get isEmpty => keys.isEmpty;
-
-  @override
-  List<Object?> get props => [keys];
-}
-
+/// A storage bucket associated with a page in an app.
+///
+/// Useful for storing per-page state that persists across navigations from one
+/// page to another.
 class PageStateBucket {
-  final _internalStorage = <String, Object>{};
+  PageStateBucket({this.name = 'state'})
+      : assert(name.isNotEmpty),
+        _localStorage = WebLocalStorageKey(name, <String, dynamic>{},
+            builder: (data) => data),
+        _sessionStorage = WebSessionStorageKey(name, <String, dynamic>{},
+            builder: (data) => data);
+
+  /// Keeps the name of this storage
+  final String name;
+
+  final BaseStorageKey<Json, Json> _localStorage;
+  final BaseStorageKey<Json, Json> _sessionStorage;
+
+  final Map<String, Object> _internalStorage = <String, Object>{};
 
   void writeState(BuildContext context, String key, Object data) {
     _internalStorage[key] = data;
   }
 
   T? readState<T>(BuildContext context, String key) {
-    return null;
+    return _internalStorage[key] as T?;
   }
 
   /// Retursn the current flattened identifier of the this widget in the specified `context`.
@@ -53,19 +55,34 @@ class PageStateBucket {
     if (key is PageStateKey) keys.add(key);
     return widget is! PageStateStorage;
   }
+
+  @override
+  String toString() => 'PageStateBucket {name: $name}';
 }
 
+/// Establish a subtree in which widgets can opt into persisting states after
+/// being destroyed.
+///
+/// [PageStateStorage] is used to save and restore values that can outlive the widget.
 class PageStateStorage extends InheritedWidget {
   const PageStateStorage({
     Key? key,
-    this.name = 'state',
+    required this.bucket,
     required Widget child,
   }) : super(key: key, child: child);
 
-  /// Keeps the name of this storage
-  final String name;
+  /// The storage bucket to use by wrapped widget subtree.
+  final PageStateBucket bucket;
 
-  static PageStateStorage? of(BuildContext context) {
+  /// The bucket from the closest instance of this class that encloses the given context.
+  ///
+  /// Typical usage is as follows:
+  ///
+  /// ```dart
+  /// PageStateBucket bucket = PageStateStorage.of(context);
+  /// ```
+  ///
+  static PageStateBucket of(BuildContext context) {
     final inheritedElement =
         context.getElementForInheritedWidgetOfExactType<PageStateStorage>();
     assert(() {
@@ -81,18 +98,41 @@ class PageStateStorage extends InheritedWidget {
       }
       return true;
     }());
-    return inheritedElement?.widget as PageStateStorage;
+    return (inheritedElement?.widget as PageStateStorage).bucket;
   }
+
+  /// The path from the closest instance of this class that encloses the given context.
+  static String pathOf(BuildContext context) =>
+      of(context).getStatePath(context);
 
   @override
   bool updateShouldNotify(PageStateStorage oldWidget) {
-    return name != oldWidget.name;
+    return bucket != oldWidget.bucket;
   }
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return '$_kClassName {name: $name}';
+    return '$_kClassName {bucket: ${bucket.name}}';
   }
 
   static const _kClassName = 'PageStateStorage';
+}
+
+class PageStateKey extends ValueKey<String> {
+  const PageStateKey(String value)
+      : assert(value.length > 0),
+        super(value);
+}
+
+@immutable
+class _PageStateIdentifier extends Equatable with Emptiable {
+  const _PageStateIdentifier(this.keys);
+
+  final List<PageStateKey> keys;
+
+  @override
+  bool get isEmpty => keys.isEmpty;
+
+  @override
+  List<Object?> get props => [keys];
 }

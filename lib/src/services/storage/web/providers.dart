@@ -22,7 +22,7 @@ enum WebStorageType {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 class WebStorage implements Storage {
   const WebStorage._(this._type)
-      : assert(kIsWeb, 'WebStorage is available only in web environment');
+      : assert(!kIsWeb, 'WebStorage is available on web platform only');
 
   static const WebStorage local = WebStorage._(WebStorageType.local);
   static const WebStorage session = WebStorage._(WebStorageType.session);
