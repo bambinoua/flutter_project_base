@@ -5,42 +5,40 @@ import 'package:flutter_project_base/flutter_project_base.dart';
 import 'package:flutter_project_base/src/services/http/base_types.dart';
 
 /// An HTTP response where the entire response body is known in advance.
-class HttpClientResponse<T extends Object?> {
+abstract class HttpClientResponse<T> {
   const HttpClientResponse(this.data);
 
-  final T? data;
-
-  bool get isMap => data is Map;
-  bool get isList => data is List;
-  bool get isString => data is String;
+  /// Underlying response data.
+  final T data;
 }
 
 /// The interface for HTTP clients that take care of maintaining persistent
 /// connections across multiple requests to the same server.
 abstract class HttpClient {
   /// Sends an HTTP HEAD request with the given headers to the given URL.
-  Future<HttpClientResponse> head(Uri uri, {Map<String, String>? headers});
+  Future<HttpClientResponse<T>> head<T>(Uri uri,
+      {Map<String, String>? headers});
 
   /// Sends an HTTP GET request with the given headers to the given URL.
-  Future<HttpClientResponse> get(Uri uri, {Map<String, String>? headers});
+  Future<HttpClientResponse<T>> get<T>(Uri uri, {Map<String, String>? headers});
 
   /// Sends an HTTP POST request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse> post(Uri uri,
+  Future<HttpClientResponse<T>> post<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP PUT request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse> put(Uri uri,
+  Future<HttpClientResponse<T>> put<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP PATCH request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse> patch(Uri uri,
+  Future<HttpClientResponse<T>> patch<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP DELETE request with the given headers to the given URL.
-  Future<HttpClientResponse> delete(Uri uri,
+  Future<HttpClientResponse<T>> delete<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Closes the client and cleans up any resources associated with it.
@@ -52,19 +50,39 @@ abstract class BaseHttpClient extends HttpClient {
   String get userAgent;
 }
 
+class DioClientResponse<T> extends HttpClientResponse<Response<T>> {
+  const DioClientResponse(Response<T> data) : super(data);
+
+  /// Response is a [Map].
+  bool get isMap => data.data is Map;
+
+  /// Response is a [List].
+  bool get isList => data.data is List;
+
+  /// Response is a [String].
+  bool get isString => !(isMap || isList);
+}
+
+/// Representss an HTTP client base on `dio` package.
 class DioHttpClient implements BaseHttpClient {
   DioHttpClient({
-    required String baseUrl,
+    required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
   }) : _httpClient = Dio(BaseOptions(
           baseUrl: baseUrl,
           headers: headers,
           contentType: ContentType.json.value,
+          connectTimeout: 2000,
           listFormat: ListFormat.csv,
         ));
 
   final Dio _httpClient;
+
+  /// Base URL which this [HttpClient] serves.
+  final String baseUrl;
+
+  /// Whether this client will be closed after single request execution.
   final bool autoclose;
 
   @override
@@ -73,38 +91,38 @@ class DioHttpClient implements BaseHttpClient {
   }
 
   @override
-  Future<HttpClientResponse<Object?>> head(Uri uri,
+  Future<HttpClientResponse<T>> head<T>(Uri uri,
           {Map<String, String>? headers}) =>
       _execute(uri, HttpMethod.head, headers: headers);
 
   @override
-  Future<HttpClientResponse<Object?>> get(Uri uri,
+  Future<HttpClientResponse<T>> get<T>(Uri uri,
           {Map<String, String>? headers}) =>
       _execute(uri, HttpMethod.get, headers: headers);
 
   @override
-  Future<HttpClientResponse<Object?>> patch(Uri uri,
+  Future<HttpClientResponse<T>> patch<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.patch, headers: headers);
 
   @override
-  Future<HttpClientResponse<Object?>> post(Uri uri,
+  Future<HttpClientResponse<T>> post<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.post, headers: headers);
 
   @override
-  Future<HttpClientResponse<Object?>> put(Uri uri,
+  Future<HttpClientResponse<T>> put<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.put, headers: headers);
 
   @override
-  Future<HttpClientResponse> delete(Uri uri,
+  Future<HttpClientResponse<T>> delete<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.delete);
 
-  Future<HttpClientResponse> _execute(Uri uri, HttpMethod method,
+  Future<HttpClientResponse<T>> _execute<T>(Uri uri, HttpMethod method,
       {Map<String, String>? headers, Object? body}) async {
-    Response<Object?> response;
+    Response<T> response;
     final options = Options(headers: headers);
     try {
       switch (method) {
@@ -132,7 +150,7 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      return HttpClientResponse(response);
+      return DioClientResponse(response) as HttpClientResponse<T>;
     } on DioError catch (e) {
       switch (e.type) {
         case DioErrorType.connectTimeout:
@@ -142,10 +160,21 @@ class DioHttpClient implements BaseHttpClient {
         case DioErrorType.receiveTimeout:
           break;
         case DioErrorType.response:
-          break;
+          throw Emergency(
+              message: '${e.message}. ${e.response!.statusMessage}',
+              code: e.type.name);
         case DioErrorType.cancel:
           break;
         case DioErrorType.other:
+          final innerError = e.error;
+          if (innerError is SocketException) {
+            throw Emergency(
+                message: innerError.message, code: 'SocketException');
+          }
+          if (innerError is HandshakeException) {
+            throw Emergency(
+                message: innerError.message, code: 'HandshakeException');
+          }
           break;
       }
       throw Emergency(message: e.message, code: e.type.name);
@@ -158,4 +187,7 @@ class DioHttpClient implements BaseHttpClient {
 
   @override
   String get userAgent => 'Dart/1.0';
+
+  @override
+  String toString() => 'DioHttpClient {baseUrl: $baseUrl}';
 }
