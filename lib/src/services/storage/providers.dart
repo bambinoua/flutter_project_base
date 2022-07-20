@@ -91,13 +91,13 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Returns list of storage items which will not be evicted after
   /// session close.
   List<StorageItem<T>> get persistentKeys => _items.values
-      .where((item) => item.priority == StoragePriority.persistent)
+      .where((item) => item.priority == StorageItemPriority.persistent)
       .toList();
 
   /// Returns list of storage items which will be evicted after
   /// session close.
   List<StorageItem<T>> get sessionKeys => _items.values
-      .where((item) => item.priority == StoragePriority.session)
+      .where((item) => item.priority == StorageItemPriority.session)
       .toList();
 
   /// Puts item into inner controller storage.
