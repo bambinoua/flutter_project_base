@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_project_base/src/services/storage/web/providers.dart';
 
+import '../core/basic_types.dart';
 import '../core/contracts.dart';
-import '../data/contracts.dart';
 import '../services/storage/contracts.dart';
 
 /// A storage bucket associated with a page in an app.

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../data/contracts.dart';
+import 'basic_types.dart';
 
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.

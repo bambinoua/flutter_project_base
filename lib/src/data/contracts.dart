@@ -5,9 +5,6 @@ import 'package:flutter/foundation.dart';
 import '../core/basic_types.dart';
 import '../core/contracts.dart';
 
-/// An alias for `[Map]<String,dynamic>`
-typedef Json = Map<String, dynamic>;
-
 /// Entities are one of the core concepts of DDD (Domain Driven Design).
 /// It is an object that is not fundamentally defined by its attributes,
 /// but rather by a thread of continuity and identity.

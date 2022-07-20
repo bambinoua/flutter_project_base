@@ -1,5 +1,8 @@
 import 'package:meta/meta.dart';
 
+/// An alias for `[Map]<String,dynamic>`
+typedef Json = Map<String, dynamic>;
+
 /// An alias for file `int` size (in bytes).
 typedef FileSize = int;
 
