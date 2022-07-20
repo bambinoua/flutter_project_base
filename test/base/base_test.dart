@@ -23,11 +23,6 @@ class TestObject implements Serializable<TestObject> {
         'enumeration': enumeration,
         'name': name,
       };
-
-  @override
-  TestObject fromJson(Json json) {
-    throw UnimplementedError();
-  }
 }
 
 void main() {
