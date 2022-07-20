@@ -7,9 +7,6 @@ import 'basic_types.dart';
 abstract class Serializable<T> {
   const Serializable();
 
-  /// Creates instance of [Serializable] from `json`.
-  T fromJson(Json json);
-
   /// Returns a [Map] which represents this object.
   Json toJson();
 }
