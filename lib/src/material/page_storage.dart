@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_project_base/src/services/storage/web/providers.dart';
@@ -10,28 +11,31 @@ import '../services/storage/contracts.dart';
 ///
 /// Useful for storing per-page state that persists across navigations from one
 /// page to another.
-class PageStateBucket {
+class PageStateBucket implements Disposable {
   PageStateBucket({this.name = 'state'})
       : assert(name.isNotEmpty),
+        _internalStorage = _PageStateInternalStorage(),
         _localStorage = WebLocalStorageKey(name, <String, dynamic>{},
             builder: (data) => data),
         _sessionStorage = WebSessionStorageKey(name, <String, dynamic>{},
-            builder: (data) => data);
+            builder: (data) => data) {
+    _internalStorage.addListener(_onChangeInternalStorage);
+  }
 
   /// Keeps the name of this storage
   final String name;
 
+  final _PageStateInternalStorage _internalStorage;
   final BaseStorageKey<Json, Json> _localStorage;
   final BaseStorageKey<Json, Json> _sessionStorage;
 
-  final Map<String, Object> _internalStorage = <String, Object>{};
-
-  void writeState(BuildContext context, String key, Object data) {
-    _internalStorage[key] = data;
+  void writeState<T>(BuildContext context, String key, T value,
+      {bool persistent = false, bool overwrite = false}) {
+    _internalStorage.add<T>(key, value, persistent, overwrite: overwrite);
   }
 
-  T? readState<T>(BuildContext context, String key) {
-    return _internalStorage[key] as T?;
+  T? readState<T>(BuildContext context, String key, {T? defaultValue}) {
+    return _internalStorage.get(key, defaultValue: defaultValue);
   }
 
   /// Retursn the current flattened identifier of the this widget in the specified `context`.
@@ -54,6 +58,44 @@ class PageStateBucket {
     final key = widget.key;
     if (key is PageStateKey) keys.add(key);
     return widget is! PageStateStorage;
+  }
+
+  void _onChangeInternalStorage() {
+    final persistentMap = <String, dynamic>{};
+    final sessionMap = <String, dynamic>{};
+
+    // Accumulate persistent and session storage items.
+    for (var storageItem in _internalStorage._storage.values) {
+      Object? value = storageItem.value;
+      final storageEntry = <String, dynamic>{
+        storageItem.key: value is Serializable ? value.toJson() : value
+      };
+
+      if (storageItem.priority == StorageItemPriority.persistent) {
+        persistentMap.addAll(storageEntry);
+      } else {
+        sessionMap.addAll(storageEntry);
+      }
+    }
+
+    // Save persistent items
+    if (persistentMap.isNotEmpty) {
+      final oldMap = _localStorage.value;
+      final newMap = mergeMaps(oldMap, persistentMap);
+      _localStorage.value = newMap;
+    }
+
+    // Save session items
+    if (sessionMap.isNotEmpty) {
+      final oldMap = _sessionStorage.value;
+      final newMap = mergeMaps(oldMap, sessionMap);
+      _sessionStorage.value = newMap;
+    }
+  }
+
+  @override
+  void dispose() {
+    _internalStorage.dispose();
   }
 
   @override
@@ -135,4 +177,45 @@ class _PageStateIdentifier extends Equatable with Emptiable {
 
   @override
   List<Object?> get props => [keys];
+}
+
+class _PageStateInternalStorage extends ChangeNotifier {
+  final _storage = <String, StorageItem<Object?>>{};
+
+  /// Retrieves the value of the item from the storage associated with this
+  /// object's `key`, or `defaultValue` if the key does not exist.
+  T? get<T>(String key, {T? defaultValue}) {
+    if (_storage.containsKey(key)) {
+      return _storage[key] as T;
+    }
+    return defaultValue;
+  }
+
+  /// Adds the passed storage item to the storage, or update that `key`
+  /// if it already exists.
+  void add<T>(String key, T value, bool persistent, {bool overwrite = false}) {
+    if (!_storage.containsKey(key) || overwrite) {
+      _storage[key] = StorageItem<T>(key, value,
+          priority: persistent
+              ? StorageItemPriority.persistent
+              : StorageItemPriority.session);
+      notifyListeners();
+    }
+  }
+
+  /// Removes the `key` from the given storage object if it exists.
+  /// If there is no item associated with the given key, this method
+  /// will do nothing.
+  void remove(String key) {
+    if (_storage.containsKey(key)) {
+      _storage.remove(key);
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _storage.clear();
+    super.dispose();
+  }
 }
