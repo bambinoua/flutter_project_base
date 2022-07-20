@@ -131,7 +131,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 
 /// Specifies a priority setting that is used to decide whether
 /// to evict a storafe entry.
-enum StoragePriority {
+enum StorageItemPriority {
   /// Indicates that there is no priority for removing the storage item.
   session,
 
@@ -145,7 +145,7 @@ class StorageItem<T> implements Cloneable<StorageItem<T>> {
   const StorageItem(
     this.key,
     this.value, {
-    this.priority = StoragePriority.session,
+    this.priority = StorageItemPriority.session,
   });
 
   /// An unique identifier for a key.
@@ -156,7 +156,7 @@ class StorageItem<T> implements Cloneable<StorageItem<T>> {
 
   /// Priority setting that is used to determine whether to evict
   /// a storage entry.
-  final StoragePriority priority;
+  final StorageItemPriority priority;
 
   @override
   StorageItem<T> copyWith({
