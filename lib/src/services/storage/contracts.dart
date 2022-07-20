@@ -24,7 +24,7 @@ abstract class Storage {
   /// Returns number of data items stored in this storage.
   int get length;
 
-  /// Adds the passed storage item to the storage, or update that `item`
+  /// Adds the passed storage item to the storage, or update that `key`
   /// if it already exists.
   void putItem(String key, String value);
 
