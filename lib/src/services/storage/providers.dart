@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/basic_types.dart';
 import 'contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
@@ -9,8 +10,14 @@ class SharedPreferencesStorage implements Storage {
   static late SharedPreferences _sharedPreferences;
   static SharedPreferencesStorage? _instance;
 
-  /// Creates an instance of storage.
-  static Future<SharedPreferencesStorage> create() async {
+  static SharedPreferencesStorage get instance {
+    assert(_instance != null,
+        'You forgot to call `SharedPreferencesStorage.init()` on app initialization');
+    return _instance!;
+  }
+
+  /// Initializes the storage.
+  static Future<SharedPreferencesStorage> init() async {
     if (_instance == null) {
       _sharedPreferences = await SharedPreferences.getInstance();
       _instance = const SharedPreferencesStorage._();
@@ -50,37 +57,13 @@ class SharedPreferencesStorage implements Storage {
   int get length => keys.length;
 }
 
-/// Provides implementation of in-memory storage.
-class MemoryStorage implements Storage {
-  /// Memory map.
-  final Map<String, String> _storage = <String, String>{};
-
-  @override
-  String? getItem(String key) {
-    assert(key.isNotEmpty);
-    return _storage[key];
-  }
-
-  @override
-  void putItem(String key, String value) {
-    assert(key.isNotEmpty);
-    _storage[key] = value;
-  }
-
-  @override
-  void removeItem(String key) {
-    assert(key.isNotEmpty);
-    _storage.remove(key);
-  }
-
-  @override
-  void clear() => _storage.clear();
-
-  @override
-  List<String> get keys => _storage.keys.toList();
-
-  @override
-  int get length => _storage.length;
+/// Creates a persistent key which stores its value in Shared Preferences
+/// on Android or NSUserDefaults on iOS.
+class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
+  SharedPreferencesStorageKey(String name, T initialValue,
+      {ConvertibleBuilder<T, V>? builder})
+      : super(name, initialValue, SharedPreferencesStorage.instance,
+            builder: builder);
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.
@@ -112,4 +95,48 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
 
   /// Removes keys which are not marked as `not removable`.
   void removeSessionKeys();
+}
+
+/// Provides implementation of in-memory storage.
+class MemoryStorage implements Storage {
+  factory MemoryStorage() => _instance;
+
+  static final MemoryStorage _instance = MemoryStorage();
+
+  /// Memory map.
+  final Map<String, String> _storage = <String, String>{};
+
+  @override
+  String? getItem(String key) {
+    assert(key.isNotEmpty);
+    return _storage[key];
+  }
+
+  @override
+  void putItem(String key, String value) {
+    assert(key.isNotEmpty);
+    _storage[key] = value;
+  }
+
+  @override
+  void removeItem(String key) {
+    assert(key.isNotEmpty);
+    _storage.remove(key);
+  }
+
+  @override
+  void clear() => _storage.clear();
+
+  @override
+  List<String> get keys => _storage.keys.toList();
+
+  @override
+  int get length => _storage.length;
+}
+
+/// Creates a memory storage key.
+class MemoryStorageKey<T, V> extends BaseStorageKey<T, V> {
+  MemoryStorageKey(String name, T initialValue,
+      {ConvertibleBuilder<T, V>? builder})
+      : super(name, initialValue, MemoryStorage(), builder: builder);
 }
