@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_project_base/flutter_project_base.dart';
-import 'package:flutter_project_base/src/services/http/base_types.dart';
+
+enum HttpMethod { head, get, post, put, patch, delete }
 
 /// An HTTP response where the entire response body is known in advance.
 abstract class HttpClientResponse<T> {
@@ -150,7 +151,7 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      return DioClientResponse(response) as HttpClientResponse<T>;
+      return DioClientResponse<T>(response) as HttpClientResponse<T>;
     } on DioError catch (e) {
       switch (e.type) {
         case DioErrorType.connectTimeout:
