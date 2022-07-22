@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../../../core/basic_types.dart';
@@ -21,8 +20,7 @@ enum WebStorageType {
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 class WebStorage implements Storage {
-  const WebStorage._(this._type)
-      : assert(kIsWeb, 'WebStorage is available on web platform only');
+  const WebStorage._(this._type);
 
   static const WebStorage local = WebStorage._(WebStorageType.local);
   static const WebStorage session = WebStorage._(WebStorageType.session);
