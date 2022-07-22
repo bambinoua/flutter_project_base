@@ -3,9 +3,43 @@ import 'dart:math' as math;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import '../core/contracts.dart';
+
+const kIndent32px = 32.0;
+const kIndent24px = 24.0;
+const kIndent16px = 16.0;
+const kIndent08px = 8.0;
+const kIndent04px = 4.0;
+const kIndent02px = 2.0;
+
+/// [Widget] extensions.
+extension Widgets on Widget {
+  /// Returns class name of the widget.
+  String get className => objectRuntimeType(this, '');
+}
+
+class UtilityWidgets {
+  UtilityWidgets._();
+
+  static const circularProgressIndicator =
+      Center(child: CircularProgressIndicator.adaptive());
+
+  static const horizontalDivider = Divider(height: 1);
+  static const verticalDivider = Divider(height: 1);
+
+  static const horizontalGap32 = SizedBox(width: kIndent32px);
+  static const horizontalGap24 = SizedBox(width: kIndent24px);
+  static const horizontalGap16 = SizedBox(width: kIndent16px);
+  static const horizontalGap08 = SizedBox(width: kIndent08px);
+  static const horizontalGap04 = SizedBox(width: kIndent04px);
+
+  static const verticalGap32 = SizedBox(height: kIndent32px);
+  static const verticalGap24 = SizedBox(height: kIndent24px);
+  static const verticalGap16 = SizedBox(height: kIndent16px);
+  static const verticalGap08 = SizedBox(height: kIndent08px);
+  static const verticalGap04 = SizedBox(height: kIndent04px);
+}
 
 /// Widget that builds itself based on the latest snapshot of interaction with
 /// a [Stream].
@@ -251,8 +285,28 @@ class _DualRingPainter extends CustomPainter {
   bool shouldRebuildSemantics(_DualRingPainter oldDelegate) => false;
 }
 
-/// [Widget] extensions.
-extension Widgets on Widget {
-  /// Returns class name of the widget.
-  String get className => objectRuntimeType(this, '');
+/// Container with shadow.
+class ShadowedContainer extends StatelessWidget {
+  const ShadowedContainer({Key? key, required this.child}) : super(key: key);
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: MediaQuery.platformBrightnessOf(context) == Brightness.light
+                ? const Color(0x0f000000)
+                : const Color(0xff323232),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
 }
