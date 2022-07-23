@@ -5,41 +5,32 @@ import 'package:flutter_project_base/flutter_project_base.dart';
 
 enum HttpMethod { head, get, post, put, patch, delete }
 
-/// An HTTP response where the entire response body is known in advance.
-abstract class HttpClientResponse<T> {
-  const HttpClientResponse(this.data);
-
-  /// Underlying response data.
-  final T data;
-}
-
 /// The interface for HTTP clients that take care of maintaining persistent
 /// connections across multiple requests to the same server.
 abstract class HttpClient {
   /// Sends an HTTP HEAD request with the given headers to the given URL.
-  Future<HttpClientResponse<T>> head<T>(Uri uri,
-      {Map<String, String>? headers});
+  Future<BaseHttpResponse<T>> head<T>(Uri uri, {Map<String, String>? headers});
 
   /// Sends an HTTP GET request with the given headers to the given URL.
-  Future<HttpClientResponse<T>> get<T>(Uri uri, {Map<String, String>? headers});
+  Future<BaseHttpResponse<T>> get<T>(Uri uri, {Map<String, String>? headers});
 
   /// Sends an HTTP POST request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse<T>> post<T>(Uri uri,
+  Future<BaseHttpResponse<T>> post<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP PUT request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse<T>> put<T>(Uri uri,
+  Future<BaseHttpResponse<T>> put<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP PATCH request with the given headers and body to the given
   /// URL.
-  Future<HttpClientResponse<T>> patch<T>(Uri uri,
+  Future<BaseHttpResponse<T>> patch<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Sends an HTTP DELETE request with the given headers to the given URL.
-  Future<HttpClientResponse<T>> delete<T>(Uri uri,
+  Future<BaseHttpResponse<T>> delete<T>(Uri uri,
       {Map<String, String>? headers, Object? body});
 
   /// Closes the client and cleans up any resources associated with it.
@@ -51,30 +42,18 @@ abstract class BaseHttpClient extends HttpClient {
   String get userAgent;
 }
 
-class DioClientResponse<T> extends HttpClientResponse<Response<T>> {
-  const DioClientResponse(Response<T> data) : super(data);
-
-  /// Response is a [Map].
-  bool get isMap => data.data is Map;
-
-  /// Response is a [List].
-  bool get isList => data.data is List;
-
-  /// Response is a [String].
-  bool get isString => !(isMap || isList);
-}
-
 /// Representss an HTTP client base on `dio` package.
 class DioHttpClient implements BaseHttpClient {
   DioHttpClient({
     required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
+    int? connectTimeout = 1200,
   }) : _httpClient = Dio(BaseOptions(
           baseUrl: baseUrl,
           headers: headers,
           contentType: ContentType.json.value,
-          connectTimeout: 2000,
+          connectTimeout: connectTimeout,
           listFormat: ListFormat.csv,
         ));
 
@@ -92,36 +71,35 @@ class DioHttpClient implements BaseHttpClient {
   }
 
   @override
-  Future<HttpClientResponse<T>> head<T>(Uri uri,
+  Future<BaseHttpResponse<T>> head<T>(Uri uri,
           {Map<String, String>? headers}) =>
       _execute(uri, HttpMethod.head, headers: headers);
 
   @override
-  Future<HttpClientResponse<T>> get<T>(Uri uri,
-          {Map<String, String>? headers}) =>
+  Future<BaseHttpResponse<T>> get<T>(Uri uri, {Map<String, String>? headers}) =>
       _execute(uri, HttpMethod.get, headers: headers);
 
   @override
-  Future<HttpClientResponse<T>> patch<T>(Uri uri,
+  Future<BaseHttpResponse<T>> patch<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.patch, headers: headers);
 
   @override
-  Future<HttpClientResponse<T>> post<T>(Uri uri,
+  Future<BaseHttpResponse<T>> post<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.post, headers: headers);
 
   @override
-  Future<HttpClientResponse<T>> put<T>(Uri uri,
+  Future<BaseHttpResponse<T>> put<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.put, headers: headers);
 
   @override
-  Future<HttpClientResponse<T>> delete<T>(Uri uri,
+  Future<BaseHttpResponse<T>> delete<T>(Uri uri,
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.delete);
 
-  Future<HttpClientResponse<T>> _execute<T>(Uri uri, HttpMethod method,
+  Future<BaseHttpResponse<T>> _execute<T>(Uri uri, HttpMethod method,
       {Map<String, String>? headers, Object? body}) async {
     Response<T> response;
     final options = Options(headers: headers);
@@ -151,7 +129,7 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      return DioClientResponse<T>(response) as HttpClientResponse<T>;
+      return DioHttpResponse<T>(response) as BaseHttpResponse<T>;
     } on DioError catch (e) {
       switch (e.type) {
         case DioErrorType.connectTimeout:
@@ -191,4 +169,25 @@ class DioHttpClient implements BaseHttpClient {
 
   @override
   String toString() => 'DioHttpClient {baseUrl: $baseUrl}';
+}
+
+/// An HTTP response where the entire response body is known in advance.
+abstract class BaseHttpResponse<T> {
+  const BaseHttpResponse(this.data);
+
+  /// Underlying response data.
+  final T data;
+}
+
+class DioHttpResponse<T> extends BaseHttpResponse<Response<T>> {
+  const DioHttpResponse(Response<T> data) : super(data);
+
+  /// Response is a [Map].
+  bool get isMap => data.data is Map;
+
+  /// Response is a [List].
+  bool get isList => data.data is List;
+
+  /// Response is a [String].
+  bool get isString => !(isMap || isList);
 }
