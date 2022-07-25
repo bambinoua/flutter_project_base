@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../flutter_project_base.dart';
 
@@ -37,6 +36,12 @@ void forTimes(int times, VoidCallback body) {
     forTimes(times - 1, body);
   }
 }
+
+/// Schedule a callback for the end of this frame.
+
+/// Does not request a new frame.
+void didBuildWiget(VoidCallback callback) =>
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => callback());
 
 /// Measures performance of `procedure`.
 FutureOr<T> meter<T>(ValueGetter<FutureOr<T>> procedure, [String? name]) async {
