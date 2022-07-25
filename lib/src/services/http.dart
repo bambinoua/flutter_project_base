@@ -48,7 +48,7 @@ class DioHttpClient implements BaseHttpClient {
     required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
-    int? connectTimeout = 1200,
+    int? connectTimeout = 15000,
   }) : _httpClient = Dio(BaseOptions(
           baseUrl: baseUrl,
           headers: headers,
