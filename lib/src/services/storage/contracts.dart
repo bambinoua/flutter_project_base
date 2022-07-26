@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
+import '../../core/constants.dart';
 import '../../core/contracts.dart';
 
 /// The Storage interface provides access to a particular mobile, memory,
@@ -75,7 +76,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     }
     try {
       final decodedValue = json.decode(jsonValue, reviver: (key, value) {
-        if (value is String && true /* data */) {
+        if (value is String && RegularExpressions.dateIso8601.hasMatch(value)) {
           return DateTime.parse(value);
         }
         return value;
