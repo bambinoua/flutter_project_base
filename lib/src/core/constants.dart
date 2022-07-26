@@ -1,16 +1,26 @@
 import 'package:charcode/charcode.dart';
+import 'package:meta/meta.dart';
 
 /// HTML entities.
+@sealed
 class HtmlEntity {
   HtmlEntity._();
 
+  /// bullet (black small circle) ('•')
   static final bull = String.fromCharCode($bull);
+
+  /// copyright symbol ('©')
   static final copy = String.fromCharCode($copy);
+
+  /// black diamond suit ('♦')
   static final diamond = String.fromCharCode($diams);
+
+  /// em dash ('—')
   static final mdash = String.fromCharCode($mdash);
 }
 
 /// Colos ANSI codes.
+@sealed
 class ColorAnsiCode {
   ColorAnsiCode._();
 
@@ -47,4 +57,13 @@ class ColorAnsiCode {
   static const backgroundBrightMagenta = '\x1B[105m';
   static const backgroundBrightCyan = '\x1B[106m';
   static const backgroundBrightWhite = '\x1B[107m';
+}
+
+@sealed
+class RegularExpressions {
+  RegularExpressions._();
+
+  static final dateIso8601 = RegExp(
+      r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?Z?$',
+      caseSensitive: false);
 }
