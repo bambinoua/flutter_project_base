@@ -168,6 +168,15 @@ class DioHttpClient implements BaseHttpClient {
               code: 'HandshakeException',
             );
           }
+          if (innerError is String) {
+            if (innerError.contains(
+                'Dio can\'t establish new connection after closed.')) {
+              throw Emergency(
+                message: e.message,
+                code: 'ClosedConnectionException',
+              );
+            }
+          }
           break;
       }
       throw Emergency(message: e.message, code: e.type.name);
