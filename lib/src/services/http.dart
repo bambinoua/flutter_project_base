@@ -149,19 +149,24 @@ class DioHttpClient implements BaseHttpClient {
           break;
         case DioErrorType.response:
           throw Emergency(
-              message: '${e.message}. ${e.response!.statusMessage}',
-              code: e.type.name);
+            message: '${e.message}. ${e.response!.statusMessage}',
+            code: '${e.response!.statusCode}',
+          );
         case DioErrorType.cancel:
           break;
         case DioErrorType.other:
           final innerError = e.error;
           if (innerError is SocketException) {
             throw Emergency(
-                message: innerError.message, code: 'SocketException');
+              message: innerError.message,
+              code: 'SocketException',
+            );
           }
           if (innerError is HandshakeException) {
             throw Emergency(
-                message: innerError.message, code: 'HandshakeException');
+              message: innerError.message,
+              code: 'HandshakeException',
+            );
           }
           break;
       }
