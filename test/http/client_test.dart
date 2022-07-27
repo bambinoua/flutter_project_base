@@ -8,9 +8,8 @@ void main() {
     try {
       const numberApiBaseUrl = 'http://numbersapi.com';
       final httpClient = DioHttpClient(baseUrl: numberApiBaseUrl);
-      final response =
-          await httpClient.get(Uri.parse('/100/trivia')) as DioClientResponse;
-      expect(response.data.statusCode, 200);
+      final response = await httpClient.get(Uri.parse('/100/trivia'));
+      expect(response.statusCode, 200);
     } on Emergency catch (e) {
       fail(e.message);
     }
