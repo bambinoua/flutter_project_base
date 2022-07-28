@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
-import '../../core/constants.dart';
 import '../../core/contracts.dart';
 
 /// The Storage interface provides access to a particular mobile, memory,
@@ -63,24 +62,33 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
         _builder = builder,
         super(name, storage);
 
+  /// Builds an instance of type T from type V.
   final ConvertibleBuilder<T, V>? _builder;
+
+  /// Default value if storage does not contains value yet.
   final T _initialValue;
 
+  /// Current value.
   late T _value;
+
+  /// Current encoded value.
+  String? _encodedValue;
 
   @override
   T get value {
     final jsonValue = storage.getItem(name);
+    // There is no stored value yet so return the default one.
     if (jsonValue == null) {
-      return _value;
+      return _initialValue;
+    }
+    // The stored value was changed from outsied. For example it is possible
+    // in Web browser. If so remove this value from storage and return default one.
+    if (jsonValue != _encodedValue) {
+      remove();
+      return _initialValue;
     }
     try {
-      final decodedValue = json.decode(jsonValue, reviver: (key, value) {
-        if (value is String && RegularExpressions.dateIso8601.hasMatch(value)) {
-          return DateTime.parse(value);
-        }
-        return value;
-      });
+      final decodedValue = json.decode(jsonValue) as V;
       return _builder != null ? _builder!(decodedValue) : decodedValue as T;
     } on FormatException {
       rethrow;
@@ -89,24 +97,39 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 
   set value(T newValue) {
     try {
-      final encodedValue = json.encode(newValue, toEncodable: (object) {
-        if (object is DateTime) {
-          return object.millisecondsSinceEpoch;
-        }
-        if (_simpleTypes.contains(object.runtimeType)) {
-          return object;
-        }
-        if (object is Enum) {
-          return object.index;
-        }
-        if (object is Serializable) {
-          return object.toJson();
-        }
-        //ignore: avoid_dynamic_calls
-        return object.toJson();
-      });
+      if (newValue is! Serializable) {
+        throw FormatException(
+          'Could not encode the `$newValue` directly. Please convert it to '
+          'String implementing `Serializable` interface',
+          newValue.toString(),
+        );
+      }
+      final encodedValue = newValue is String
+          ? newValue as String
+          : json.encode(newValue, toEncodable: (object) {
+              if (object is DateTime) {
+                throw FormatException(
+                  'Could not encode the `DateTime` directly. Please convert it to '
+                  '`String` value calling `toIso8601String()` method, or to '
+                  '`int` value calling `millisecondsSinceEpoch` property',
+                  object.toString(),
+                );
+              }
+              if (object is Enum) {
+                throw FormatException(
+                  'Could not encode the `Enum` directly. Please convert it to '
+                  '`int` value calling `index` property',
+                  object.toString(),
+                );
+              }
+              return object;
+            });
       storage.putItem(name, encodedValue);
-      _value = newValue;
+      if (_value != newValue) {
+        _value = newValue;
+        _encodedValue = encodedValue;
+        notifyListeners();
+      }
     } on FormatException {
       rethrow;
     }
@@ -116,18 +139,8 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   void remove() {
     storage.removeItem(name);
     _value = _initialValue;
+    notifyListeners();
   }
-
-  static const _simpleTypes = <Type>[
-    String,
-    num,
-    int,
-    double,
-    bool,
-    List,
-    Map,
-    Null,
-  ];
 }
 
 /// Specifies a priority setting that is used to decide whether
