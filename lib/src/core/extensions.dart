@@ -22,6 +22,11 @@ extension FileSizeExtension on FileSize {
   }
 }
 
+extension SizeAspectRatio on Size {
+  /// Returns the aspect ration of this [Size].
+  double get aspectRatio => width / height;
+}
+
 /// Executes `body` in a loop for specified `times`.
 ///
 /// This sugar syntax for emulation of the following code:
