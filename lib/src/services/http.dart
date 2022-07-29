@@ -137,7 +137,8 @@ class DioHttpClient implements BaseHttpClient {
       if (contentType == ContentType.json.toString()) {
         assert(response.data != null,
             'Response HTTP header `content-type: application/json` suppose JSON data');
-        assert(T == String, 'T response body type mismatched with JSON string');
+        assert(response.data is String,
+            'Response body type mismatched with JSON string');
         responseBody = json.decode(response.data as String);
       } else {
         responseBody = response.data as T;
