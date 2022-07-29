@@ -139,6 +139,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   void remove() {
     storage.removeItem(name);
     _value = _initialValue;
+    _encodedValue = null;
     notifyListeners();
   }
 }
