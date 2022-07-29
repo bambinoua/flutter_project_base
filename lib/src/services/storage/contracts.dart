@@ -97,26 +97,24 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 
   set value(T newValue) {
     try {
-      final encodedValue = newValue is String
-          ? newValue
-          : json.encode(newValue, toEncodable: (object) {
-              if (object is DateTime) {
-                throw FormatException(
-                  'Could not encode the `DateTime` directly. Please convert it to '
-                  '`String` value calling `toIso8601String()` method, or to '
-                  '`int` value calling `millisecondsSinceEpoch` property',
-                  object.toString(),
-                );
-              }
-              if (object is Enum) {
-                throw FormatException(
-                  'Could not encode the `Enum` directly. Please convert it to '
-                  '`int` value calling `index` property',
-                  object.toString(),
-                );
-              }
-              return object;
-            });
+      final encodedValue = json.encode(newValue, toEncodable: (object) {
+        if (object is DateTime) {
+          throw FormatException(
+            'Could not encode the `DateTime` directly. Please convert it to '
+            '`String` value calling `toIso8601String()` method, or to '
+            '`int` value calling `millisecondsSinceEpoch` property',
+            object.toString(),
+          );
+        }
+        if (object is Enum) {
+          throw FormatException(
+            'Could not encode the `Enum` directly. Please convert it to '
+            '`int` value calling `index` property',
+            object.toString(),
+          );
+        }
+        return object;
+      });
       storage.putItem(name, encodedValue);
       if (_value != newValue) {
         _value = newValue;
