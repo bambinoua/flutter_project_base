@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -131,8 +132,18 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      return HttpClientResponse(
-        data: response.data,
+      final contentType = response.headers.value(HttpHeaders.contentTypeHeader);
+      T responseBody;
+      if (contentType == ContentType.json.mimeType) {
+        assert(response.data != null,
+            'Response HTTP header `content-type: application/json` suppose JSON data');
+        assert(T == String, 'T response body type mismatched with JSON string');
+        responseBody = json.decode(response.data as String);
+      } else {
+        responseBody = response.data as T;
+      }
+      return HttpClientResponse<T>(
+        data: responseBody,
         headers: response.headers.map
             .map((key, value) => MapEntry(key, value.join(','))),
         statusCode: response.statusCode!,
