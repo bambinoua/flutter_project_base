@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project_base/src/material/scaffold_messenger.dart';
 
 import '../core/contracts.dart';
 
@@ -289,13 +290,14 @@ class _DualRingPainter extends CustomPainter {
 class ShadowedContainer extends StatelessWidget {
   const ShadowedContainer({Key? key, required this.child}) : super(key: key);
 
+  /// The [child] contained by the container.
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.theme.colorScheme.background,
         boxShadow: [
           BoxShadow(
             color: MediaQuery.platformBrightnessOf(context) == Brightness.light
