@@ -97,15 +97,8 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 
   set value(T newValue) {
     try {
-      if (newValue is! Serializable) {
-        throw FormatException(
-          'Could not encode the `$newValue` directly. Please convert it to '
-          'String implementing `Serializable` interface',
-          newValue.toString(),
-        );
-      }
       final encodedValue = newValue is String
-          ? newValue as String
+          ? newValue
           : json.encode(newValue, toEncodable: (object) {
               if (object is DateTime) {
                 throw FormatException(
