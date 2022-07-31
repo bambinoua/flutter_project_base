@@ -44,9 +44,9 @@ abstract class BaseHttpClient extends HttpClient {
   String get userAgent;
 }
 
-/// Representss an HTTP client base on `dio` package.
-class DioHttpClient implements BaseHttpClient {
-  DioHttpClient({
+/// Representss an HTTP client working with JSON based on `dio` package.
+class JsonHttpClient implements BaseHttpClient {
+  JsonHttpClient({
     required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
@@ -132,20 +132,12 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      final contentType = response.headers.value(HttpHeaders.contentTypeHeader);
-      T responseBody;
-      if (contentType == ContentType.json.toString()) {
-        assert(response.data != null,
-            'Response HTTP header `content-type: application/json` suppose JSON data');
-        assert(
-            response.data is String ||
-                response.data is List ||
-                response.data is Map,
-            'Response body type mismatched with JSON allowed format');
-        responseBody = json.decode(response.data as String);
-      } else {
-        responseBody = response.data as T;
-      }
+      assert(
+          response.data is String ||
+              response.data is List ||
+              response.data is Map,
+          'Response body type mismatched with JSON allowed format');
+      final responseBody = json.decode(response.data as String);
       return HttpClientResponse<T>(
         data: responseBody,
         headers: response.headers.map
