@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:meta/meta.dart';
 
 enum HttpMethod { head, get, post, put, patch, delete }
 
@@ -117,6 +118,31 @@ class DioHttpClient implements BaseHttpClient {
           {Map<String, String>? headers, Object? body}) =>
       _execute(uri, HttpMethod.delete);
 
+  @protected
+  HttpClientResponse<T> transformResponse<T>(Response<Object?> response) {
+    assert(
+        response.data is String ||
+            response.data is List ||
+            response.data is Map,
+        'Response data type mismatched with JSON allowed format');
+    final responseContentType = ContentType.parse(
+        response.headers.value(HttpHeaders.contentTypeHeader) ??
+            ContentType.json.value);
+    final responseBody =
+        (responseContentType.mimeType == ContentType.json.mimeType &&
+                response.data is String
+            ? json.decode(response.data as String)
+            : response.data) as T;
+    return HttpClientResponse<T>(
+      data: responseBody,
+      headers: response.headers.map
+          .map((key, value) => MapEntry(key, value.join(','))),
+      statusCode: response.statusCode!,
+      statusMessage: response.statusMessage!,
+      uri: response.realUri,
+    );
+  }
+
   Future<HttpClientResponse<T>> _execute<T>(Uri uri, HttpMethod method,
       {Map<String, String>? headers, Object? body}) async {
     Response<T> response;
@@ -147,25 +173,7 @@ class DioHttpClient implements BaseHttpClient {
               await _httpClient.deleteUri(uri, data: body, options: options);
           break;
       }
-      assert(
-          response.data is String ||
-              response.data is List ||
-              response.data is Map,
-          'Response body type mismatched with JSON allowed format');
-      final responseContentType = ContentType.parse(
-          response.headers.value(HttpHeaders.contentTypeHeader) ?? '');
-      final responseBody =
-          (responseContentType == ContentType.json && response.data is String
-              ? json.decode(response.data as String)
-              : response.data) as T;
-      return HttpClientResponse<T>(
-        data: responseBody,
-        headers: response.headers.map
-            .map((key, value) => MapEntry(key, value.join(','))),
-        statusCode: response.statusCode!,
-        statusMessage: response.statusMessage!,
-        uri: response.realUri,
-      );
+      return transformResponse(response);
     } on DioError catch (e) {
       switch (e.type) {
         case DioErrorType.connectTimeout:
