@@ -7,7 +7,7 @@ void main() {
   test('DIO client GET test', () async {
     try {
       const numberApiBaseUrl = 'http://numbersapi.com';
-      final httpClient = JsonHttpClient(baseUrl: numberApiBaseUrl);
+      final httpClient = DioHttpClient(baseUrl: numberApiBaseUrl);
       final response = await httpClient.get(Uri.parse('/100/trivia'));
       expect(response.statusCode, 200);
     } on Emergency catch (e) {

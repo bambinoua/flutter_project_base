@@ -6,6 +6,19 @@ import 'package:flutter_project_base/flutter_project_base.dart';
 
 enum HttpMethod { head, get, post, put, patch, delete }
 
+enum HttpBodyType { json, plain, stream, bytes }
+
+extension on HttpBodyType {
+  ResponseType asResponseType() => _map[this]!;
+
+  static const _map = <HttpBodyType, ResponseType>{
+    HttpBodyType.json: ResponseType.json,
+    HttpBodyType.plain: ResponseType.plain,
+    HttpBodyType.stream: ResponseType.stream,
+    HttpBodyType.bytes: ResponseType.bytes,
+  };
+}
+
 /// The interface for HTTP clients that take care of maintaining persistent
 /// connections across multiple requests to the same server.
 abstract class HttpClient {
@@ -44,17 +57,19 @@ abstract class BaseHttpClient extends HttpClient {
   String get userAgent;
 }
 
-/// Representss an HTTP client working with JSON based on `dio` package.
-class JsonHttpClient implements BaseHttpClient {
-  JsonHttpClient({
+/// Representss an HTTP client based on `dio` package.
+class DioHttpClient implements BaseHttpClient {
+  DioHttpClient({
     required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
     int? connectTimeout = 15000,
+    HttpBodyType bodyType = HttpBodyType.json,
   }) : _httpClient = Dio(BaseOptions(
           baseUrl: baseUrl,
           headers: headers,
           contentType: ContentType.json.value,
+          responseType: bodyType.asResponseType(),
           connectTimeout: connectTimeout,
           listFormat: ListFormat.csv,
         ));
@@ -137,7 +152,12 @@ class JsonHttpClient implements BaseHttpClient {
               response.data is List ||
               response.data is Map,
           'Response body type mismatched with JSON allowed format');
-      final responseBody = json.decode(response.data as String);
+      final responseContentType = ContentType.parse(
+          response.headers.value(HttpHeaders.contentTypeHeader) ?? '');
+      final responseBody =
+          (responseContentType == ContentType.json && response.data is String
+              ? json.decode(response.data as String)
+              : response.data) as T;
       return HttpClientResponse<T>(
         data: responseBody,
         headers: response.headers.map
