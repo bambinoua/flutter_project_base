@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../flutter_project_base.dart';
@@ -25,6 +26,25 @@ extension FileSizeExtension on FileSize {
 extension SizeAspectRatio on Size {
   /// Returns the aspect ration of this [Size].
   double get aspectRatio => width / height;
+}
+
+extension StringExtensions on String {
+  /// Make a string's first character uppercase.
+  String upperCapitalizeFirst() =>
+      this[0].toUpperCase() + substring(1).toLowerCase();
+
+  /// Uppercase the first character of each word in a string.
+  String upperCapitalizeWords() => splitMapJoin(RegExp(r'\b'),
+      onNonMatch: (match) => upperCapitalizeFirst());
+
+  /// Returns the width of this [String] in pixels.
+  double widthInPixels(TextStyle style,
+      {TextDirection textDirection = TextDirection.ltr}) {
+    final textPainer = TextPainter(
+        text: TextSpan(text: this, style: style), textDirection: textDirection)
+      ..layout();
+    return textPainer.width;
+  }
 }
 
 /// Executes `body` in a loop for specified `times`.
