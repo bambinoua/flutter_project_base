@@ -22,10 +22,6 @@ enum InternetConnectivityState {
 ///
 /// Distinguish between WI-FI, cellular and Ethernet.
 class InternetConnectivity extends ChangeNotifier {
-  /// Creates a singleton of [InternetConnectivity].
-  factory InternetConnectivity() => _this;
-  static final _this = InternetConnectivity._();
-
   InternetConnectivity._() {
     _connectivity.onConnectivityChanged.listen(_connectivityListener);
     if (Platform.isIOS) {
@@ -34,6 +30,10 @@ class InternetConnectivity extends ChangeNotifier {
       }();
     }
   }
+
+  /// Creates a singleton of [InternetConnectivity].
+  factory InternetConnectivity() => _this;
+  static final _this = InternetConnectivity._();
 
   final _connectivity = Connectivity();
 
@@ -44,23 +44,20 @@ class InternetConnectivity extends ChangeNotifier {
   bool get isConnected => _connectivityResult != ConnectivityResult.none;
 
   /// Returns `true` if there is a connectivitiy is unavailable.
-  bool get isDisonnected => !isConnected;
+  bool get isDisconnected => !isConnected;
 
   /// Returns `true` if there is a connectivitiy to mobile network.
   bool get isMobileNetworkConnected =>
-      state == InternetConnectivityState.mobile;
+      _connectivityResult == ConnectivityResult.mobile;
 
   /// Returns `true` if there is a connectivitiy to WiFi network.
-  bool get isWiFiNetworkConnected => state == InternetConnectivityState.wifi;
-
-  /// Returns the current Internet connectivity state.
-  InternetConnectivityState get state => _stateMap[_connectivityResult]!;
+  bool get isWiFiNetworkConnected =>
+      _connectivityResult == ConnectivityResult.wifi;
 
   /// Listens the connectivity changes and notifies other listeners.
-  Future<void> _connectivityListener(
-      ConnectivityResult connectivityResult) async {
+  Future<void> _connectivityListener(ConnectivityResult result) async {
     try {
-      _connectivityResult = connectivityResult;
+      _connectivityResult = result;
       final ipAddress = await InternetAddress.lookup('example.com');
       if (ipAddress.isEmpty || ipAddress.first.rawAddress.isEmpty) {
         throw SocketException;
@@ -74,21 +71,11 @@ class InternetConnectivity extends ChangeNotifier {
     }
   }
 
-  /// This map is for convinience. It allows to map [ConnectivityResult] item
-  /// to [InternetConnectivityState].
-  ///
-  /// [InternetConnectivityState] is used to avoid import of `connectivity_plus` package.
-  static const _stateMap = {
-    ConnectivityResult.none: InternetConnectivityState.none,
-    ConnectivityResult.wifi: InternetConnectivityState.wifi,
-    ConnectivityResult.mobile: InternetConnectivityState.mobile,
-    ConnectivityResult.ethernet: InternetConnectivityState.ethernet,
-  };
-
   @override
   String toString() {
-    final message =
-        isConnected ? 'connected via ${state.name}' : 'disconnected';
+    final message = isConnected
+        ? 'connected via ${_connectivityResult.name}'
+        : 'disconnected';
     return 'Internet $message';
   }
 }
