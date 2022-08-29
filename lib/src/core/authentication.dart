@@ -1,4 +1,4 @@
-enum AuthenticationStatus { unauthenticated, authenticated, failure }
+enum AuthenticationStatus { unauthenticated, authenticated, failure, busy }
 
 /// All available authentication states.
 class AuthenticationState {
@@ -11,6 +11,8 @@ class AuthenticationState {
   final Object? data;
 
   bool get hasData => data != null;
+
+  static const busy = AuthenticationState._(AuthenticationStatus.busy);
 
   static const unauthenticated =
       AuthenticationState._(AuthenticationStatus.unauthenticated);
