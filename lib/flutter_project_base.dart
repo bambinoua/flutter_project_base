@@ -10,6 +10,7 @@ export 'src/core/extensions.dart';
 export 'src/core/math.dart';
 
 export 'src/material/functions.dart';
+export 'src/material/internet_connectivity_bar.dart';
 export 'src/material/scaffold_messenger.dart' show ScaffoldMessengerOfContext;
 export 'src/material/textfield.dart';
 export 'src/material/widgets.dart';
