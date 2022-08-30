@@ -4,7 +4,7 @@ import 'basic_types.dart';
 
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
-abstract class Serializable<T> {
+abstract class Serializable {
   const Serializable();
 
   /// Returns a [Map] which represents this object.

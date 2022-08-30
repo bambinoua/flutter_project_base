@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 enum TestEnum { one, two }
 
-class TestObject implements Serializable<TestObject> {
+class TestObject implements Serializable {
   TestObject(
     this.datetime,
     this.enumeration,

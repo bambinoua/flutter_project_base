@@ -8,15 +8,17 @@ import '../core/contracts.dart';
 /// Identity interface which just defines an `id` property with the given
 /// primary key type.
 ///
-/// Primary key types can be `int` or `Guid`,
+/// Primary key types can be `int` or `String` (GUID indeed),
 abstract class Identity<T> {
-  const Identity();
+  const Identity() : assert(T == int || T == String);
 
-  /// Entity identifier.
+  /// Default name of identity property.
+  static const String propertyName = 'id';
+
+  /// Unique domain entity identifier.
+  ///
+  /// Cannot be negative.
   T get id;
-
-  /// Returns `true` if entity is transient, i.e. new.
-  bool get isTransient => id == 0;
 }
 
 /// Entities are one of the core concepts of DDD (Domain Driven Design).
@@ -24,12 +26,12 @@ abstract class Identity<T> {
 /// rather by a thread of continuity and identity. Essentially, entities
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
-abstract class EntityObject<T> implements Identity<int> {
+abstract class EntityObject with EquatableMixin implements Identity<int> {
   /// Cretes an instance of reference entity.
   const EntityObject({int? id}) : _id = id;
 
   /// Cretes an instance of entity object from `map`.
-  EntityObject.fromJson(Json map) : _id = map['id'];
+  EntityObject.fromJson(Json map) : _id = map[Identity.propertyName];
 
   /// Entity unique identifier.
   final int? _id;
@@ -37,8 +39,14 @@ abstract class EntityObject<T> implements Identity<int> {
   @override
   int get id => _id ?? 0;
 
-  /// Constructs the instance of type T.
-  ConvertibleBuilder<T, Json> get builder;
+  /// Optional entity name.
+  String get name => '';
+
+  /// Returns `true` if entity is transient, i.e. new.
+  bool get isTransient => _id == 0;
+
+  @override
+  List<Object?> get props => [_id];
 }
 
 /// An object that represents a descriptive aspect of the domain with no
@@ -56,7 +64,7 @@ abstract class EntityObject<T> implements Identity<int> {
 /// are considered to be the same address.
 @immutable
 abstract class ValueObject<T> extends Equatable
-    implements Serializable<T>, Cloneable<T> {
+    implements Serializable, Cloneable<T> {
   const ValueObject();
 }
 
@@ -70,21 +78,31 @@ abstract class ValueObject<T> extends Equatable
 /// Presentation layer is completely isolated from the Domain layer.
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
-abstract class DTO<T> implements Serializable<T> {
-  const DTO();
+abstract class DTO implements Identity<int>, Serializable {
+  /// Cretes an instance of entity object from `map`.
+  DTO.fromJson(Json map) : _id = map[Identity.propertyName];
+
+  /// Entity unique identifier.
+  final int? _id;
+
+  @override
+  int get id => _id ?? 0;
+}
+
+abstract class EntityToDtoConverter<T extends EntityObject, S extends DTO> {
+  /// Maps `entity` to [DTO].
+  S toDTO(T entity);
+}
+
+abstract class DtoToEntityConverter<T extends EntityObject, S extends DTO> {
+  /// Maps `dto` to [EntityObject].
+  T toEntity(S dto);
 }
 
 /// Declares an interface for bidirectional mapping of [EntityObject] to [DTO]
 /// and vise versa.
-abstract class EntityMapper<T extends EntityObject<T>, S extends DTO<S>> {
-  EntityMapper._();
-
-  /// Maps `entity` to [DTO].
-  S mapToDTO(T entity);
-
-  /// Maps `dto` to [EntityObject].
-  T mapToEntity(S dto);
-}
+abstract class EntityMapper<T extends EntityObject, S extends DTO>
+    implements EntityToDtoConverter<T, S>, DtoToEntityConverter<T, S> {}
 
 /// Enables creation of DDEX provider objects.
 abstract class DataProvider implements Disposable {
