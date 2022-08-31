@@ -30,8 +30,8 @@ abstract class EntityObject with EquatableMixin implements Identity<int> {
   /// Cretes an instance of reference entity.
   const EntityObject({int? id}) : _id = id;
 
-  /// Cretes an instance of entity object from `map`.
-  EntityObject.fromJson(Json map) : _id = map[Identity.propertyName];
+  /// Cretes an instance of entity object from `dto`.
+  EntityObject.fromDTO(DTO dto) : _id = dto.id;
 
   /// Entity unique identifier.
   final int? _id;
@@ -89,20 +89,25 @@ abstract class DTO implements Identity<int>, Serializable {
   int get id => _id ?? 0;
 }
 
-abstract class EntityToDtoConverter<T extends EntityObject, S extends DTO> {
-  /// Maps `entity` to [DTO].
-  S toDTO(T entity);
+mixin EntityToDtoMapper<T extends DTO> on EntityObject {
+  /// Maps this [entity] to [DTO].
+  T toDTO();
 }
 
-abstract class DtoToEntityConverter<T extends EntityObject, S extends DTO> {
-  /// Maps `dto` to [EntityObject].
-  T toEntity(S dto);
+mixin DtoToEntityMapper<T extends EntityObject> on DTO {
+  /// Maps this [dto] to [EntityObject].
+  T toEntity();
 }
 
 /// Declares an interface for bidirectional mapping of [EntityObject] to [DTO]
 /// and vise versa.
-abstract class EntityMapper<T extends EntityObject, S extends DTO>
-    implements EntityToDtoConverter<T, S>, DtoToEntityConverter<T, S> {}
+abstract class EntityMapper<T extends EntityObject, S extends DTO> {
+  /// Maps the `entity` to [DTO].
+  S toDTO(T entity);
+
+  /// Maps the `dto` to [EntityObject].
+  T toEntity(S dto);
+}
 
 /// Enables creation of DDEX provider objects.
 abstract class DataProvider implements Disposable {
