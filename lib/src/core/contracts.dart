@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'basic_types.dart';
+import 'exceptions.dart';
 
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
@@ -24,6 +25,7 @@ abstract class Cloneable<T> {
 /// For example this interface can be implemented by classes which use
 /// [StreamController]s. The `dispose` method can be used for close sink.
 abstract class Disposable {
+  /// Disposes resources which were allocated.
   void dispose();
 }
 
@@ -44,52 +46,6 @@ mixin Emptiable {
   bool get isNotEmpty => !isEmpty;
 }
 
-/// Provides base interface for classes which may be used as `enum`s.
-///
-/// For example,
-/// ```dart
-/// class Gender implements CustomEnum {
-///   const Gender._(this._index);
-///
-///   final int _index;
-///
-///   static const none = Gender._(0);
-///   static const male = Gender._(1);
-///   static const female = Gender._(2);
-///
-///   static const List<Gender> values = [
-///     none,
-///     male,
-///     female,
-///   ];
-///
-///   @override
-///   int get index => _index;
-/// }
-/// ```
-abstract class CustomEnum {
-  const CustomEnum();
-
-  /// A numeric identifier for the enumerated value.
-  ///
-  /// The values of a single enumeration are numbered
-  /// consecutively from zero to one less than the
-  /// number of values.
-  /// This is also the index of the value in the
-  /// enumerated type's static `values` list.
-  int get index;
-
-  /// The value's "name".
-  ///
-  /// The name of a value is a string containing the
-  /// source identifier used to declare the value.
-  ///
-  String get name;
-
-  @override
-  String toString() => '$runtimeType {$index: $name}';
-}
-
 /// An interface for objects that are aware of some task execution.
 ///
 /// This is used to make a widget aware of changes to the task's execution state.
@@ -98,7 +54,7 @@ abstract class TaskAware {
   void onTaskCompleted([TaskResult? result]);
 
   /// Called when the current task has been failed.
-  void onTaskFailed([Exception? exception]) {}
+  void onTaskFailed([Emergency? exception]) {}
 
   /// Called when the current task has changed `isBusy` status.
   void onTaskStatusChanged(bool isBusy) {}

@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import 'exceptions.dart';
+
 /// An alias for `[Map]<String,dynamic>`
 typedef Json = Map<String, dynamic>;
 
@@ -15,12 +17,11 @@ typedef ConvertibleBuilder<T, V> = T Function(V value);
 
 /// Provides a helper instances for using with [StreamBuilder]'s.
 @sealed
-@immutable
 class ResourceState {
   const ResourceState._(
     this._value, {
     this.data,
-    this.message,
+    this.emergency,
   });
 
   /// The resource is idle.
@@ -33,26 +34,29 @@ class ResourceState {
   const ResourceState.ready({Object? data})
       : this._(ResourceStates.ready, data: data);
 
-  /// The resource is failed with the `message`.
-  const ResourceState.error(String message)
-      : this._(ResourceStates.error, message: message);
+  /// The resource is failed with the `emergency`.
+  const ResourceState.failed(Emergency emergency)
+      : this._(ResourceStates.failed, emergency: emergency);
 
   /// Contains resource state value.
   final ResourceStates _value;
 
-  /// Contains data when resource is ready.
+  /// Contains data when the resource is ready.
   final Object? data;
 
-  /// Contains error message when resource is failed.
-  final String? message;
+  /// Contains an exception when the resource is failed.
+  final Emergency? emergency;
 
   /// Whether data is available. Applicable for `ready` state.
   bool get hasData => data != null;
 
+  /// Whether data is available. Applicable for `ready` state.
+  bool get hasError => emergency != null;
+
   bool get isIdle => _value == ResourceStates.idle;
   bool get isWaiting => _value == ResourceStates.waiting;
   bool get isReady => _value == ResourceStates.ready;
-  bool get isError => _value == ResourceStates.error;
+  bool get isFailed => _value == ResourceStates.failed;
 }
 
 /// Resource state values.
@@ -60,5 +64,5 @@ enum ResourceStates {
   idle,
   waiting,
   ready,
-  error,
+  failed,
 }

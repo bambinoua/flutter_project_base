@@ -1,3 +1,5 @@
+import 'domain_driven_design.dart';
+
 enum AuthenticationStatus { unauthenticated, authenticated, failure, busy }
 
 /// All available authentication states.
@@ -25,7 +27,7 @@ class AuthenticationState {
 }
 
 /// Provides interface for authentication process.
-abstract class AuthenticationController<T> {
+abstract class AuthenticationService<T> implements ApplicationService {
   /// Executes process of signing in.
   Future<T> signIn();
 
