@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 
@@ -155,4 +156,41 @@ class Date extends DateTime {
         month.withLeadingZeros(2),
         day.withLeadingZeros(2)
       ].join('-');
+}
+
+/// Encapsulates a start and end [Date] that represent the range of dates.
+///
+/// The range includes the [start] and [end] dates. The [start] and [end] dates
+/// may be equal to indicate a date range of a single day. The [start] date must
+/// not be after the [end] date.
+@immutable
+class DateRange {
+  /// Creates a date range for the given start and end [Date].
+  DateRange({
+    required this.start,
+    required this.end,
+  }) : assert(!start.isAfter(end));
+
+  /// The start of the range of dates.
+  final DateTime start;
+
+  /// The end of the range of dates.
+  final DateTime end;
+
+  /// Returns a [Duration] of the time between [start] and [end].
+  Duration get duration => end.difference(start);
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is DateRange && other.start == start && other.end == end;
+  }
+
+  @override
+  int get hashCode => Object.hash(start, end);
+
+  @override
+  String toString() => '$start - $end';
 }
