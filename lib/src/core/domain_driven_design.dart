@@ -28,12 +28,12 @@ abstract class DomainService {}
 ///
 /// In an ideally layered application, the presentation layer never directly
 /// works with domain objects.
-abstract class ApplicationService {}
+abstract class ApplicationService implements Disposable {}
 
 /// These are services that typically talk to external resources and are not
 /// part of the primary problem domain. The common examples that I see for
 /// this are emailing and logging.
-abstract class InfrastructureService {}
+abstract class InfrastructureService implements Disposable {}
 
 /// Defines an entity with a single primary key with `id` property.
 ///
@@ -48,6 +48,12 @@ abstract class Identity<T> {
   ///
   /// Cannot be negative.
   T get id;
+}
+
+/// Interface for generate identity.
+abstract class IdentityGenerator<T> implements DomainService {
+  /// Generates a new identity.
+  T generate();
 }
 
 /// Entities are one of the core concepts of DDD (Domain Driven Design).
