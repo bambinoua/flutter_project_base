@@ -28,7 +28,7 @@ abstract class DomainService {}
 ///
 /// In an ideally layered application, the presentation layer never directly
 /// works with domain objects.
-abstract class ApplicationService implements Disposable {}
+abstract class ApplicationService {}
 
 /// These are services that typically talk to external resources and are not
 /// part of the primary problem domain. The common examples that I see for
