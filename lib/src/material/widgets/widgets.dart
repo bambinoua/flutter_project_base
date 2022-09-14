@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_base/src/material/scaffold_messenger.dart';
 
-import '../core/contracts.dart';
+import '../../core/contracts.dart';
 
 const kIndent32px = 32.0;
 const kIndent24px = 24.0;
