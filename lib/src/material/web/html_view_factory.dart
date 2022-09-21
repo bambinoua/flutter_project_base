@@ -1,11 +1,13 @@
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart';
 
 import '../../core/contracts.dart';
-import 'shims/ui_real.dart' if (dart.library.html) 'shims/ui_fake.dart' as ui;
+import ''
+    if (dart.library.io) 'shims/ui_real.dart'
+    if (dart.library.html) 'shims/ui_fake.dart' as ui;
 
 abstract class HtmlElementViewFactory<T extends Element> implements Disposable {
-  HtmlElementViewFactory(this._viewType) {
+  HtmlElementViewFactory(this._viewType) : assert(kIsWeb) {
     if (!_cache.containsKey(_viewType)) {
       _cache.putIfAbsent(_viewType, () => this);
       // ignore: undefined_prefixed_name, avoid_dynamic_calls
