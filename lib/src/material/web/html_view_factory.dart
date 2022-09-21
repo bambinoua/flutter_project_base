@@ -3,8 +3,8 @@ import 'package:universal_html/html.dart';
 
 import '../../core/contracts.dart';
 import ''
-    if (dart.library.io) 'shims/ui_real.dart'
-    if (dart.library.html) 'shims/ui_fake.dart' as ui;
+    if (dart.library.html) 'shims/ui_real.dart'
+    if (dart.library.io) 'shims/ui_fake.dart' as ui;
 
 abstract class HtmlElementViewFactory<T extends Element> implements Disposable {
   HtmlElementViewFactory(this._viewType) : assert(kIsWeb) {
