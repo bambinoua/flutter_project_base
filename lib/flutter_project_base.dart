@@ -14,6 +14,7 @@ export 'src/core/logger.dart';
 export 'src/core/math.dart';
 
 export 'src/data/contracts.dart';
+export 'src/data/query.dart';
 
 export 'src/material/functions.dart';
 export 'src/material/scaffold_messenger.dart' show ScaffoldMessengerOfContext;
