@@ -26,8 +26,8 @@ class PageStateBucket implements Disposable {
   final String name;
 
   final _PageStateInternalStorage _internalStorage;
-  final BaseStorageKey<Json, Json> _localStorage;
-  final BaseStorageKey<Json, Json> _sessionStorage;
+  final BaseStorageKey<JsonMap, JsonMap> _localStorage;
+  final BaseStorageKey<JsonMap, JsonMap> _sessionStorage;
 
   void writeState<T>(BuildContext context, String key, T value,
       {bool persistent = false, bool overwrite = false}) {

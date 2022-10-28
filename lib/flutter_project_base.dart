@@ -2,6 +2,7 @@ library flutter_project_base;
 
 export 'src/core/authentication.dart';
 export 'src/core/basic_types.dart';
+export 'src/core/blocs/types.dart' show BlocEvent, BlocState;
 export 'src/core/cache.dart';
 export 'src/core/constants.dart';
 export 'src/core/contracts.dart';

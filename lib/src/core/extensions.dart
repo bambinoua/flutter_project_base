@@ -29,6 +29,14 @@ extension SizeAspectRatio on Size {
 }
 
 extension StringExtensions on String {
+  /// The string with normalized whitespaces.
+  ///
+  /// ```dart
+  /// final trimmed = 'Dart  is\t\tfun\n'.trimInner();
+  /// print(trimmed); // 'Dart is fun'
+  /// ```
+  String trimInner() => replaceAll(RegExp(r'\s+'), ' ');
+
   /// Make a string's first character uppercase.
   String upperCapitalizeFirst() =>
       this[0].toUpperCase() + substring(1).toLowerCase();

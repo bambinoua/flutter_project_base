@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'basic_types.dart';
 import 'exceptions.dart';
 
@@ -9,7 +11,29 @@ abstract class Serializable {
   const Serializable();
 
   /// Returns a [Map] which represents this object.
-  Json toJson();
+  JsonMap toJson();
+}
+
+/// Provides base implementation of [Serializable] interface which ignores
+/// `null` values while [json.encode] method is used.
+///
+/// To specife properties which may contain null values the getter
+/// [nullablePermittedKeys] must be overridden.
+abstract class NullableNeglectionSerializable extends Serializable {
+  @override
+  JsonMap toJson() {
+    return toJsonMap()
+      ..removeWhere((key, value) =>
+          value == null && !nullablePermittedKeys.contains(key));
+  }
+
+  /// Returns a [Map] which represents this object.
+  @protected
+  JsonMap toJsonMap();
+
+  /// The list of keys which are permitted to have null values.
+  @protected
+  List<String> get nullablePermittedKeys => <String>[];
 }
 
 /// Interface provides a method that it is legal for make a field-for-field
@@ -38,6 +62,8 @@ abstract class Builder<T> {
 }
 
 /// Mixin provides getters which defines if the mixed object is empty or not.
+///
+/// The method `isEmpty()` must be overridden.
 mixin Emptiable {
   /// Whether this [Emptiable] is empty.
   bool get isEmpty;
@@ -54,7 +80,7 @@ abstract class TaskAware {
   void onTaskCompleted([TaskResult? result]);
 
   /// Called when the current task has been failed.
-  void onTaskFailed([Emergency? exception]) {}
+  void onTaskFailed([ApplicationException? exception]) {}
 
   /// Called when the current task has changed `isBusy` status.
   void onTaskStatusChanged(bool isBusy) {}

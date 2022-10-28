@@ -183,7 +183,7 @@ class DioHttpClient implements BaseHttpClient {
         case DioErrorType.receiveTimeout:
           break;
         case DioErrorType.response:
-          throw Emergency(
+          throw ApplicationException(
             message: '${e.message}. ${e.response!.statusMessage}',
             code: '${e.response!.statusCode}',
           );
@@ -192,13 +192,13 @@ class DioHttpClient implements BaseHttpClient {
         case DioErrorType.other:
           final innerError = e.error;
           if (innerError is SocketException) {
-            throw Emergency(
+            throw ApplicationException(
               message: innerError.message,
               code: 'SocketException',
             );
           }
           if (innerError is HandshakeException) {
-            throw Emergency(
+            throw ApplicationException(
               message: innerError.message,
               code: 'HandshakeException',
             );
@@ -206,7 +206,7 @@ class DioHttpClient implements BaseHttpClient {
           if (innerError is String) {
             if (innerError.contains(
                 'Dio can\'t establish new connection after closed.')) {
-              throw Emergency(
+              throw ApplicationException(
                 message: e.message,
                 code: 'ClosedConnectionException',
               );
@@ -214,7 +214,7 @@ class DioHttpClient implements BaseHttpClient {
           }
           break;
       }
-      throw Emergency(message: e.message, code: e.type.name);
+      throw ApplicationException(message: e.message, code: e.type.name);
     } finally {
       if (autoclose) {
         close();

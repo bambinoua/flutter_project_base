@@ -10,7 +10,7 @@ void main() {
       final httpClient = DioHttpClient(baseUrl: numberApiBaseUrl);
       final response = await httpClient.get(Uri.parse('/100/trivia'));
       expect(response.statusCode, 200);
-    } on Emergency catch (e) {
+    } on ApplicationException catch (e) {
       fail(e.message);
     }
   });

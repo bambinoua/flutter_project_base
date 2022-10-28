@@ -61,12 +61,14 @@ abstract class IdentityGenerator<T> implements DomainService {
 /// rather by a thread of continuity and identity. Essentially, entities
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
-abstract class EntityObject with EquatableMixin implements Identity<int> {
+abstract class Entity with EquatableMixin implements Identity<int> {
   /// Cretes an instance of reference entity.
-  const EntityObject({int? id}) : _id = id;
+  const Entity({int? id})
+      : assert(id == null || id > 0),
+        _id = id;
 
   /// Cretes an instance of entity object from `dto`.
-  EntityObject.fromDTO(DTO dto) : _id = dto.id;
+  Entity.fromDTO(DTO dto) : _id = dto.id;
 
   /// Entity unique identifier.
   final int? _id;
@@ -91,12 +93,12 @@ abstract class EntityObject with EquatableMixin implements Identity<int> {
 /// example may be an order and its line-items, these will be separate
 /// objects, but it's useful to treat the order (together with its line
 /// items) as a single aggregate
-abstract class AggregateRoot extends EntityObject {}
+abstract class AggregateRoot extends Entity {}
 
 /// An object that represents a descriptive aspect of the domain with no
 /// conceptual identity is called a VALUE OBJECT
 ///
-/// [EntityObject]s have identities (Id), Value Objects do not. If the
+/// [Entity]s have identities (Id), Value Objects do not. If the
 /// identities of two Entities are different, they are considered as
 /// different objects/entities even if all the properties of those
 /// entities are the same.
@@ -124,7 +126,7 @@ abstract class ValueObject<T> extends Equatable
 /// works with domain objects, (Repositories, or Entities...).
 abstract class DTO implements Identity<int>, Serializable {
   /// Cretes an instance of entity object from `map`.
-  DTO.fromJson(Json map) : _id = map[Identity.propertyName];
+  DTO.fromJson(JsonMap map) : _id = map[Identity.propertyName];
 
   /// Entity unique identifier.
   final int? _id;

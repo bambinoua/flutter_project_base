@@ -5,24 +5,24 @@ import '../core/contracts.dart';
 import '../core/domain_driven_design.dart';
 import 'query.dart';
 
-mixin EntityToDtoMapper<T extends DTO> on EntityObject {
+mixin EntityToDtoMapper<T extends DTO> on Entity {
   /// Maps this [entity] to [DTO].
   T toDTO();
 }
 
-mixin DtoToEntityMapper<T extends EntityObject> on DTO {
-  /// Maps this [dto] to [EntityObject].
+mixin DtoToEntityMapper<T extends Entity> on DTO {
+  /// Maps this [dto] to [Entity].
   T toEntity();
 }
 
-/// Declares an interface for bidirectional mapping of [EntityObject] to [DTO]
+/// Declares an interface for bidirectional mapping of [Entity] to [DTO]
 /// and vise versa.
-abstract class EntityMapper<T extends EntityObject, S extends DTO>
+abstract class EntityMapper<T extends Entity, S extends DTO>
     implements DomainService {
   /// Maps the `entity` to [DTO].
   S toDTO(T entity);
 
-  /// Maps the `dto` to [EntityObject].
+  /// Maps the `dto` to [Entity].
   T toEntity(S dto);
 }
 
@@ -31,7 +31,7 @@ abstract class DataProvider implements InfrastructureService, Disposable {
   DataProvider._();
 
   /// Fetches the list of rows from underlaying `dataSource`.
-  Future<List<Json>> fetch(
+  Future<List<JsonMap>> fetch(
     String dataSource, {
     bool distinct = false,
     List<String> columns = const <String>[],
@@ -52,7 +52,7 @@ abstract class DataProvider implements InfrastructureService, Disposable {
   /// };
   /// int id = await db.insert('tableTodo', value);
   /// ```
-  Future<Json> insert(
+  Future<JsonMap> insert(
     String dataSource, {
     Map<String, dynamic> values = const <String, dynamic>{},
   });
@@ -67,7 +67,7 @@ abstract class DataProvider implements InfrastructureService, Disposable {
   /// int count = await db.update(tableTodo, todo.toMap(),
   ///    where: [QueryFilter('id', 1]);
   /// ```
-  Future<Json> update(
+  Future<JsonMap> update(
     String dataSource, {
     Map<String, dynamic> values = const <String, dynamic>{},
     List<QueryFilter> where = const <QueryFilter>[],
