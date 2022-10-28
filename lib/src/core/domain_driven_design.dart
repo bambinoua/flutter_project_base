@@ -134,3 +134,63 @@ abstract class DTO implements Identity<int>, Serializable {
   @override
   int get id => _id ?? 0;
 }
+
+/// An prototype of callback for specification predicaete.
+typedef SpecificationPredicate<T> = bool Function(T value);
+
+abstract class Specification<T> {
+  const Specification();
+
+  /// Whether `value` is satisfied to some criteria.
+  bool isSatisfied(T value);
+}
+
+class CriteriaSpecification<T> extends Specification<T> {
+  const CriteriaSpecification(this._predicate);
+
+  final SpecificationPredicate<T> _predicate;
+
+  @override
+  bool isSatisfied(T value) => _predicate(value);
+}
+
+class AndCriteriaSpecification<T> extends CriteriaSpecification<T> {
+  const AndCriteriaSpecification(
+      this.other, SpecificationPredicate<T> predicate)
+      : super(predicate);
+
+  /// Other [Specification] to be ANDed.
+  final Specification<T> other;
+
+  @override
+  bool isSatisfied(T value) => isSatisfied(value) && other.isSatisfied(value);
+}
+
+class OrCriteriaSpecification<T> extends CriteriaSpecification<T> {
+  const OrCriteriaSpecification(this.other, SpecificationPredicate<T> predicate)
+      : super(predicate);
+
+  /// Other [Specification] to be ORed.
+  final Specification<T> other;
+
+  @override
+  bool isSatisfied(T value) => isSatisfied(value) || other.isSatisfied(value);
+}
+
+class NotCriteriaSpecification<T> extends CriteriaSpecification<T> {
+  const NotCriteriaSpecification(SpecificationPredicate<T> predicate)
+      : super(predicate);
+
+  @override
+  bool isSatisfied(T value) => !isSatisfied(value);
+}
+
+extension SpecificationExtensions<T> on Specification<T> {
+  /// Executes boolean AND operation with `other` [Specification].
+  Specification<T> and(CriteriaSpecification<T> other) =>
+      AndCriteriaSpecification(this, (value) => other._predicate(value));
+
+  /// Executes boolean OR operation with `other` [Specification].
+  Specification<T> or(CriteriaSpecification<T> other) =>
+      OrCriteriaSpecification(this, (value) => other._predicate(value));
+}
