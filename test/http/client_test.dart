@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:flutter_project_base/src/core/exceptions.dart';
+import 'package:flutter_project_base/src/services/http.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
