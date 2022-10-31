@@ -138,16 +138,31 @@ abstract class DTO implements Identity<int>, Serializable {
 /// An prototype of callback for specification predicate.
 typedef SpecificationPredicate<T> = bool Function(T value);
 
-abstract class ISpecification<T> {
-  const ISpecification();
+/// Provides an interface for inmplementation of Specification design pattern.
+abstract class Specification<T> {
+  const Specification._();
 
-  /// Whether `value` is satisfied to some criteria.
+  /// Whether `value` is satisfied to this criteria.
   bool isSatisfied(T value);
+
+  /// Whether `value` is not satisfied to this criteria.
+  bool isNotSatisfied(T value) => !isSatisfied(value);
+
+  factory Specification(SpecificationPredicate<T> predicate) =>
+      _Specification(predicate);
+
+  factory Specification.and(SpecificationPredicate<T> leftPredicate,
+          SpecificationPredicate<T> rightPredicate) =>
+      AndSpecification.predicatable(leftPredicate, rightPredicate);
+
+  factory Specification.or(SpecificationPredicate<T> leftPredicate,
+          SpecificationPredicate<T> rightPredicate) =>
+      OrSpecification.predictable(leftPredicate, rightPredicate);
 }
 
-/// Base implementation of [ISpecification] interface.
-class Specification<T> extends ISpecification<T> {
-  const Specification(this._predicate);
+/// Base implementation of [Specification] interface.
+class _Specification<T> extends Specification<T> {
+  const _Specification(this._predicate) : super._();
 
   final SpecificationPredicate<T> _predicate;
 
@@ -155,64 +170,64 @@ class Specification<T> extends ISpecification<T> {
   bool isSatisfied(T value) => _predicate(value);
 }
 
-/// Provides AND boolean operation on [ISpecification] interfaces.
-class AndSpecification<T> extends ISpecification<T> {
-  const AndSpecification(this.left, this.right);
+/// Provides AND boolean operation on [Specification] interfaces.
+class AndSpecification<T> extends Specification<T> {
+  const AndSpecification(this.left, this.right) : super._();
 
-  AndSpecification.predicate(
+  AndSpecification.predicatable(
     SpecificationPredicate<T> leftPredicate,
     SpecificationPredicate<T> rightPredicate,
-  )   : left = Specification<T>(leftPredicate),
-        right = Specification<T>(rightPredicate);
+  )   : left = _Specification<T>(leftPredicate),
+        right = _Specification<T>(rightPredicate),
+        super._();
 
-  /// The left [ISpecification] operand to be ANDed.
-  final ISpecification<T> left;
+  /// The left [Specification] operand to be ANDed.
+  final Specification<T> left;
 
-  /// The right [ISpecification] operand to be ANDed.
-  final ISpecification<T> right;
+  /// The right [Specification] operand to be ANDed.
+  final Specification<T> right;
 
   @override
   bool isSatisfied(T value) =>
       left.isSatisfied(value) && right.isSatisfied(value);
 }
 
-/// Provides OR boolean operation on [ISpecification] interfaces.
-class OrSpecification<T> extends ISpecification<T> {
-  const OrSpecification(this.left, this.right);
+/// Provides OR boolean operation on [Specification] interfaces.
+class OrSpecification<T> extends Specification<T> {
+  const OrSpecification(this.left, this.right) : super._();
 
-  OrSpecification.predicate(
+  OrSpecification.predictable(
     SpecificationPredicate<T> leftPredicate,
     SpecificationPredicate<T> rightPredicate,
-  )   : left = Specification<T>(leftPredicate),
-        right = Specification<T>(rightPredicate);
+  )   : left = _Specification<T>(leftPredicate),
+        right = _Specification<T>(rightPredicate),
+        super._();
 
-  /// The left [ISpecification] operand to be ORed.
-  final ISpecification<T> left;
+  /// The left [Specification] operand to be ORed.
+  final Specification<T> left;
 
-  /// The right [ISpecification] operand to be ORed.
-  final ISpecification<T> right;
+  /// The right [Specification] operand to be ORed.
+  final Specification<T> right;
 
   @override
   bool isSatisfied(T value) =>
       left.isSatisfied(value) || right.isSatisfied(value);
 }
 
-/// Provides NOT boolean operation on [ISpecification] interface.
-class NotSpecification<T> extends Specification<T> {
-  const NotSpecification(SpecificationPredicate<T> predicate)
-      : super(predicate);
+extension SpecificationExtensions<T> on Specification<T> {
+  /// Executes boolean AND operation with other [Specification].
+  Specification<T> and(Specification<T> specification) =>
+      AndSpecification(this, specification);
 
-  NotSpecification.other(Specification<T> other) : this(other._predicate);
+  /// Executes boolean OR operation with other [Specification].
+  Specification<T> or(Specification<T> specification) =>
+      OrSpecification(this, specification);
 
-  @override
-  bool isSatisfied(T value) => !super.isSatisfied(value);
-}
+  /// Executes boolean AND operation with other [Specification].
+  Specification<T> predictableAnd(SpecificationPredicate<T> predicate) =>
+      AndSpecification(this, Specification(predicate));
 
-extension SpecificationExtensions<T> on ISpecification<T> {
-  /// Executes boolean AND operation with `other` [ISpecification].
-  ISpecification<T> and(ISpecification<T> other) =>
-      AndSpecification(this, other);
-
-  /// Executes boolean OR operation with `other` [ISpecification].
-  ISpecification<T> or(ISpecification<T> other) => OrSpecification(this, other);
+  /// Executes boolean OR operation with other [Specification].
+  Specification<T> predictableOr(SpecificationPredicate<T> predicate) =>
+      OrSpecification(this, Specification(predicate));
 }
