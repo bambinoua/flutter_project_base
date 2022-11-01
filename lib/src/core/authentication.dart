@@ -1,29 +1,37 @@
-import 'domain_driven_design.dart';
+import 'package:flutter_project_base/src/core/basic_types.dart';
 
-enum AuthenticationStatus { unauthenticated, authenticated, failure, busy }
+import 'domain_driven_design.dart';
+import 'exceptions.dart';
+
+enum AuthenticationStatus {
+  unauthenticated,
+  authenticated,
+  failure,
+  waiting,
+}
 
 /// All available authentication states.
-class AuthenticationState {
-  const AuthenticationState._(this.status, [this.data]);
+class AuthenticationState<T extends Object>
+    extends Either<T, ApplicationException> {
+  const AuthenticationState._(this.status,
+      {T? data, ApplicationException? error})
+      : super(data: data, error: error);
 
-  /// Status
   final AuthenticationStatus status;
 
-  /// Optional state payload.
-  final Object? data;
-
-  bool get hasData => data != null;
-
-  static const busy = AuthenticationState._(AuthenticationStatus.busy);
-
+  static const waiting = AuthenticationState._(AuthenticationStatus.waiting);
   static const unauthenticated =
       AuthenticationState._(AuthenticationStatus.unauthenticated);
 
-  static AuthenticationState authenticated(Object data) =>
-      AuthenticationState._(AuthenticationStatus.authenticated, data);
+  AuthenticationState.authenticated([T? data])
+      : this._(AuthenticationStatus.authenticated, data: data);
+  AuthenticationState.failure([ApplicationException? error])
+      : this._(AuthenticationStatus.failure, error: error);
 
-  static AuthenticationState failure(Object error) =>
-      AuthenticationState._(AuthenticationStatus.failure, error);
+  bool get isAutenticated => status == AuthenticationStatus.authenticated;
+  bool get isUnautenticated => status == AuthenticationStatus.unauthenticated;
+  bool get isFailure => status == AuthenticationStatus.failure;
+  bool get isWaiting => status == AuthenticationStatus.waiting;
 }
 
 /// Provides interface for authentication process.

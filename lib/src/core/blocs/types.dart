@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_project_base/src/core/basic_types.dart';
 
 import '../exceptions.dart';
 
@@ -20,27 +21,21 @@ abstract class BlocEvent extends Equatable {
 /// Provides a base state for BLoC patter.
 ///
 /// Usually may be use with [flutter_bloc] package.
-class BlocState<T> {
+class BlocState<T extends Object> extends Either<T, ApplicationException> {
   const BlocState(
     this.status, {
-    this.data,
-    this.error,
-  });
+    T? data,
+    ApplicationException? error,
+  }) : super(data: data, error: error);
 
-  /// Current status.
+  static const idle = BlocState(BlocStatus.idle);
+  static const waiting = BlocState(BlocStatus.waiting);
+
+  BlocState.success([T? data]) : this(BlocStatus.success, data: data);
+  BlocState.failure([ApplicationException? error])
+      : this(BlocStatus.failure, error: error);
+
   final BlocStatus status;
-
-  /// Contains data when this state is successful.
-  final T? data;
-
-  /// Contains an exception when this state is failed.
-  final ApplicationException? error;
-
-  /// Whether data is available. Applicable for `ready` state.
-  bool get hasData => data != null;
-
-  /// Whether data is available. Applicable for `ready` state.
-  bool get hasError => error != null;
 
   bool get isIdle => status == BlocStatus.idle;
   bool get isWaiting => status == BlocStatus.waiting;
