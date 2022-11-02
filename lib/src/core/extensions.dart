@@ -1,10 +1,19 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../flutter_project_base.dart';
+
+extension Int on int {
+  static const int min32bitValue = -2147483648;
+  static const int max32bitValue = 2147483647;
+  static const int min64bitValue = -9223372036854775808;
+  static const int max64bitValue =
+      kIsWeb ? 9007199254740991 /* 2^53-1 */ : 9223372036854775807;
+}
 
 /// [int] extensions.
 extension IntFormatters on int {
