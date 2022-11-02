@@ -15,7 +15,6 @@ extension Int on int {
       kIsWeb ? 9007199254740991 /* 2^53-1 */ : 9223372036854775807;
 }
 
-/// [int] extensions.
 extension IntFormatters on int {
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
@@ -24,20 +23,7 @@ extension IntFormatters on int {
   }
 }
 
-extension FileSizeExtension on FileSize {
-  /// Represents a [FileSize] as `XX.XX Mb` [String]
-  String formatSizeInBytesToScaledSize({int decimals = 0}) {
-    assert(!decimals.isNegative);
-    return Helper.formatSizeInBytesToScaledSize(this, decimals: decimals);
-  }
-}
-
-extension SizeAspectRatio on Size {
-  /// Returns the aspect ration of this [Size].
-  double get aspectRatio => width / height;
-}
-
-extension StringExtensions on String {
+extension Strings on String {
   /// The string with normalized whitespaces.
   ///
   /// ```dart
@@ -62,6 +48,24 @@ extension StringExtensions on String {
       ..layout();
     return textPainer.width;
   }
+}
+
+extension Lists on List<Object?> {
+  /// Returns the last index of this [List].
+  int get lastIndex => isEmpty ? -1 : length - 1;
+}
+
+extension FileSizeExtension on FileSize {
+  /// Represents a [FileSize] as `XX.XX Mb` [String]
+  String formatSizeInBytesToScaledSize({int decimals = 0}) {
+    assert(!decimals.isNegative);
+    return Helper.formatSizeInBytesToScaledSize(this, decimals: decimals);
+  }
+}
+
+extension SizeAspectRatio on Size {
+  /// Returns the aspect ration of this [Size].
+  double get aspectRatio => width / height;
 }
 
 /// Executes `body` in a loop for specified `times`.
