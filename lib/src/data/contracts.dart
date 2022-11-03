@@ -1,5 +1,7 @@
 // Domain object.
 
+import 'package:flutter/foundation.dart';
+
 import '../core/basic_types.dart';
 import '../core/contracts.dart';
 import '../core/domain_driven_design.dart';
@@ -8,6 +10,7 @@ import 'query.dart';
 /// Provides a connection for [DataProvider]s which require it.
 mixin DataProviderConnectible<T> on DataProvider {
   /// Declares a connection if [DataProvider] requires it.
+  @protected
   T get connection;
 }
 
