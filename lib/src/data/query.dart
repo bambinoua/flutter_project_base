@@ -1,10 +1,13 @@
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
+import '../core/contracts.dart';
 import '../core/extensions.dart';
 
 /// Data query order used in ORDER BY clause.
+@immutable
 class QueryOrder extends Equatable {
   const QueryOrder(
     this.column, {
@@ -25,6 +28,7 @@ class QueryOrder extends Equatable {
 }
 
 /// Data query filter used in WHERE clause.
+@immutable
 class QueryFilter<T extends Object> extends Equatable {
   const QueryFilter(
     this.column,
@@ -49,15 +53,15 @@ class QueryFilter<T extends Object> extends Equatable {
 }
 
 /// Provides base interface for data query filter.
-class DataQuery {
+@immutable
+class DataQuery implements Cloneable<DataQuery> {
   DataQuery({
     List<String>? columns,
     List<QueryFilter>? where,
     List<QueryOrder>? orderBy,
   })  : _columns = Helper.safeList(columns),
         _where = Helper.safeList(where),
-        _orderBy = Map.fromEntries(Helper.safeList(orderBy)
-            .map((item) => MapEntry(item.column, item)));
+        _orderBy = Helper.safeList(orderBy);
 
   DataQuery.single(int id) : this(where: [QueryFilter('id', id)]);
 
@@ -71,7 +75,7 @@ class DataQuery {
   final List<QueryFilter> _where;
 
   /// List of ORDER BY columns.
-  final Map<String, QueryOrder> _orderBy;
+  final List<QueryOrder> _orderBy;
 
   /// Returns list of queired colums.
   List<String> get columns => UnmodifiableListView(_columns);
@@ -80,21 +84,20 @@ class DataQuery {
   List<QueryFilter> get where => UnmodifiableListView(_where);
 
   /// Returns list of sorting columns.
-  List<QueryOrder> get orderBy => UnmodifiableListView(_orderBy.values);
+  List<QueryOrder> get orderBy => UnmodifiableListView(_orderBy);
 
   /// Add condition with `column` and `value`.
   void addCondition<T extends Object>(String column, T value,
       {ComparisonOperation operation = ComparisonOperation.equal}) {
     assert(column.isNotEmpty);
-    _where.add(QueryFilter(column, value, operation: operation));
+    _where.add(QueryFilter<T>(column, value, operation: operation));
   }
 
   /// Add sorting order with `key` and `value`.
   void addSorting(String column,
       {SortDirection direction = SortDirection.ascending}) {
     assert(column.isNotEmpty);
-    _orderBy.putIfAbsent(
-        column, () => QueryOrder(column, direction: direction));
+    _orderBy.add(QueryOrder(column, direction: direction));
   }
 
   @override
@@ -103,8 +106,8 @@ class DataQuery {
     final whereClause = _where
         .map((condition) => '${condition.column}=${condition.value}')
         .join(',');
-    final orderByClause = _orderBy.entries
-        .map((order) => '${order.key}=${order.value.direction.name}')
+    final orderByClause = _orderBy
+        .map((order) => '${order.column}=${order.direction.name}')
         .join(',');
     final properties = [
       if (columnsClause.isNotEmpty) 'columns: $columnsClause',
@@ -112,6 +115,19 @@ class DataQuery {
       if (orderByClause.isNotEmpty) 'orderby: $orderByClause',
     ].join(',');
     return 'DataQuery {$properties}';
+  }
+
+  @override
+  DataQuery copyWith({
+    List<String>? columns,
+    List<QueryFilter>? where,
+    List<QueryOrder>? orderBy,
+  }) {
+    return DataQuery(
+      columns: columns ?? _columns,
+      where: where ?? _where,
+      orderBy: orderBy ?? _orderBy,
+    );
   }
 }
 

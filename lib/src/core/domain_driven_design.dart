@@ -67,9 +67,6 @@ abstract class Entity with EquatableMixin implements Identity<int> {
       : assert(id == null || id > 0),
         _id = id;
 
-  /// Cretes an instance of entity object from `dto`.
-  Entity.fromDTO(DTO dto) : _id = dto.id;
-
   /// Entity unique identifier.
   final int? _id;
 
@@ -124,21 +121,17 @@ abstract class ValueObject<T> extends Equatable
 /// Presentation layer is completely isolated from the Domain layer.
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
-abstract class DTO implements Identity<int>, Serializable {
+@immutable
+abstract class DTO implements Serializable {
   /// Cretes an instance of entity object from `map`.
-  DTO.fromJson(JsonMap map) : _id = map[Identity.propertyName];
-
-  /// Entity unique identifier.
-  final int? _id;
-
-  @override
-  int get id => _id ?? 0;
+  const DTO.fromJson(JsonMap map);
 }
 
 /// An prototype of callback for specification predicate.
 typedef SpecificationPredicate<T> = bool Function(T value);
 
 /// Provides an interface for inmplementation of Specification design pattern.
+@immutable
 abstract class Specification<T> {
   const Specification._();
 

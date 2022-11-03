@@ -5,31 +5,14 @@ import '../core/contracts.dart';
 import '../core/domain_driven_design.dart';
 import 'query.dart';
 
-mixin EntityToDtoMapper<T extends DTO> on Entity {
-  /// Maps this [entity] to [DTO].
-  T toDTO();
-}
-
-mixin DtoToEntityMapper<T extends Entity> on DTO {
-  /// Maps this [dto] to [Entity].
-  T toEntity();
-}
-
-/// Declares an interface for bidirectional mapping of [Entity] to [DTO]
-/// and vise versa.
-abstract class EntityMapper<T extends Entity, S extends DTO>
-    implements DomainService {
-  /// Maps the `entity` to [DTO].
-  S toDTO(T entity);
-
-  /// Maps the `dto` to [Entity].
-  T toEntity(S dto);
+/// Provides a connection for [DataProvider]s which require it.
+mixin DataProviderConnectible<T> on DataProvider {
+  /// Declares a connection if [DataProvider] requires it.
+  T get connection;
 }
 
 /// Enables creation of DDEX provider objects.
 abstract class DataProvider implements InfrastructureService, Disposable {
-  DataProvider._();
-
   /// Fetches the list of rows from underlaying `dataSource`.
   Future<List<JsonMap>> fetch(
     String dataSource, {
