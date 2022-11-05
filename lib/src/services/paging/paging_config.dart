@@ -1,4 +1,5 @@
 import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:flutter_project_base/src/services/paging/load_result.dart';
 
 /// An object used to configure loading behavior within a [Pager], as it loads
 /// content from a [PagingSource].
@@ -11,13 +12,13 @@ class PagingConfig {
     this.initialLoadSize = 1,
     this.maxSize = maxSizeUnbounded,
     this.prefetchDistance = 0,
-    this.jumpThreshold = countUndefined,
+    this.jumpThreshold = LoadResult.countUndefined,
     this.enablePlaceholders = false,
   })  : assert(pageSize >= 1),
         assert(maxSize >= 2),
         assert(initialLoadSize >= 1),
         assert(prefetchDistance >= 0),
-        assert(jumpThreshold == countUndefined || jumpThreshold > 0),
+        assert(jumpThreshold == LoadResult.countUndefined || jumpThreshold > 0),
         assert(() {
           if (!enablePlaceholders && prefetchDistance == 0) {
             throw ArgumentError(
@@ -46,10 +47,9 @@ class PagingConfig {
     );
   }
 
-  static const int countUndefined = Int.min32bitValue;
-  static const int maxSizeUnbounded = Int.max32bitValue;
   static const int defaultPageSize = 30;
   static const int defaultInitialPageMultiplier = 3;
+  static const int maxSizeUnbounded = Int.max32bitValue;
 
   /// Defines the number of items loaded at once from the [PagingSource].
   final int pageSize;

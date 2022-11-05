@@ -10,26 +10,51 @@ abstract class PagingSource<Key, Value> {
   final _invalidateCallbackTracker =
       InvalidateCallbackTracker<VoidCallback>((callback) => callback());
 
+  /// `true` if this [PagingSource] supports jumping, `false` otherwise.
+  ///
+  /// Override this to `true` if pseudo-fast scrolling via jumps is supported.
+  ///
+  /// A jump occurs when a `RecyclerView` scrolls through a number of
+  /// placeholders defined by [PagingConfig.jumpThreshold] and triggers a load
+  /// with [LoadType] [REFRESH].
+  ///
+  /// [PagingSource]s that support jumps should override [getRefreshKey] to
+  /// return a [Key] that would load data fulfilling the viewport given a
+  /// user's current [PagingState.anchorPosition].
+  ///
+  /// See [PagingConfig.jumpThreshold].
+  bool get jumpingSupported => false;
+
+  /// `true` if this [PagingSource] expects to re-use keys to load distinct
+  /// pages without a call to [invalidate], `false` otherwise.
+  bool get keyReuseSupported => false;
+
   /// Whether this [PagingSource] has been invalidated, which should happen when
   /// the data this [PagingSource] represents changes since it was first
   /// instantiated.
   bool get invalid => _invalidateCallbackTracker.invalid;
 
-  /// `true` if this [PagingSource] expects to re-use keys to load distinct
-  /// pages without a call to invalidate, `false` otherwise.
-  bool get keyReuseSupported => false;
-
-  /// `true` if this [PagingSource] supports jumping, `false` otherwise.
-  bool get jumpingSupported => false;
-
-  /// Signal this [PagingSource] to stop loading.
+  /// Signal the [PagingSource] to stop loading.
+  ///
+  /// This method is idempotent. i.e., If [invalidate] has already been called,
+  /// subsequent calls to this method should have no effect.
   void invalidate() => _invalidateCallbackTracker.invalidate();
 
+  /// Add a callback to invoke when the [PagingSource] is first invalidated.
+  ///
+  /// Once invalidated, a [PagingSource] will not become valid again.
+  ///
+  /// A [PagingSource] will only invoke its callbacks once - the first time
+  /// [invalidate] is called, on that thread.
+  ///
+  /// If this [PagingSource] is already invalid, the provided
+  /// [onInvalidatedCallback] will be triggered immediately.
   void registerInvalidatedCallback(VoidCallback onInvalidatedCallback) {
     _invalidateCallbackTracker
         .registerInvalidatedCallback(onInvalidatedCallback);
   }
 
+  /// Remove a previously added invalidate callback.
   void unregisterInvalidatedCallback(VoidCallback onInvalidatedCallback) {
     _invalidateCallbackTracker
         .unregisterInvalidatedCallback(onInvalidatedCallback);

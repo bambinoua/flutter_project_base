@@ -1,17 +1,15 @@
-import 'package:flutter/foundation.dart';
-
 typedef CallbackInvoker<T> = void Function(T callback);
 typedef InvalidGetter = bool Function();
 
 /// https://android.googlesource.com/platform/frameworks/support/+/androidx-paging-release/paging/paging-common/src/main/kotlin/androidx/paging/InvalidateCallbackTracker.kt
-class InvalidateCallbackTracker<T extends VoidCallback> {
-  InvalidateCallbackTracker(this._callbackInvoker,
-      {InvalidGetter? invalidGetter})
-      : _invalidGetter = invalidGetter;
+class InvalidateCallbackTracker<T> {
+  InvalidateCallbackTracker(
+    this._callbackInvoker, {
+    InvalidGetter? invalidGetter,
+  }) : _invalidGetter = invalidGetter;
 
   final CallbackInvoker<T> _callbackInvoker;
   final InvalidGetter? _invalidGetter;
-
   final List<T> _callbacks = <T>[];
 
   bool get invalid => _invalid;
