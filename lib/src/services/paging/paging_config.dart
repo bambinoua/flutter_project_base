@@ -1,5 +1,5 @@
-import 'package:flutter_project_base/flutter_project_base.dart';
-import 'package:flutter_project_base/src/services/paging/load_result.dart';
+import '../../core/extensions.dart';
+import 'load_result.dart';
 
 /// An object used to configure loading behavior within a [Pager], as it loads
 /// content from a [PagingSource].

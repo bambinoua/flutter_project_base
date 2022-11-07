@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_project_base/flutter_project_base.dart';
 
+import '../../core/extensions.dart';
 import 'load_result.dart';
 import 'paging_config.dart';
 
