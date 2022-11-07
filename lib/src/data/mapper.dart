@@ -14,9 +14,11 @@ abstract class EntityMapper<T extends Entity, S extends DTO>
   /// Maps the `map` to [DTO].
   S toDTOFromMap(JsonMap map);
 
-  List<S> toListOfDTOs(List<T> entities) =>
+  /// Converts list of entities to list of DTOs.
+  List<S> toListOfDTOs(Iterable<T> entities) =>
       entities.map((e) => toDTO(e)).toList();
 
-  List<T> toListOfEntities(List<S> dtos) =>
+  /// Converts list of DTOs to list of entities.
+  List<T> toListOfEntities(Iterable<S> dtos) =>
       dtos.map((o) => toEntity(o)).toList();
 }
