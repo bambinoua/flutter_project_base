@@ -11,7 +11,6 @@ export 'src/core/domain_driven_design.dart';
 export 'src/core/errors.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/extensions.dart';
-export 'src/core/logger.dart';
 export 'src/core/math.dart';
 
 export 'src/data/contracts.dart';
@@ -28,6 +27,7 @@ export 'src/material/web/html_view_factory.dart' show DivHtmlElement;
 export 'src/services/internet_connectivity.dart';
 export 'src/services/guid_generator.dart';
 export 'src/services/http.dart';
+export 'src/services/logging.dart';
 export 'src/services/paging.dart';
 export 'src/services/storage/contracts.dart';
 export 'src/services/storage/providers.dart';

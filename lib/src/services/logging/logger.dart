@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 
 /// A Logger object is used to log messages for
 /// a specific system or application component.
-abstract class Logger extends Listenable {
-  Logger({this.name = '', this.level = LogLevel.all});
+abstract class BaseLogger extends Listenable {
+  BaseLogger({this.name = '', this.level = LogLevel.all});
 
   /// The name for this logger.
   final String name;
