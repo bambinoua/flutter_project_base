@@ -11,7 +11,7 @@ class PagingState<Key, Value> extends Equatable {
   const PagingState({
     this.anchorPosition,
     required this.config,
-    this.pages = const <LoadResultPage<Key, Value>>[],
+    this.pages = const <Page<Key, Value>>[],
     int leadingPlaceholderCount = 0,
   })  : assert(leadingPlaceholderCount >= 0),
         _leadingPlaceholderCount = leadingPlaceholderCount;
@@ -26,7 +26,7 @@ class PagingState<Key, Value> extends Equatable {
   final PagingConfig config;
 
   /// Loaded pages of data in the list.
-  final List<LoadResultPage<Key, Value>> pages;
+  final List<Page<Key, Value>> pages;
 
   /// Number of placeholders before the first loaded item if placeholders are
   /// enabled, otherwise 0.
@@ -59,7 +59,7 @@ class PagingState<Key, Value> extends Equatable {
 
   /// Coerces an index in the list, including placeholders, to closest loaded
   /// page in [pages].
-  LoadResultPage<Key, Value>? closestPageToPosition(int anchorPosition) {
+  Page<Key, Value>? closestPageToPosition(int anchorPosition) {
     if (pages.isEmpty) return null;
 
     return _anchorPositionToPagedIndices(anchorPosition, (pageIndex, index) {
