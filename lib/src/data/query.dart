@@ -2,17 +2,20 @@ import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-
-import '../core/contracts.dart';
-import '../core/extensions.dart';
+import 'package:flutter_project_base/flutter_project_base.dart';
 
 /// Data query order used in ORDER BY clause.
 @immutable
-class QueryOrder extends Equatable {
-  const QueryOrder(
+class QueryOrder extends Equatable implements Serializable {
+  const QueryOrder._(
     this.column, {
     this.direction = SortDirection.ascending,
-  });
+  }) : assert(column.length > 0);
+
+  const QueryOrder.asc(String column) : this._(column);
+
+  const QueryOrder.desc(String column)
+      : this._(column, direction: SortDirection.descending);
 
   /// The name of the data source column.
   final String column;
@@ -24,17 +27,34 @@ class QueryOrder extends Equatable {
   List<Object?> get props => [column, direction];
 
   @override
+  JsonMap toJson() {
+    return {
+      'column': column,
+      'direction': direction.index,
+    };
+  }
+
+  @override
   String toString() => 'QueryOrder {$column: ${direction.name}}';
 }
 
 /// Data query filter used in WHERE clause.
 @immutable
-class QueryFilter<T extends Object> extends Equatable {
-  const QueryFilter(
+class QueryFilter<T extends Object> extends Equatable implements Serializable {
+  const QueryFilter._(
     this.column,
     this.value, {
-    this.operation = ComparisonOperation.equal,
-  });
+    required this.operation,
+  }) : assert(column.length > 0);
+
+  const QueryFilter.equal(String column, T value)
+      : this._(column, value, operation: ComparisonOperation.equal);
+
+  const QueryFilter.greater(String column, T value)
+      : this._(column, value, operation: ComparisonOperation.greater);
+
+  const QueryFilter.less(String column, T value)
+      : this._(column, value, operation: ComparisonOperation.less);
 
   /// The name of the data source column.
   final String column;
@@ -49,21 +69,35 @@ class QueryFilter<T extends Object> extends Equatable {
   List<Object?> get props => [column, operation, value];
 
   @override
+  JsonMap toJson() {
+    return {
+      'column': column,
+      'value': value,
+      'operation': operation.index,
+    };
+  }
+
+  @override
   String toString() => 'QueryFilter {$column ${operation.name} $value}';
 }
 
 /// Provides base interface for data query filter.
 @immutable
-class DataQuery implements Cloneable<DataQuery> {
+class DataQuery extends ValueObject<DataQuery> {
   DataQuery({
     List<String>? columns,
     List<QueryFilter>? where,
     List<QueryOrder>? orderBy,
-  })  : _columns = Helper.safeList(columns),
+    this.offset = 0,
+    this.limit = -1,
+    this.distinct = false,
+  })  : assert(offset >= 0),
+        assert(limit.isNegative || limit >= 0),
+        _columns = Helper.safeList(columns),
         _where = Helper.safeList(where),
         _orderBy = Helper.safeList(orderBy);
 
-  DataQuery.single(int id) : this(where: [QueryFilter('id', id)]);
+  DataQuery.single(int id) : this(where: [QueryFilter.equal('id', id)]);
 
   /// Returns empty data query.
   static DataQuery get empty => DataQuery();
@@ -76,6 +110,17 @@ class DataQuery implements Cloneable<DataQuery> {
 
   /// List of ORDER BY columns.
   final List<QueryOrder> _orderBy;
+
+  /// The offset of the first row to return.
+  ///
+  /// The offset of the initial row is 0 (not 1).
+  final int offset;
+
+  /// Constrains the number of rows returned by the query.
+  final int limit;
+
+  /// Specifies removal of duplicate rows from the result set.
+  final bool distinct;
 
   /// Returns list of queired colums.
   List<String> get columns => UnmodifiableListView(_columns);
@@ -90,14 +135,48 @@ class DataQuery implements Cloneable<DataQuery> {
   void addCondition<T extends Object>(String column, T value,
       {ComparisonOperation operation = ComparisonOperation.equal}) {
     assert(column.isNotEmpty);
-    _where.add(QueryFilter<T>(column, value, operation: operation));
+    _where.add(QueryFilter<T>._(column, value, operation: operation));
   }
 
   /// Add sorting order with `key` and `value`.
   void addSorting(String column,
       {SortDirection direction = SortDirection.ascending}) {
     assert(column.isNotEmpty);
-    _orderBy.add(QueryOrder(column, direction: direction));
+    _orderBy.add(QueryOrder._(column, direction: direction));
+  }
+
+  @override
+  List<Object?> get props => [columns, where, orderBy, offset, limit, distinct];
+
+  @override
+  DataQuery copyWith({
+    List<String>? columns,
+    List<QueryFilter>? where,
+    List<QueryOrder>? orderBy,
+    int? offset,
+    int? limit,
+    bool? distinct,
+  }) {
+    return DataQuery(
+      columns: columns ?? _columns,
+      where: where ?? _where,
+      orderBy: orderBy ?? _orderBy,
+      offset: offset ?? this.offset,
+      limit: limit ?? this.limit,
+      distinct: distinct ?? this.distinct,
+    );
+  }
+
+  @override
+  JsonMap toJson() {
+    return {
+      'columns': _columns,
+      'where': _where,
+      'orderBy': _orderBy,
+      if (offset > 0) 'offset': offset,
+      if (limit > 0) 'limit': limit,
+      'distinct': distinct,
+    };
   }
 
   @override
@@ -115,19 +194,6 @@ class DataQuery implements Cloneable<DataQuery> {
       if (orderByClause.isNotEmpty) 'orderby: $orderByClause',
     ].join(',');
     return 'DataQuery {$properties}';
-  }
-
-  @override
-  DataQuery copyWith({
-    List<String>? columns,
-    List<QueryFilter>? where,
-    List<QueryOrder>? orderBy,
-  }) {
-    return DataQuery(
-      columns: columns ?? _columns,
-      where: where ?? _where,
-      orderBy: orderBy ?? _orderBy,
-    );
   }
 }
 

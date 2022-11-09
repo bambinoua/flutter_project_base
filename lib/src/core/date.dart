@@ -114,6 +114,15 @@ class Date extends DateTime {
         .map((index, name) => MapEntry(index + 1, name));
   }
 
+  /// Returns name of `month`.
+  ///
+  /// Month must be from 1 to 12.
+  static String getMonthName(int month, {bool shortNames = true}) {
+    assert(month >= DateTime.january && month <= DateTime.december);
+    final months = getMonths(shortNames: shortNames);
+    return months[month]!;
+  }
+
   /// Return the days of the week, starting with Sunday or short names for
   /// days of the week, starting with Sunday, e.g. 'Sun'.
   static Map<int, String> getDaysOfWeek(
@@ -129,6 +138,15 @@ class Date extends DateTime {
         ..sort((dow1, dow2) => dow1.key.compareTo(dow2.key)));
     }
     return daysOfWeek;
+  }
+
+  /// Returns the name of `dayOfWeek`.
+  ///
+  /// `dayOfWeek` must be from 1 to 7.
+  static String getDayOfWeekName(int dayOfWeek, {bool shortNames = true}) {
+    assert(dayOfWeek >= DateTime.monday && dayOfWeek <= DateTime.sunday);
+    final daysOfWeek = getDaysOfWeek(shortNames: shortNames);
+    return daysOfWeek[dayOfWeek]!;
   }
 
   /// Returns the last day of the specified `month`.
