@@ -11,8 +11,10 @@ class TextFieldHelper<T> implements Disposable {
   TextFieldHelper({
     FocusNode? focusNode,
     TextEditingController? controller,
-  })  : focusNode = focusNode ?? FocusNode(),
-        controller = controller ?? TextEditingController();
+    String? initialText,
+  })  : assert(controller == null || initialText == null),
+        focusNode = focusNode ?? FocusNode(),
+        controller = controller ?? TextEditingController(text: initialText);
 
   /// An object that can be used by a [TextField] widget to obtain the keyboard focus
   final FocusNode? focusNode;
