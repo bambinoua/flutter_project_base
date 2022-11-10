@@ -23,7 +23,10 @@ dependencies:
   js: ^0.6.4
   json_annotation: ^4.7.0
   logging: ^1.1.0
-  meta: ^1.7.0
+  meta: ^1.8.0
+  path_provider: ^2.0.11
+  provider: ^6.0.4
+  rxdart: ^0.27.5
   shared_preferences: ^2.0.15
   universal_html: ^2.0.8
   uuid: ^3.0.6

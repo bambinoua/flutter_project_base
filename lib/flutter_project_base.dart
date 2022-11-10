@@ -8,6 +8,10 @@ export 'package:freezed_annotation/freezed_annotation.dart';
 export 'package:json_annotation/json_annotation.dart';
 export 'package:google_fonts/google_fonts.dart';
 export 'package:logging/logging.dart';
+export 'package:meta/meta.dart';
+export 'package:path_provider/path_provider.dart';
+export 'package:provider/provider.dart';
+export 'package:rxdart/rxdart.dart';
 
 export 'src/core/authentication.dart';
 export 'src/core/basic_types.dart';
