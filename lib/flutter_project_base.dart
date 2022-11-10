@@ -4,6 +4,7 @@ export 'package:collection/collection.dart';
 export 'package:equatable/equatable.dart';
 export 'package:freezed_annotation/freezed_annotation.dart';
 export 'package:json_annotation/json_annotation.dart';
+export 'package:google_fonts/google_fonts.dart';
 export 'package:logging/logging.dart';
 
 export 'src/core/authentication.dart';
