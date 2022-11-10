@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_project_base/flutter_project_base.dart';
-import 'package:meta/meta.dart';
 
 enum HttpMethod { head, get, post, put, patch, delete }
 

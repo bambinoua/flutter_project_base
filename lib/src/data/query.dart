@@ -2,7 +2,11 @@ import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_project_base/flutter_project_base.dart';
+
+import '../core/basic_types.dart';
+import '../core/contracts.dart';
+import '../core/domain_driven_design.dart';
+import '../core/extensions.dart';
 
 /// Data query order used in ORDER BY clause.
 @immutable
