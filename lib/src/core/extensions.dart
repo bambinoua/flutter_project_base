@@ -14,7 +14,7 @@ extension Int on int {
   static const int min64bitValue =
       kIsWeb ? -9007199254740991 /* -(2^53 - 1) */ : 0x8000000000000000;
   static const int max64bitValue =
-      kIsWeb ? 9007199254740991 /* 2^53 – 1 */ : 0x7fffffffffffffff;
+      kIsWeb ? 9007199254740991 /* 2^53 – 1 */ : 0x8000000000000000;
 
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
