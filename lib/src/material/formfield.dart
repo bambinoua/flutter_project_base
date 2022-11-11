@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 
 import '../core/contracts.dart';
 
-/// A helper class which can be used for management of [FormField] widgets.
+/// A helper class which can be used for management of [TextField] widgets.
 ///
 /// Combines `focusNode` and text editing `controller` in single object.
-class FormFieldHelper<T> implements Disposable {
-  FormFieldHelper({
+class TextFieldHelper<T> implements Disposable {
+  TextFieldHelper({
     FocusNode? focusNode,
     TextEditingController? controller,
     String? initialText,
@@ -16,7 +16,8 @@ class FormFieldHelper<T> implements Disposable {
         focusNode = focusNode ?? FocusNode(),
         controller = controller ?? TextEditingController(text: initialText);
 
-  /// An object that can be used by a [TextField] widget to obtain the keyboard focus
+  /// An object that can be used by a [TextField] widget to obtain the
+  /// keyboard focus.
   final FocusNode? focusNode;
 
   /// A controller for an editable text field.
@@ -45,5 +46,37 @@ class FormFieldHelper<T> implements Disposable {
   void dispose() {
     focusNode!.dispose();
     controller!.dispose();
+  }
+}
+
+/// A helper class which can be used for management of widgets which requires
+/// a value like [Checkbox] or [DropdownButtonFormField].
+///
+/// Combines `focusNode` and editable `value` in single object.
+class SelectableFieldHelper implements Disposable {
+  SelectableFieldHelper({
+    FocusNode? focusNode,
+    this.value,
+  }) : focusNode = focusNode ?? FocusNode();
+
+  /// An object that can be used by a [Checkbox] widget to obtain the
+  /// keyboard focus
+  final FocusNode? focusNode;
+
+  /// A value of this checkbox.
+  bool? value;
+
+  /// Requests the primary focus for this node.
+  void setFocus() => focusNode!.requestFocus();
+
+  /// Clears parent [Checkbox] and requests the primary focus for it.
+  void reset() {
+    value = false;
+    setFocus();
+  }
+
+  @override
+  void dispose() {
+    focusNode!.dispose();
   }
 }
