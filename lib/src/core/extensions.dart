@@ -11,9 +11,10 @@ import 'date.dart';
 extension Int on int {
   static const int min32bitValue = 0x80000000;
   static const int max32bitValue = 0x7fffffff;
-  static const int min64bitValue = 0x7fffffffffffffff;
-  static const int max64bitValue = kIsWeb
-      ? 0x2000000000000000 /* 2^53-1 */ : 0x8000000000000000 /*2^63 - 1*/;
+  static const int min64bitValue =
+      kIsWeb ? -9007199254740991 /* -(2^53 - 1) */ : 0x8000000000000000;
+  static const int max64bitValue =
+      kIsWeb ? 9007199254740991 /* 2^53 – 1 */ : 0x7fffffffffffffff;
 
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
