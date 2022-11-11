@@ -1,7 +1,6 @@
-import 'package:flutter_project_base/src/core/basic_types.dart';
+import 'package:flutter_project_base/flutter_project_base.dart';
 
-import 'domain_driven_design.dart';
-import 'exceptions.dart';
+part 'authentication.freezed.dart';
 
 enum AuthenticationStatus {
   unauthenticated,
@@ -11,27 +10,21 @@ enum AuthenticationStatus {
 }
 
 /// All available authentication states.
-class AuthenticationState<T extends Object>
-    extends Either<T, ApplicationException> {
-  const AuthenticationState._(this.status,
-      {T? data, ApplicationException? error})
-      : super(data: data, error: error);
+@freezed
+class AuthenticationState<T> with _$AuthenticationState<T> {
+  const AuthenticationState._();
 
-  final AuthenticationStatus status;
+  const factory AuthenticationState.waiting() = AuthWaiting;
+  const factory AuthenticationState.unauthenticated() = AuthUnauthenticated;
+  const factory AuthenticationState.authenticated([T? data]) =
+      AuthAuthenticated;
+  const factory AuthenticationState.failure([ApplicationException? error]) =
+      AuthFailure;
 
-  static const waiting = AuthenticationState._(AuthenticationStatus.waiting);
-  static const unauthenticated =
-      AuthenticationState._(AuthenticationStatus.unauthenticated);
-
-  AuthenticationState.authenticated([T? data])
-      : this._(AuthenticationStatus.authenticated, data: data);
-  AuthenticationState.failure([ApplicationException? error])
-      : this._(AuthenticationStatus.failure, error: error);
-
-  bool get isAutenticated => status == AuthenticationStatus.authenticated;
-  bool get isUnautenticated => status == AuthenticationStatus.unauthenticated;
-  bool get isFailure => status == AuthenticationStatus.failure;
-  bool get isWaiting => status == AuthenticationStatus.waiting;
+  bool get isWaiting => this is AuthWaiting;
+  bool get isFailure => this is AuthFailure;
+  bool get isAutenticated => this is AuthAuthenticated;
+  bool get isUnautenticated => this is AuthUnauthenticated;
 }
 
 /// Provides interface for authentication process.
