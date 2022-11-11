@@ -11,7 +11,7 @@ class PagingState<Key, Value> extends Equatable {
   const PagingState({
     this.anchorPosition,
     required this.config,
-    this.pages = const <Page<Key, Value>>[],
+    required this.pages,
     int leadingPlaceholderCount = 0,
   })  : assert(leadingPlaceholderCount >= 0),
         _leadingPlaceholderCount = leadingPlaceholderCount;
