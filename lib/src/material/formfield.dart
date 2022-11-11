@@ -4,11 +4,11 @@ import 'package:flutter/widgets.dart';
 
 import '../core/contracts.dart';
 
-/// A helper class which can be used for management of [TextField] widgets.
+/// A helper class which can be used for management of [FormField] widgets.
 ///
 /// Combines `focusNode` and text editing `controller` in single object.
-class TextFieldHelper<T> implements Disposable {
-  TextFieldHelper({
+class FormFieldHelper<T> implements Disposable {
+  FormFieldHelper({
     FocusNode? focusNode,
     TextEditingController? controller,
     String? initialText,

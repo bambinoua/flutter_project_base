@@ -31,9 +31,9 @@ export 'src/data/query.dart';
 export 'src/data/mapper.dart';
 export 'src/data/paging.dart';
 
+export 'src/material/formfield.dart';
 export 'src/material/functions.dart';
 export 'src/material/scaffold_messenger.dart' show ScaffoldMessengerOfContext;
-export 'src/material/textfield.dart';
 export 'src/material/widgets/internet_connectivity_bar.dart';
 export 'src/material/widgets/widgets.dart';
 export 'src/material/web/html_view_factory.dart' show DivHtmlElement;
