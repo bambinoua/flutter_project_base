@@ -14,14 +14,26 @@ extension Int on int {
   static const int min64bitValue = -9223372036854775808;
   static const int max64bitValue =
       kIsWeb ? 9007199254740991 /* 2^53-1 */ : 9223372036854775807;
-}
 
-extension IntFormatters on int {
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
     assert(!pad.isNegative);
     return toString().padLeft(pad, '0');
   }
+}
+
+extension Nums on num {
+  /// Adds `value` to this number.
+  num plus(num value) => this + value;
+
+  /// Subtracts `value` from this number.
+  num minus(num value) => this - value;
+
+  /// Multily `value` by this number.
+  num multiplyBy(num value) => this * value;
+
+  /// Divides this number by `value`.
+  num divideBy(num value) => this * value;
 }
 
 extension Strings on String {
@@ -51,9 +63,24 @@ extension Strings on String {
   }
 }
 
-extension Lists on List<Object?> {
+extension Lists<T> on List<T> {
   /// Returns the last index of this [List].
   int get lastIndex => isEmpty ? -1 : length - 1;
+
+  /// Returns new array which is a copy of this list.
+  List<T> copyOf() => List<T>.from(this);
+
+  /// Returns a list containing only distinct elements from this list.
+  List<T> distinct() => toSet().toList();
+}
+
+extension NumLists on List<num> {
+  /// Returns an average value of elements in this list.
+  num get average {
+    final sum =
+        fold<num>(0, (previousValue, element) => previousValue + element);
+    return sum / length;
+  }
 }
 
 extension FileSizeExtension on FileSize {
@@ -64,7 +91,7 @@ extension FileSizeExtension on FileSize {
   }
 }
 
-extension SizeAspectRatio on Size {
+extension Sizes on Size {
   /// Returns the aspect ration of this [Size].
   double get aspectRatio => width / height;
 }
