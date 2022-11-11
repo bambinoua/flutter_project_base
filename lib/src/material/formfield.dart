@@ -56,7 +56,7 @@ class TextFieldHelper<T> implements Disposable {
 class SelectableFieldHelper implements Disposable {
   SelectableFieldHelper({
     FocusNode? focusNode,
-    this.value,
+    this.value = false,
   }) : focusNode = focusNode ?? FocusNode();
 
   /// An object that can be used by a [Checkbox] widget to obtain the
