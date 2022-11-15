@@ -58,19 +58,28 @@ enum AnsiColor {
 /// - [error] (optional) an error object associated with this log event
 /// - [stackTrace] (optional) a stack trace associated with this log event
 void log(
-  String message, {
+  Object message, {
   String name = '',
-  AnsiColor color = AnsiColor.foregroundBrightBlack,
+  AnsiColor? color,
   Level level = Level.ALL,
   int? sequenceNumber,
   Object? error,
   StackTrace? stackTrace,
-}) =>
-    developer.log(
-      message,
-      name: name,
-      level: level.value,
-      sequenceNumber: sequenceNumber,
-      error: error,
-      stackTrace: stackTrace,
-    );
+  bool withTimestamp = false,
+}) {
+  final sender = <String>[if (name.isNotEmpty) name];
+  if (withTimestamp) {
+    final now = DateTime.now();
+    final timestamp = now.subtract(Duration(microseconds: now.microsecond));
+    sender.insert(0, '$timestamp');
+  }
+  final colorHexCode = color?.code ?? '';
+  developer.log(
+    '$colorHexCode$message',
+    name: sender.join(', '),
+    level: level.value,
+    sequenceNumber: sequenceNumber,
+    error: error,
+    stackTrace: stackTrace,
+  );
+}
