@@ -4,26 +4,27 @@ import '../../core/basic_types.dart';
 import 'contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage implements Storage {
-  const SharedPreferencesStorage._();
+class SharedPreferencesStorage implements BaseStorage {
+  const SharedPreferencesStorage._(this._sharedPreferences);
 
-  static late SharedPreferences _sharedPreferences;
   static SharedPreferencesStorage? _instance;
 
   static SharedPreferencesStorage get instance {
-    assert(_instance != null,
-        'You forgot to call `SharedPreferencesStorage.init()` on app initialization');
+    assert(
+        _instance != null,
+        'You forgot to call `SharedPreferencesStorage.init()` '
+        'on app initialization');
     return _instance!;
   }
 
   /// Initializes the storage.
   static Future<SharedPreferencesStorage> init() async {
-    if (_instance == null) {
-      _sharedPreferences = await SharedPreferences.getInstance();
-      _instance = const SharedPreferencesStorage._();
-    }
+    _instance ??=
+        SharedPreferencesStorage._(await SharedPreferences.getInstance());
     return _instance!;
   }
+
+  final SharedPreferences _sharedPreferences;
 
   @override
   String? getItem(String key) {
@@ -98,7 +99,7 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
 }
 
 /// Provides implementation of in-memory storage.
-class MemoryStorage implements Storage {
+class MemoryStorage implements BaseStorage {
   factory MemoryStorage() => _instance;
 
   static final MemoryStorage _instance = MemoryStorage();

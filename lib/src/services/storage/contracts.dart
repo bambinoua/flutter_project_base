@@ -8,9 +8,7 @@ import '../../core/contracts.dart';
 /// The Storage interface provides access to a particular mobile, memory,
 /// domain's session or local storage. It allows, for example, the addition,
 /// modification, or deletion of stored data items.
-abstract class Storage {
-  Storage._();
-
+abstract class BaseStorage {
   /// When invoked, will empty all keys out of the storage.
   void clear();
 
@@ -43,7 +41,7 @@ abstract class StorageKey<T> extends ChangeNotifier
   final String name;
 
   /// Underlying storage interface.
-  final Storage storage;
+  final BaseStorage storage;
 
   /// Removes this key from storage.
   void remove();
@@ -54,7 +52,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   BaseStorageKey(
     String name,
     T initialValue,
-    Storage storage, {
+    BaseStorage storage, {
     ConvertibleBuilder<T, V>? builder,
   })  : assert(name.isNotEmpty),
         _initialValue = initialValue,
@@ -145,7 +143,8 @@ enum StorageItemPriority {
   persistent
 }
 
-/// A key that uses as parameter for [Storage].
+/// A key that uses as parameter for [BaseStorage].
+@immutable
 class StorageItem<T> implements Cloneable<StorageItem<T>> {
   /// Construct a [StorageItem] with optional persistence.
   const StorageItem(

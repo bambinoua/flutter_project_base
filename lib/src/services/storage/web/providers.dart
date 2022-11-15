@@ -19,7 +19,7 @@ enum WebStorageType {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-class WebStorage implements Storage {
+class WebStorage implements BaseStorage {
   const WebStorage._(this._type);
 
   static const WebStorage local = WebStorage._(WebStorageType.local);
