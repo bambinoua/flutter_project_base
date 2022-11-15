@@ -7,6 +7,7 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:freezed_annotation/freezed_annotation.dart';
 export 'package:json_annotation/json_annotation.dart';
 export 'package:google_fonts/google_fonts.dart';
+export 'package:hydrated_bloc/hydrated_bloc.dart';
 export 'package:logging/logging.dart';
 export 'package:meta/meta.dart';
 export 'package:path_provider/path_provider.dart';
