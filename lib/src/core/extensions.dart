@@ -16,6 +16,18 @@ extension Int on int {
   static const int max64bitValue =
       kIsWeb ? 9007199254740991 /* 2^53 – 1 */ : 0x8000000000000000;
 
+  /// Adds `value` to this number.
+  int plus(int value) => this + value;
+
+  /// Subtracts `value` from this number.
+  int minus(int value) => this - value;
+
+  /// Multily `value` by this number.
+  int multiplyBy(int value) => this * value;
+
+  /// Divides this number by `value`.
+  double divideBy(int value) => this / value;
+
   /// Format number as string with leading zeros.
   String withLeadingZeros([int pad = 0]) {
     assert(!pad.isNegative);
@@ -23,18 +35,18 @@ extension Int on int {
   }
 }
 
-extension Nums on num {
+extension Double on double {
   /// Adds `value` to this number.
-  num plus(num value) => this + value;
+  double plus(double value) => this + value;
 
   /// Subtracts `value` from this number.
-  num minus(num value) => this - value;
+  double minus(double value) => this - value;
 
   /// Multily `value` by this number.
-  num multiplyBy(num value) => this * value;
+  double multiplyBy(double value) => this * value;
 
   /// Divides this number by `value`.
-  num divideBy(num value) => this * value;
+  double divideBy(double value) => this * value;
 }
 
 extension Strings on String {
@@ -75,16 +87,16 @@ extension Lists<T> on List<T> {
   List<T> distinct() => toSet().toList();
 }
 
-extension NumLists on List<num> {
+extension NumIterable<T extends num> on Iterable<T> {
   /// Returns an average value of elements in this list.
-  num get average {
-    final sum =
-        fold<num>(0, (previousValue, element) => previousValue + element);
+  double get average {
+    final sum = fold<T>(
+        0 as T, (previousValue, element) => (previousValue + element) as T);
     return sum / length;
   }
 }
 
-extension FileSizeExtension on FileSize {
+extension FileSizeProps on FileSize {
   /// Represents a [FileSize] as `XX.XX Mb` [String]
   String formatSizeInBytesToScaledSize({int decimals = 0}) {
     assert(!decimals.isNegative);
@@ -92,10 +104,12 @@ extension FileSizeExtension on FileSize {
   }
 }
 
-extension Sizes on Size {
+extension SizeProps on Size {
   /// Returns the aspect ration of this [Size].
   double get aspectRatio => width / height;
 }
+
+extension DateTimeProps on DateTime {}
 
 /// Executes `body` in a loop for specified `times`.
 ///
