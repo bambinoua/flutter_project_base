@@ -39,8 +39,6 @@ abstract class InfrastructureService implements Disposable {}
 ///
 /// Primary key types can be `int` or `String` (GUID indeed),
 abstract class Identity<T> {
-  const Identity() : assert(T == int || T == String);
-
   /// Default name of identity property.
   static const String propertyName = 'id';
 
