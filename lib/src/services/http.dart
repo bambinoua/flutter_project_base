@@ -63,7 +63,9 @@ class DioHttpClient implements BaseHttpClient {
     required this.baseUrl,
     Map<String, dynamic>? headers,
     this.autoclose = true,
-    int? connectTimeout = 15000,
+    int? connectTimeout = 30000,
+    int? sendTimeout = 30000,
+    int? receiveTimeout = 30000,
     HttpBodyType bodyType = HttpBodyType.json,
   }) : _httpClient = Dio(BaseOptions(
           baseUrl: baseUrl,
@@ -71,6 +73,8 @@ class DioHttpClient implements BaseHttpClient {
           contentType: ContentType.json.value,
           responseType: bodyType.asResponseType(),
           connectTimeout: connectTimeout,
+          receiveTimeout: receiveTimeout,
+          sendTimeout: sendTimeout,
           listFormat: ListFormat.csv,
         ));
 
