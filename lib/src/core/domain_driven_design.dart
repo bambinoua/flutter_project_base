@@ -125,6 +125,20 @@ abstract class DTO implements Serializable {
   const DTO.fromJson(JsonMap map);
 }
 
+/// Data Transfer Object with identity.
+abstract class IdentDTO extends DTO with Identity<int> {
+  /// Cretes an instance of entity object from `map`.
+  IdentDTO.fromJson(JsonMap map)
+      : _id = map[Identity.propertyName],
+        super.fromJson(map);
+
+  /// Keeps the unique id of this instance.
+  final int? _id;
+
+  @override
+  int get id => _id ?? 0;
+}
+
 /// An prototype of callback for specification predicate.
 typedef SpecificationPredicate<T> = bool Function(T value);
 

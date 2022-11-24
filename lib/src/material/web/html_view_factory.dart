@@ -2,9 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart';
 
 import '../../core/contracts.dart';
-import ''
-    if (dart.library.html) 'shims/ui_real.dart'
-    if (dart.library.io) 'shims/ui_fake.dart' as ui;
+import 'shims/ui_fake.dart' if (dart.library.html) 'shims/ui_real.dart' as ui;
 
 abstract class HtmlElementViewFactory<T extends Element> implements Disposable {
   HtmlElementViewFactory(this._viewType) : assert(kIsWeb) {
@@ -19,7 +17,7 @@ abstract class HtmlElementViewFactory<T extends Element> implements Disposable {
   final String _viewType;
 
   /// Underlying HTML element.
-  T? _element;
+  late final T _element;
 
   /// Describes the part of the user interface represented by this view.
   @protected
@@ -55,22 +53,19 @@ class DivHtmlElement extends HtmlElementViewFactory<DivElement> {
   final String? className;
 
   /// Returns value of element's `id` attribute.
-  String get id => _element!.id;
+  String get id => _element.id;
 
   @override
   DivElement build(int viewId) {
-    if (_element == null) {
-      _element = DivElement()
-        ..id = _unifyIdAttribute ? '$_viewType-$viewId' : _viewType
-        ..style.width = '100%'
-        ..style.height = '100%'
-        ..style.position = 'relative'
-        ..style.overflow = 'hidden';
-
-      if (className != null) {
-        _element!.className = className!;
-      }
+    _element = DivElement()
+      ..id = _unifyIdAttribute ? '$_viewType-$viewId' : _viewType
+      ..style.width = '100%'
+      ..style.height = '100%'
+      ..style.position = 'relative'
+      ..style.overflow = 'hidden';
+    if (className != null) {
+      _element.className = className!;
     }
-    return _element!;
+    return _element;
   }
 }
