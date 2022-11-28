@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Shows a modal material design bottom sheet with rounded corners.
@@ -32,4 +34,34 @@ Future<T?> showModalRoundedBottomSheet<T>({
     },
     isScrollControlled: isScrollControlled,
   );
+}
+
+extension RenderBoxExtension on BuildContext {
+  /// Finds a widget identified by `key`.
+  Future<Rect> findWidgetRect<T extends Widget>(LocalKey key) async {
+    assert(T != Widget);
+    final completer = Completer<RenderBox>();
+    visitAncestorElements((element) {
+      if (element.widget is T && element.widget.key == key) {
+        completer.complete(element.renderObject as RenderBox);
+        return false;
+      }
+      return true;
+    });
+    final renderBox = await completer.future;
+    final topLeft =
+        renderBox.localToGlobal(renderBox.size.topLeft(Offset.zero));
+    return topLeft & renderBox.size;
+  }
+
+  /// Returns [Rect] of this context.
+  Rect getRect() {
+    final renderBox = findRenderObject() as RenderBox?;
+    assert(renderBox != null);
+    final topLeft =
+        renderBox!.localToGlobal(renderBox.size.topLeft(Offset.zero));
+    final bottomRight =
+        renderBox.localToGlobal(renderBox.size.bottomRight(Offset.zero));
+    return Rect.fromPoints(topLeft, bottomRight);
+  }
 }
