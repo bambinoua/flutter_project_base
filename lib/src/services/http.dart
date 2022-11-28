@@ -62,7 +62,7 @@ class DioHttpClient implements BaseHttpClient {
   DioHttpClient({
     required this.baseUrl,
     Map<String, dynamic>? headers,
-    this.autoclose = true,
+    this.autoclose = false,
     int? connectTimeout = 30000,
     int? sendTimeout = 30000,
     int? receiveTimeout = 30000,
@@ -185,39 +185,52 @@ class DioHttpClient implements BaseHttpClient {
           break;
         case DioErrorType.receiveTimeout:
           break;
-        case DioErrorType.response:
-          throw ApplicationException(
-            message: '${e.message}. ${e.response!.statusMessage}',
-            code: '${e.response!.statusCode}',
-          );
         case DioErrorType.cancel:
           break;
+        case DioErrorType.response:
+          final contentTypeHeader =
+              e.response!.headers.value(HttpHeaders.contentTypeHeader);
+          assert(contentTypeHeader != null, 'Content-type header is missing');
+          final contentType = ContentType.parse(contentTypeHeader!);
+          if (contentType.value == ContentType.html.value) {
+            // Usually states are 404, 503...
+          } else if (contentType.value == ContentType.json.value) {
+            //
+          }
+          throw HttpClientException(
+            message: e.message,
+            code: e.response!.statusCode.toString(),
+          );
         case DioErrorType.other:
           final innerError = e.error;
           if (innerError is SocketException) {
-            throw ApplicationException(
-              message: innerError.message,
-              code: 'SocketException',
+            throw HttpClientException(
+              message: e.message,
+              code: HttpStatus.networkConnectTimeoutError.toString(),
+              path: e.requestOptions.uri,
             );
           }
-          if (innerError is HandshakeException) {
-            throw ApplicationException(
-              message: innerError.message,
-              code: 'HandshakeException',
+          if (innerError is TlsException) {
+            throw HttpClientException(
+              message: e.message,
+              code: HttpStatus.connectionClosedWithoutResponse.toString(),
+              path: e.requestOptions.uri,
             );
           }
           if (innerError is String) {
             if (innerError.contains(
                 'Dio can\'t establish new connection after closed.')) {
-              throw ApplicationException(
+              throw HttpClientException(
                 message: e.message,
-                code: 'ClosedConnectionException',
+                code: HttpStatus.clientClosedRequest.toString(),
+                path: e.requestOptions.uri,
               );
             }
           }
           break;
+        default:
       }
-      throw ApplicationException(message: e.message, code: e.type.name);
+      throw HttpClientException(message: e.message, code: e.type.name);
     } finally {
       if (autoclose) {
         close();
@@ -267,4 +280,10 @@ class HttpClientResponse<T> {
 
   /// Response is a [String].
   bool get isString => !(isMap || isList);
+}
+
+class HttpClientException extends ApplicationException {
+  const HttpClientException({super.message, super.code, this.path});
+
+  final Uri? path;
 }

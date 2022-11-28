@@ -10,7 +10,7 @@ class ApplicationException implements Exception {
   const ApplicationException({
     this.message = '',
     this.code = '',
-  }) : assert(message.length > 0);
+  });
 
   /// The long form message of the exception.
   final String message;
