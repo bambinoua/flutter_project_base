@@ -1,3 +1,5 @@
+// ignore_for_file: strict_raw_type
+
 import '../core/basic_types.dart';
 import '../core/domain_driven_design.dart';
 
