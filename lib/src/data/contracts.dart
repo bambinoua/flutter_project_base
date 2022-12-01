@@ -8,24 +8,24 @@ import 'query.dart';
 /// The [DataService] interface defines the contract by which app retrieve data.
 ///  * TCollection is a type of returned collection of entities.
 ///  * TSingle is a type of single entity in collection.
-///  * TSchema is a type of table schema or name to be handled.
+///  * TSource is a type of table schema or name to be handled.
 ///  * TValue is a type of value to be inserted or updated.
 @injectable
-abstract class DataService<TCollection, TSingle, TSchema, TValue>
+abstract class DataService<TCollection, TItem, TSource, TValue>
     implements InfrastructureService, Disposable {
-  /// Fetches the snapthot (usually list of rows) from underlaying `collection`.
+  /// Fetches the snapthot (usually list of rows) from underlaying `source`.
   /// ```
-  /// int count = await db.fetch('collection',
+  /// int count = await db.fetch('source',
   ///    where: [QueryFilter('search', 'needle']);
   ///   orderBy: [QueryOrder('id']);
   /// ```
   Future<TCollection> fetch(
-    TSchema schema, {
+    TSource source, {
     required DataQuery query,
   });
 
   /// This method helps insert a map of `values`
-  /// into the specified `collection` and returns the
+  /// into the specified `source` and returns the
   /// `id` of the last inserted row.
   ///
   /// ```
@@ -33,49 +33,49 @@ abstract class DataService<TCollection, TSingle, TSchema, TValue>
   ///   'age': 18,
   ///   'name': 'value'
   /// };
-  /// int id = await db.insert('collection', value);
+  /// int id = await db.insert('source', value);
   /// ```
-  Future<TSingle> insert(
-    TSchema schema, {
+  Future<TItem> insert(
+    TSource source, {
     required TValue value,
   });
 
-  /// Updates `collection` with `values`, a map from column names to new column
+  /// Updates `source` with `values`, a map from column names to new column
   /// values. null is a valid value that will be translated to NULL.
   ///
   /// `where` is the optional WHERE clause to apply when updating.
   /// Passing null will update all rows.
   ///
   /// ```
-  /// int count = await db.update('collection', item.toMap(),
+  /// int count = await db.update('source', item.toMap(),
   ///    where: [QueryFilter('id', 1]);
   /// ```
-  Future<TSingle> update(
-    TSchema schema, {
+  Future<TItem> update(
+    TSource source, {
     required TValue value,
     required List<QueryFilter>? where,
   });
 
-  /// Deletes rows from `collection`.
+  /// Deletes rows from `source`.
   ///
   /// `where` is the optional WHERE clause to apply when updating. Passing null
   /// or empty value will delete all rows.
   ///
   /// Returns the number of rows affected.
   /// ```
-  /// int count = await db.delete('collection', where: [QueryFilter('id', 1)]);
+  /// int count = await db.delete('source', where: [QueryFilter('id', 1)]);
   /// ```
   Future<int> delete(
-    TSchema schema, {
+    TSource source, {
     required List<QueryFilter> where,
   });
 }
 
 /// Represents an SQL database service.
-abstract class SqlDataService<TConnection, TCollection, TSingle, TSchema,
-        TValue> extends DataService<TCollection, TSingle, TSchema, TValue>
+abstract class SqlDataService<TConnection, TCollection, TItem, TSource, TValue>
+    extends DataService<TCollection, TItem, TSource, TValue>
     with
-        DataServiceConnection<TConnection, TCollection, TSingle, TSchema,
+        DataServiceConnection<TConnection, TCollection, TItem, TSource,
             TValue> {
   /// Executes a raw SQL SELECT query and returns a list
   /// of the rows that were found.
@@ -88,15 +88,15 @@ abstract class SqlDataService<TConnection, TCollection, TSingle, TSchema,
 }
 
 /// Represents a remote database service.
-abstract class RemoteDataService<TConnection, TCollection, TSingle, TSchema,
-        TValue> extends DataService<TCollection, TSingle, TSchema, TValue>
+abstract class RemoteDataService<TConnection, TCollection, TItem, TSource,
+        TValue> extends DataService<TCollection, TItem, TSource, TValue>
     with
-        DataServiceConnection<TConnection, TCollection, TSingle, TSchema,
+        DataServiceConnection<TConnection, TCollection, TItem, TSource,
             TValue> {}
 
 /// Provides a connection for [DataService]s which require it.
-mixin DataServiceConnection<TConnection, TCollection, TSingle, TSchema, TValue>
-    on DataService<TCollection, TSingle, TSchema, TValue> {
+mixin DataServiceConnection<TConnection, TCollection, TItem, TSource, TValue>
+    on DataService<TCollection, TItem, TSource, TValue> {
   /// Declares a connection if [DataService] requires it.
   @protected
   TConnection get connection;
