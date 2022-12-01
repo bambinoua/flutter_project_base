@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 
 import '../core/basic_types.dart';
 import '../core/contracts.dart';
@@ -6,6 +7,7 @@ import '../core/domain_driven_design.dart';
 import 'query.dart';
 
 /// The [DataService] interface defines the contract by which app retrieve data.
+@injectable
 abstract class DataService<TSnapshot, TSingle>
     implements InfrastructureService, Disposable {
   /// Fetches the snapthot (usually list of rows) from underlaying `collection`.
