@@ -44,8 +44,8 @@ abstract class Identity<T> {
 
   /// Unique domain entity identifier.
   ///
-  /// Cannot be negative.
-  T get id;
+  /// Can be null but cannot be negative.
+  T? get id;
 }
 
 /// Interface for generate identity.
@@ -59,26 +59,22 @@ abstract class IdentityGenerator<T> implements DomainService {
 /// rather by a thread of continuity and identity. Essentially, entities
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
-abstract class Entity with EquatableMixin implements Identity<int> {
+abstract class Entity<T> with EquatableMixin implements Identity<T> {
   /// Cretes an instance of reference entity.
-  const Entity({int? id})
-      : assert(id == null || id > 0),
-        _id = id;
+  const Entity({this.id}) : assert(id == null);
 
   /// Entity unique identifier.
-  final int? _id;
-
   @override
-  int get id => _id ?? 0;
+  final T? id;
 
   /// Optional entity name.
   String get name => '';
 
   /// Returns `true` if entity is transient, i.e. new.
-  bool get isTransient => _id == 0;
+  bool get isTransient => id == null;
 
   @override
-  List<Object?> get props => [_id];
+  List<Object?> get props => [id];
 }
 
 /// Defines an aggregate root with a single primary key with `id` property.
@@ -88,7 +84,7 @@ abstract class Entity with EquatableMixin implements Identity<int> {
 /// example may be an order and its line-items, these will be separate
 /// objects, but it's useful to treat the order (together with its line
 /// items) as a single aggregate
-abstract class AggregateRoot extends Entity {}
+abstract class AggregateRoot<T> extends Entity<T> {}
 
 /// An object that represents a descriptive aspect of the domain with no
 /// conceptual identity is called a VALUE OBJECT
@@ -126,17 +122,15 @@ abstract class DTO implements Serializable {
 }
 
 /// Data Transfer Object with identity.
-abstract class IdentDTO extends DTO with Identity<int> {
+abstract class DTOWithIdentity<T> extends DTO with Identity<T> {
   /// Cretes an instance of entity object from `map`.
-  IdentDTO.fromJson(JsonMap map)
-      : _id = map[Identity.propertyName],
+  DTOWithIdentity.fromJson(JsonMap map)
+      : id = map[Identity.propertyName] as T,
         super.fromJson(map);
 
   /// Keeps the unique id of this instance.
-  final int? _id;
-
   @override
-  int get id => _id ?? 0;
+  final T? id;
 }
 
 /// An prototype of callback for specification predicate.
