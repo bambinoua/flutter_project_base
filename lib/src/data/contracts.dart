@@ -87,8 +87,8 @@ abstract class SqlDataService<TConnection, TCollection, TSingle, TSchema,
   Future<List<TValue>> query(String sql, {List<Object?>? parameters});
 }
 
-/// Represents a NOSQL database service.
-abstract class NoSqlDataService<TConnection, TCollection, TSingle, TSchema,
+/// Represents a remote database service.
+abstract class RemoteDataService<TConnection, TCollection, TSingle, TSchema,
         TValue> extends DataService<TCollection, TSingle, TSchema, TValue>
     with
         DataServiceConnection<TConnection, TCollection, TSingle, TSchema,
