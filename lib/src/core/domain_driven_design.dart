@@ -59,7 +59,7 @@ abstract class IdentityGenerator<T> implements DomainService {
 /// rather by a thread of continuity and identity. Essentially, entities
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
-abstract class Entity<T> with EquatableMixin implements Identity<T> {
+abstract class Entity<T> extends Equatable with Identity<T> {
   /// Cretes an instance of reference entity.
   const Entity({this.id}) : assert(id == null);
 
