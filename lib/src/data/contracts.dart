@@ -35,7 +35,7 @@ abstract class DataService<TQueryable, TEntity, TValue>
   /// };
   /// int id = await db.insert('source', value);
   /// ```
-  Future<TEntity> insert<TSource, TResult>(
+  Future<TEntity> insert<TSource>(
     TSource source, {
     required TValue value,
   });
@@ -50,7 +50,7 @@ abstract class DataService<TQueryable, TEntity, TValue>
   /// int count = await db.update('source', item.toMap(),
   ///    where: [QueryFilter('id', 1]);
   /// ```
-  Future<TEntity> update<TSource, TResult>(
+  Future<TEntity> update<TSource>(
     TSource source, {
     required TValue value,
     required List<QueryFilter>? where,
