@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 
 import '../core/contracts.dart';
@@ -6,12 +5,12 @@ import '../core/domain_driven_design.dart';
 import 'query.dart';
 
 /// The [DataService] interface defines the contract by which app retrieve data.
-///  * TCollection is a type of returned collection of entities.
-///  * TSingle is a type of single entity in collection.
 ///  * TSource is a type of table schema or name to be handled.
+///  * TQueryable is a type of returned collection of entities.
+///  * TEntity is a type of single entity in collection.
 ///  * TValue is a type of value to be inserted or updated.
 @injectable
-abstract class DataService<TQueryable, TEntity, TValue>
+abstract class DataService<TSource, TQueryable, TEntity, TValue>
     implements InfrastructureService, Disposable {
   /// Fetches the snapthot (usually list of rows) from underlaying `source`.
   /// ```
@@ -19,7 +18,7 @@ abstract class DataService<TQueryable, TEntity, TValue>
   ///    where: [QueryFilter('search', 'needle']);
   ///   orderBy: [QueryOrder('id']);
   /// ```
-  Future<TQueryable> fetch<TSource>(
+  Future<TQueryable> fetch(
     TSource source, {
     required DataQuery query,
   });
@@ -35,7 +34,7 @@ abstract class DataService<TQueryable, TEntity, TValue>
   /// };
   /// int id = await db.insert('source', value);
   /// ```
-  Future<TEntity> insert<TSource>(
+  Future<TEntity> insert(
     TSource source, {
     required TValue value,
   });
@@ -50,7 +49,7 @@ abstract class DataService<TQueryable, TEntity, TValue>
   /// int count = await db.update('source', item.toMap(),
   ///    where: [QueryFilter('id', 1]);
   /// ```
-  Future<TEntity> update<TSource>(
+  Future<TEntity> update(
     TSource source, {
     required TValue value,
     required List<QueryFilter>? where,
@@ -65,16 +64,16 @@ abstract class DataService<TQueryable, TEntity, TValue>
   /// ```
   /// int count = await db.delete('source', where: [QueryFilter('id', 1)]);
   /// ```
-  Future<TResult> delete<TSource, TResult>(
+  Future<TResult> delete<TResult>(
     TSource source, {
     required List<QueryFilter> where,
   });
 }
 
 /// Represents an SQL database service.
-abstract class SqlDataService<TConnection, TQueryable, TEntity, TValue>
-    extends DataService<TQueryable, TEntity, TValue>
-    with DataServiceConnection<TConnection, TQueryable, TEntity, TValue> {
+abstract class SqlDataService<TConnection, TSource, TQueryable, TEntity, TValue>
+    extends DataService<TSource, TQueryable, TEntity, TValue>
+    with DataConnection<TConnection, TSource, TQueryable, TEntity, TValue> {
   /// Executes a raw SQL SELECT query and returns a list
   /// of the rows that were found.
   ///
@@ -86,15 +85,14 @@ abstract class SqlDataService<TConnection, TQueryable, TEntity, TValue>
 }
 
 /// Represents a remote database service.
-abstract class RemoteDataService<TConnection, TQueryable, TEntity, TValue>
-    extends DataService<TQueryable, TEntity, TValue>
-    with DataServiceConnection<TConnection, TQueryable, TEntity, TValue> {}
+abstract class RemoteDataService<TConnection, TSource, TQueryable, TEntity,
+        TValue> extends DataService<TSource, TQueryable, TEntity, TValue>
+    with DataConnection<TConnection, TSource, TQueryable, TEntity, TValue> {}
 
 /// Provides a connection for [DataService]s which require it.
-mixin DataServiceConnection<TConnection, TQueryable, TEntity, TValue>
-    on DataService<TQueryable, TEntity, TValue> {
+mixin DataConnection<TConnection, TSource, TQueryable, TEntity, TValue>
+    on DataService<TSource, TQueryable, TEntity, TValue> {
   /// Declares a connection if [DataService] requires it.
-  @protected
   TConnection get connection;
 }
 
