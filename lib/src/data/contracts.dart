@@ -64,7 +64,7 @@ abstract class DataService<TSource, TQueryable, TEntity, TValue>
   /// ```
   /// int count = await db.delete('source', where: [QueryFilter('id', 1)]);
   /// ```
-  Future<TResult> delete<TResult>(
+  Future<TResult> delete<TResult extends Object?>(
     TSource source, {
     required List<QueryFilter> where,
   });
