@@ -95,5 +95,3 @@ mixin DataConnection<TConnection, TSource, TQueryable, TEntity, TValue>
   /// Declares a connection if [DataService] requires it.
   TConnection get connection;
 }
-
-abstract class Queryable<E> extends Iterable<E> {}
