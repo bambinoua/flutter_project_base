@@ -60,8 +60,8 @@ abstract class IdentityGenerator<T> implements DomainService {
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
 ///
-/// ! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
-/// ! inheritated objects as @immutable
+//! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
+//! inheritated objects as @immutable
 abstract class Entity<T> with EquatableMixin, Identity<T> {
   /// Cretes an instance of reference entity.
   const Entity({this.id}) : assert(id == null);
