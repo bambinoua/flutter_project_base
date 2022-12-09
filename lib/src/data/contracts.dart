@@ -20,7 +20,7 @@ abstract class DataService<TSource, TQueryable, TEntity, TValue>
   /// ```
   Future<TQueryable> fetch(
     TSource source, {
-    required DataQuery query,
+    DataQuery? query,
   });
 
   /// This method helps insert a map of `values`
