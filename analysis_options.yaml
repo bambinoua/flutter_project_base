@@ -17,7 +17,15 @@ analyzer:
   language:
     strict-casts: false
     strict-raw-types: true
+    strict-inference: false
+  strong-mode:
+    implicit-casts: true
   errors:
+    dead_code: error
+    unused_element: error
+    unused_import: error
+    unused_local_variable: error
+    unsafe_html: ignore    
     invalid_annotation_target: ignore
 
 linter:

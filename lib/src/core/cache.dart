@@ -132,7 +132,7 @@ abstract class Cache {
   /// Returns `true` if item exists in the cache, `false` otherwise.
   ///
   /// Throws [ArgumentError] if the `key` string is not a legal value.
-  bool hasItem($key);
+  bool hasItem(String key);
 
   /// Invalidate the cache pool through removing all cache items, expecting
   /// all entries to be immediately invisible for subsequent lookups.
