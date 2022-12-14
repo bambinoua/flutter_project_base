@@ -26,7 +26,8 @@ abstract class EntityMapper<T extends Identity, S extends DTO>
 }
 
 extension IdentityMapper<T> on Identity<T> {
-  TTarget map<TTarget>(ConvertibleBuilder<TTarget, Identity<T>> mapper) =>
+  TTarget map<TTarget extends Identity<T>>(
+          ConvertibleBuilder<TTarget, Identity<T>> mapper) =>
       mapper(this);
 }
 
@@ -40,19 +41,17 @@ extension JsonMapper on JsonMap {
 }
 
 extension IdentityIterableMapper<T> on Iterable<Identity<T>> {
-  List<TTarget> map<TTarget>(Iterable<Identity<T>> source,
+  List<TTarget> map<TTarget extends Identity<T>>(
           ConvertibleBuilder<TTarget, Identity<T>> mapper) =>
-      source.map((item) => item.map(mapper)).toList();
+      this.map((item) => item.map(mapper)).toList();
 }
 
 extension DTOIterableMapper<T> on Iterable<DTO> {
-  List<TTarget> map<TTarget>(
-          Iterable<DTO> source, ConvertibleBuilder<TTarget, DTO> mapper) =>
-      source.map((item) => item.map(mapper)).toList();
+  List<TTarget> map<TTarget>(ConvertibleBuilder<TTarget, DTO> mapper) =>
+      this.map((item) => item.map(mapper)).toList();
 }
 
 extension JsonMapIterableMapper<T> on Iterable<JsonMap> {
-  List<TTarget> map<TTarget>(Iterable<JsonMap> source,
-          ConvertibleBuilder<TTarget, JsonMap> mapper) =>
-      source.map((item) => mapper(item)).toList();
+  List<TTarget> map<TTarget>(ConvertibleBuilder<TTarget, JsonMap> mapper) =>
+      this.map((item) => mapper(item)).toList();
 }
