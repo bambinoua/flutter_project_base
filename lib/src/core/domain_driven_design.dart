@@ -63,12 +63,14 @@ abstract class IdentityGenerator<T> implements DomainService {
 //! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
 //! inheritated objects as @immutable
 abstract class Entity<T> with EquatableMixin, Identity<T> {
-  /// Cretes an instance of reference entity.
-  const Entity({this.id}) : assert(id == null);
+  /// Creates an instance of reference entity.
+  Entity({this.id})
+      : assert(T == int),
+        assert(id == null);
 
   /// Entity unique identifier.
   @override
-  final T? id;
+  T? id;
 
   /// Optional entity name.
   String get name => '';
@@ -120,7 +122,7 @@ abstract class ValueObject<T> extends Equatable
 /// works with domain objects, (Repositories, or Entities...).
 @immutable
 abstract class DTO implements Serializable {
-  /// Cretes an instance of entity object from `map`.
+  /// Creates an instance of entity object from `map`.
   const DTO.fromJson(JsonMap map);
 }
 
@@ -128,10 +130,11 @@ abstract class DTO implements Serializable {
 abstract class DTOWithIdentity<T> extends DTO with Identity<T> {
   /// Cretes an instance of entity object from `map`.
   DTOWithIdentity.fromJson(JsonMap map)
-      : id = map[Identity.propertyName] as T,
+      : assert(T == int),
+        id = map[Identity.propertyName] as T,
         super.fromJson(map);
 
-  /// Keeps the unique id of this instance.
+  /// Keeps the unique id of this [DTO].
   @override
   final T? id;
 }
