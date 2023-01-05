@@ -5,53 +5,46 @@ import '../core/domain_driven_design.dart';
 
 /// Declares an interface for bidirectional mapping of [Entity] to [DTO]
 /// and vise versa.
-abstract class EntityMapper<T extends Identity, S extends DTO>
+abstract class BaseMapper<T extends Entity, S extends DTO>
     implements DomainService {
   /// Maps the `entity` to [DTO].
-  S toDTO(T entity);
+  S mapEntityToDTO(T entity);
 
   /// Maps the `dto` to [Entity].
-  T toEntity(S dto);
+  T mapDtoToEntity(S dto);
 
   /// Maps the `map` to [DTO].
-  S toDTOFromMap(JsonMap map);
+  S mapJsonToDTO(JsonMap map);
 
   /// Converts list of entities to list of DTOs.
-  List<S> toListOfDTOs(Iterable<T> entities) =>
-      entities.map((e) => toDTO(e)).toList();
+  List<S> mapEntitiesToDTOs(Iterable<T> entities) =>
+      entities.map((e) => mapEntityToDTO(e)).toList();
 
   /// Converts list of DTOs to list of entities.
-  List<T> toListOfEntities(Iterable<S> dtos) =>
-      dtos.map((o) => toEntity(o)).toList();
+  List<T> mapDTOsToEntities(Iterable<S> dtos) =>
+      dtos.map((o) => mapDtoToEntity(o)).toList();
 }
 
-extension IdentityMapper<T> on Identity<T> {
-  TTarget map<TTarget extends Identity<T>>(
-          ConvertibleBuilder<TTarget, Identity<T>> mapper) =>
+extension EntityToEntityMapper<TGuid> on Entity<TGuid> {
+  TTarget map<TTarget extends Entity<TGuid>>(
+          ConvertibleBuilder<TTarget, Entity<TGuid>> mapper) =>
       mapper(this);
 }
 
-extension DTOMapper on DTO {
-  TTarget map<TTarget>(ConvertibleBuilder<TTarget, DTO> mapper) => mapper(this);
-}
-
-extension JsonMapper on JsonMap {
-  TTarget map<TTarget>(ConvertibleBuilder<TTarget, JsonMap> mapper) =>
+extension EntityToDtoMapper<TGuid> on Entity<TGuid> {
+  TTarget map<TTarget extends DTO>(
+          ConvertibleBuilder<TTarget, Entity<TGuid>> mapper) =>
       mapper(this);
 }
 
-extension IdentityIterableMapper<T> on Iterable<Identity<T>> {
-  List<TTarget> map<TTarget extends Identity<T>>(
-          ConvertibleBuilder<TTarget, Identity<T>> mapper) =>
-      this.map((item) => item.map(mapper)).toList();
+extension DtoToEntityMapper<TGuid> on DTO {
+  TTarget map<TTarget extends Entity<TGuid>>(
+          ConvertibleBuilder<TTarget, DTO> mapper) =>
+      mapper(this);
 }
 
-extension DTOIterableMapper<T> on Iterable<DTO> {
-  List<TTarget> map<TTarget>(ConvertibleBuilder<TTarget, DTO> mapper) =>
-      this.map((item) => item.map(mapper)).toList();
-}
-
-extension JsonMapIterableMapper<T> on Iterable<JsonMap> {
-  List<TTarget> map<TTarget>(ConvertibleBuilder<TTarget, JsonMap> mapper) =>
-      this.map((item) => mapper(item)).toList();
+extension JsonToDtoMapper on JsonMap {
+  TTarget map<TTarget extends DTO>(
+          ConvertibleBuilder<TTarget, JsonMap> mapper) =>
+      mapper(this);
 }
