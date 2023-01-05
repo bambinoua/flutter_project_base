@@ -4,6 +4,9 @@ typedef JsonMap = Map<String, dynamic>;
 /// An alias for file `int` size (in bytes).
 typedef FileSize = int;
 
+/// An alias for file `GUID`.
+typedef GuidString = String;
+
 /// Signature for a function which providdes a value of type T.
 typedef ValueBuilder<T> = T Function();
 

@@ -44,7 +44,8 @@ abstract class Identity<T> {
 
   /// Unique domain entity identifier.
   ///
-  /// Can be null but cannot be negative.
+  /// T is usually `int` or `GuidString`. Can be null. If T is `int` then it
+  /// cannot be negative.
   T? get id;
 }
 
@@ -121,22 +122,18 @@ abstract class ValueObject<T> extends Equatable
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
 @immutable
-abstract class DTO implements Serializable {
-  /// Creates an instance of entity object from `map`.
-  const DTO.fromJson(JsonMap map);
+abstract class DTO {}
+
+/// Instance of [DTO] which is used for input.
+abstract class InputDTO implements DTO {
+  /// Creates an instance of input [DTO] from the `map`.
+  InputDTO.fromJson(JsonMap map);
 }
 
-/// Data Transfer Object with identity.
-abstract class DTOWithIdentity<T> extends DTO with Identity<T> {
-  /// Cretes an instance of entity object from `map`.
-  DTOWithIdentity.fromJson(JsonMap map)
-      : assert(T == int),
-        id = map[Identity.propertyName] as T,
-        super.fromJson(map);
-
-  /// Keeps the unique id of this [DTO].
-  @override
-  final T? id;
+/// Instance of [DTO] which is used for output.
+abstract class OutputDTO implements DTO, Serializable {
+  /// Creates an instance of output [DTO].
+  const OutputDTO();
 }
 
 /// An prototype of callback for specification predicate.
