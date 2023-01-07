@@ -65,16 +65,11 @@ abstract class IdentityGenerator<T> implements DomainService {
 //! inheritated objects as @immutable
 abstract class Entity<T> with EquatableMixin, Identity<T> {
   /// Creates an instance of reference entity.
-  Entity({this.id})
-      : assert(T == int),
-        assert(id == null);
+  Entity({this.id});
 
   /// Entity unique identifier.
   @override
   T? id;
-
-  /// Optional entity name.
-  String get name => '';
 
   /// Returns `true` if entity is transient, i.e. new.
   bool get isTransient => id == null;
@@ -83,6 +78,13 @@ abstract class Entity<T> with EquatableMixin, Identity<T> {
   List<Object?> get props => [id];
 }
 
+/// Meta Entity allows to add metadata about an entity, stored in a
+/// dedicated entity (meta_entity). This is useful when you want to avoid
+/// storing this information as a content entity field and clutter the content
+/// entity with data that is not part of the content but is metadata (data
+/// about other data).
+abstract class MetaEntity {}
+
 /// Defines an aggregate root with a single primary key with `id` property.
 ///
 /// Aggregate is a pattern in Domain-Driven Design. A DDD aggregate is a
@@ -90,7 +92,9 @@ abstract class Entity<T> with EquatableMixin, Identity<T> {
 /// example may be an order and its line-items, these will be separate
 /// objects, but it's useful to treat the order (together with its line
 /// items) as a single aggregate
-abstract class AggregateRoot<T> extends Entity<T> {}
+abstract class AggregateRoot<T> extends Entity<T> {
+  AggregateRoot({super.id});
+}
 
 /// An object that represents a descriptive aspect of the domain with no
 /// conceptual identity is called a VALUE OBJECT
