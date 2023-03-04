@@ -83,7 +83,15 @@ abstract class Entity<T> with EquatableMixin, Identity<T> {
 /// storing this information as a content entity field and clutter the content
 /// entity with data that is not part of the content but is metadata (data
 /// about other data).
-abstract class MetaEntity {}
+class MetaEntity {
+  const MetaEntity(
+    this.name,
+    this.namePlural,
+  );
+
+  final String name;
+  final String namePlural;
+}
 
 /// Defines an aggregate root with a single primary key with `id` property.
 ///
@@ -126,18 +134,15 @@ abstract class ValueObject<T> extends Equatable
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
 @immutable
-abstract class DTO {}
+abstract class DTO implements Serializable {
+  /// Creates an instance of [DTO].
+  const DTO();
 
-/// Instance of [DTO] which is used for input.
-abstract class InputDTO implements DTO {
   /// Creates an instance of input [DTO] from the `map`.
-  InputDTO.fromJson(JsonMap map);
-}
+  const DTO.fromJson(JsonMap map);
 
-/// Instance of [DTO] which is used for output.
-abstract class OutputDTO implements DTO, Serializable {
-  /// Creates an instance of output [DTO].
-  const OutputDTO();
+  @override
+  JsonMap toJson() => const {};
 }
 
 /// An prototype of callback for specification predicate.
