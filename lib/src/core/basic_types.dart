@@ -17,17 +17,3 @@ typedef ConvertibleBuilder<T, V> = T Function(V value);
 /// Signature for a function which creates a value of type T
 /// using [JsonMap].
 typedef JsonValueBuilder<T> = T Function(JsonMap map);
-
-/// Provides data or error result.
-class Either<T, V extends Exception> {
-  const Either({this.data, this.error});
-
-  /// Paylod.
-  final T? data;
-
-  /// Error.
-  final V? error;
-
-  bool get hasData => data != null;
-  bool get hasError => error != null;
-}

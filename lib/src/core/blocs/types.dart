@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_project_base/src/core/basic_types.dart';
 
-import '../exceptions.dart';
+import '../contracts.dart';
 
-/// BLoC state values.
+/// BLoC statuses.
 enum BlocStatus {
-  idle,
+  initial,
   waiting,
   success,
   failure,
@@ -16,29 +15,33 @@ enum BlocStatus {
 /// Usually may be use with [flutter_bloc] package.
 abstract class BlocEvent extends Equatable {
   const BlocEvent();
+
+  @override
+  List<Object?> get props => const [];
 }
 
-/// Provides a base state for BLoC patter.
+/// Provides a base state for BLoC pattern.
 ///
 /// Usually may be use with [flutter_bloc] package.
-class BlocState<T extends Object> extends Either<T, ApplicationException> {
-  const BlocState(
-    this.status, {
-    T? data,
-    ApplicationException? error,
-  }) : super(data: data, error: error);
+abstract class BlocState<T, D, E> extends Equatable implements Cloneable<T> {
+  const BlocState({required this.status, this.data, this.error});
 
-  static const idle = BlocState(BlocStatus.idle);
-  static const waiting = BlocState(BlocStatus.waiting);
-
-  BlocState.success([T? data]) : this(BlocStatus.success, data: data);
-  BlocState.failure([ApplicationException? error])
-      : this(BlocStatus.failure, error: error);
+  const BlocState.initial() : this(status: BlocStatus.initial);
+  const BlocState.waiting() : this(status: BlocStatus.waiting);
+  const BlocState.success([D? data])
+      : this(status: BlocStatus.success, data: data);
+  const BlocState.failure([E? error])
+      : this(status: BlocStatus.failure, error: error);
 
   final BlocStatus status;
+  final D? data;
+  final E? error;
 
-  bool get isIdle => status == BlocStatus.idle;
+  bool get isInitial => status == BlocStatus.initial;
   bool get isWaiting => status == BlocStatus.waiting;
   bool get isSuccess => status == BlocStatus.success;
   bool get isFailure => status == BlocStatus.failure;
+
+  @override
+  List<Object?> get props => [status, data, error];
 }
