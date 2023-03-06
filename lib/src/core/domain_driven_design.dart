@@ -65,13 +65,13 @@ abstract class IdentityGenerator<T> implements DomainService {
 ///
 //! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
 //! inheritated objects as @immutable
-abstract class Entity<T> extends Identity<T> with EquatableMixin {
+abstract class Entity extends Identity<int> with EquatableMixin {
   /// Creates an instance of reference entity.
   Entity({this.id});
 
   /// Entity unique identifier.
   @override
-  T? id;
+  int? id;
 
   /// Returns `true` if entity is transient, i.e. new.
   bool get isTransient => id == null;
@@ -102,7 +102,7 @@ class MetaEntity {
 /// example may be an order and its line-items, these will be separate
 /// objects, but it's useful to treat the order (together with its line
 /// items) as a single aggregate
-abstract class AggregateRoot<T> extends Entity<T> {
+abstract class AggregateRoot extends Entity {
   AggregateRoot({super.id});
 }
 
