@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 
@@ -7,11 +8,11 @@ import 'exceptions.dart';
 
 /// Interface provides a set of methods to allow class which implement it
 /// to be serializable using [json.encode] method.
-abstract class Serializable {
+abstract class Serializable<T extends Object> {
   const Serializable();
 
   /// Returns a [Map] which represents this object.
-  JsonMap toJson();
+  T toJson();
 }
 
 /// Provides base implementation of [Serializable] interface which ignores
@@ -19,12 +20,12 @@ abstract class Serializable {
 ///
 /// To specife properties which may contain null values the getter
 /// [nullablePermittedKeys] must be overridden.
-abstract class NullableNeglectionSerializable extends Serializable {
+abstract class BaseSerializable extends Serializable<JsonMap> {
   @override
   JsonMap toJson() {
     return toJsonMap()
-      ..removeWhere((key, value) =>
-          value == null && !nullablePermittedKeys.contains(key));
+      ..removeWhere(removeWhere)
+      ..map(map);
   }
 
   /// Returns a [Map] which represents this object.
@@ -33,7 +34,27 @@ abstract class NullableNeglectionSerializable extends Serializable {
 
   /// The list of keys which are permitted to have null values.
   @protected
-  List<String> get nullablePermittedKeys => <String>[];
+  List<String> get nullablePermittedKeys => const <String>[];
+
+  /// Removes all entries of this map that satisfy the given [test].
+  @protected
+  bool removeWhere(String key, dynamic value) =>
+      value == null && !nullablePermittedKeys.contains(key);
+
+  /// Returns a new map entry.
+  @protected
+  MapEntry<String, dynamic> map(String key, dynamic value) {
+    if (value is Enum) {
+      value = value.index;
+    } else if (value is DateTime) {
+      value = value.millisecondsSinceEpoch;
+    } else if (value is Color) {
+      value = value.value;
+    } else if (value is Serializable) {
+      value = value.toJson();
+    }
+    return MapEntry(key, value);
+  }
 }
 
 /// Interface provides a method that it is legal for make a field-for-field
@@ -63,7 +84,7 @@ abstract class Builder<T> {
 
 /// Mixin provides getters which defines if the mixed object is empty or not.
 ///
-/// The method `isEmpty()` must be overridden.
+/// The method `isEmpty` must be overridden.
 mixin Emptiable {
   /// Whether this [Emptiable] is empty.
   bool get isEmpty;
