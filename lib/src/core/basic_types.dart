@@ -13,7 +13,3 @@ typedef ValueBuilder<T> = T Function();
 /// Signature for a function which creates a value of type T
 /// using `value` of type V.
 typedef ConvertibleBuilder<T, V> = T Function(V value);
-
-/// Signature for a function which creates a value of type T
-/// using [JsonMap].
-typedef JsonValueBuilder<T> = T Function(JsonMap map);
