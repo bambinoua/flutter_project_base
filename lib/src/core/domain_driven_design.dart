@@ -37,7 +37,7 @@ abstract class InfrastructureService implements Disposable {}
 
 /// Defines an entity with a single primary key with `id` property.
 ///
-/// Primary key types can be `int` or `String` (GUID indeed),
+/// Primary key types can be [int] or [GuidString].
 abstract class Identity<T> {
   /// Default name of identity property.
   static const String propertyName = 'id';
@@ -50,6 +50,8 @@ abstract class Identity<T> {
 }
 
 /// Interface for generate identity.
+///
+/// Primary key types can be [int] or [GuidString].
 abstract class IdentityGenerator<T> implements DomainService {
   /// Generates a new identity.
   T generate();
@@ -63,7 +65,7 @@ abstract class IdentityGenerator<T> implements DomainService {
 ///
 //! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
 //! inheritated objects as @immutable
-abstract class Entity<T> with EquatableMixin, Identity<T> {
+abstract class Entity<T> extends Identity<T> with EquatableMixin {
   /// Creates an instance of reference entity.
   Entity({this.id});
 
@@ -119,7 +121,7 @@ abstract class AggregateRoot<T> extends Entity<T> {
 /// are considered to be the same address.
 @immutable
 abstract class ValueObject<T> extends Equatable
-    implements Serializable, Cloneable<T> {
+    implements Serializable<JsonMap>, Cloneable<T> {
   const ValueObject();
 }
 
@@ -134,16 +136,17 @@ abstract class ValueObject<T> extends Equatable
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
 @immutable
-abstract class DTO implements Serializable {
+abstract class DTO implements Serializable<JsonMap> {
   /// Creates an instance of [DTO].
   const DTO();
-
-  /// Creates an instance of input [DTO] from the `map`.
-  const DTO.fromJson(JsonMap map);
 
   @override
   JsonMap toJson() => const {};
 }
+
+/// Signature for a function which creates a value of type T
+/// using [JsonMap].
+typedef DTOBuilder<T> = ConvertibleBuilder<T, JsonMap>;
 
 /// An prototype of callback for specification predicate.
 typedef SpecificationPredicate<T> = bool Function(T value);
