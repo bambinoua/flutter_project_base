@@ -80,19 +80,38 @@ abstract class Entity extends Identity<int> with EquatableMixin {
   List<Object?> get props => [id];
 }
 
+/// Provides meta property for mixin'ed object.
+mixin MetaEntityMixin {
+  /// Custom data for this object.
+  MetaEntity get meta;
+}
+
 /// Meta Entity allows to add metadata about an entity, stored in a
 /// dedicated entity (meta_entity). This is useful when you want to avoid
 /// storing this information as a content entity field and clutter the content
 /// entity with data that is not part of the content but is metadata (data
 /// about other data).
 class MetaEntity {
-  const MetaEntity(
-    this.name,
-    this.namePlural,
-  );
+  const MetaEntity({
+    this.key = '',
+    required this.displayName,
+    required this.displayNamePlural,
+    required this.entityType,
+  })  : assert(displayName.length > 0),
+        assert(displayNamePlural.length > 0);
 
-  final String name;
-  final String namePlural;
+  /// Must be a unique identifier. We recommend using Fully Qualified Names (FQN),
+  /// similar to Internet addresses.
+  final String key;
+
+  /// Primarily shown in the user interface.
+  final String displayName;
+
+  /// [displayName] in plural.
+  final String displayNamePlural;
+
+  /// Type of the entity you want this to apply.
+  final Type entityType;
 }
 
 /// Defines an aggregate root with a single primary key with `id` property.
