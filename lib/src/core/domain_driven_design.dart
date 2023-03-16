@@ -155,7 +155,7 @@ abstract class ValueObject<T> extends Equatable
 /// In an ideally layered application, the presentation layer never
 /// works with domain objects, (Repositories, or Entities...).
 @immutable
-abstract class DTO implements Serializable<JsonMap> {
+abstract class DTO extends BaseSerializable {
   /// Creates an instance of [DTO].
   const DTO();
 

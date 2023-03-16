@@ -21,6 +21,8 @@ abstract class Serializable<T extends Object> {
 /// To specife properties which may contain null values the getter
 /// [nullablePermittedKeys] must be overridden.
 abstract class BaseSerializable extends Serializable<JsonMap> {
+  const BaseSerializable();
+
   @override
   JsonMap toJson() {
     return toJsonMap()
