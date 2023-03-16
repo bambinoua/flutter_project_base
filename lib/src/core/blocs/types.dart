@@ -12,7 +12,8 @@ enum BlocStatus {
 
 /// Provides a base event for BLoC pattern.
 ///
-/// Usually may be use with [flutter_bloc] package.
+/// Usually may be use with [flutter_bloc] package. It is required to override
+/// `props` property in ancestors.
 abstract class BlocEvent extends Equatable {
   const BlocEvent();
 
@@ -23,19 +24,31 @@ abstract class BlocEvent extends Equatable {
 /// Provides a base state for BLoC pattern.
 ///
 /// Usually may be use with [flutter_bloc] package.
-abstract class BlocState<T, D, E> extends Equatable implements Cloneable<T> {
+abstract class BlocState<TState, TData, TError> extends Equatable
+    implements Cloneable<TState> {
   const BlocState({required this.status, this.data, this.error});
 
+  /// Initial state.
   const BlocState.initial() : this(status: BlocStatus.initial);
+
+  /// This state is active when BLoC is busy with some async operation.
   const BlocState.waiting() : this(status: BlocStatus.waiting);
-  const BlocState.success([D? data])
+
+  /// Successful state.
+  ///
+  /// May contains `data`.
+  const BlocState.success([TData? data])
       : this(status: BlocStatus.success, data: data);
-  const BlocState.failure([E? error])
+
+  /// Failure state.
+  ///
+  /// May contains `error`.
+  const BlocState.failure([TError? error])
       : this(status: BlocStatus.failure, error: error);
 
   final BlocStatus status;
-  final D? data;
-  final E? error;
+  final TData? data;
+  final TError? error;
 
   bool get isInitial => status == BlocStatus.initial;
   bool get isWaiting => status == BlocStatus.waiting;
