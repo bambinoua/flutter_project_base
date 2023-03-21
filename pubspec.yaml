@@ -22,7 +22,7 @@ dependencies:
   google_fonts: ^4.0.3
   hydrated_bloc: ^9.0.0
   injectable: ^2.1.0
-  intl: ^0.18.0
+  intl: ^0.17.0
   js: ^0.6.4
   json_annotation: ^4.7.0
   logging: ^1.1.0
