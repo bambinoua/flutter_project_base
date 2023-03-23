@@ -3,12 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../contracts.dart';
 
 /// BLoC statuses.
-enum BlocStatus {
-  initial,
-  waiting,
-  success,
-  failure,
-}
+enum Status { initial, waiting, success, failure }
 
 /// Provides a base event for BLoC pattern.
 ///
@@ -24,37 +19,35 @@ abstract class BlocEvent extends Equatable {
 /// Provides a base state for BLoC pattern.
 ///
 /// Usually may be use with [flutter_bloc] package.
-abstract class BlocState<TState, TData, TError> extends Equatable
-    implements Cloneable<TState> {
-  const BlocState({required this.status, this.data, this.error});
+abstract class BlocState<T extends BlocState<T, TData, TError>, TData, TError>
+    extends Equatable implements Cloneable<T> {
+  const BlocState({
+    Status status = Status.initial,
+    this.data,
+    this.error,
+  })  : assert(data == null || error == null),
+        _status = status;
 
-  /// Initial state.
-  const BlocState.initial() : this(status: BlocStatus.initial);
+  /// Status of the this state.
+  final Status _status;
 
-  /// This state is active when BLoC is busy with some async operation.
-  const BlocState.waiting() : this(status: BlocStatus.waiting);
-
-  /// Successful state.
-  ///
-  /// May contains `data`.
-  const BlocState.success([TData? data])
-      : this(status: BlocStatus.success, data: data);
-
-  /// Failure state.
-  ///
-  /// May contains `error`.
-  const BlocState.failure([TError? error])
-      : this(status: BlocStatus.failure, error: error);
-
-  final BlocStatus status;
+  /// Payload of this state.
   final TData? data;
+
+  /// Error of this state.
   final TError? error;
 
-  bool get isInitial => status == BlocStatus.initial;
-  bool get isWaiting => status == BlocStatus.waiting;
-  bool get isSuccess => status == BlocStatus.success;
-  bool get isFailure => status == BlocStatus.failure;
+  /// Whether state contains a payload.
+  bool get hasData => data != null;
+
+  /// Whether state is error.
+  bool get hasError => error != null;
+
+  bool get isInitial => _status == Status.initial;
+  bool get isWaiting => _status == Status.waiting;
+  bool get isSuccess => _status == Status.success;
+  bool get isFailure => _status == Status.failure;
 
   @override
-  List<Object?> get props => [status, data, error];
+  List<Object?> get props => [_status, data, error];
 }
