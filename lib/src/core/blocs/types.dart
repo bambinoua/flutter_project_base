@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 import '../contracts.dart';
 
@@ -22,14 +23,14 @@ abstract class BlocEvent extends Equatable {
 abstract class BlocState<T extends BlocState<T, TData, TError>, TData, TError>
     extends Equatable implements Cloneable<T> {
   const BlocState({
-    Status status = Status.initial,
+    this.status = Status.initial,
     this.data,
     this.error,
-  })  : assert(data == null || error == null),
-        _status = status;
+  }) : assert(data == null || error == null);
 
   /// Status of the this state.
-  final Status _status;
+  @protected
+  final Status status;
 
   /// Payload of this state.
   final TData? data;
@@ -43,11 +44,14 @@ abstract class BlocState<T extends BlocState<T, TData, TError>, TData, TError>
   /// Whether state is error.
   bool get hasError => error != null;
 
-  bool get isInitial => _status == Status.initial;
-  bool get isWaiting => _status == Status.waiting;
-  bool get isSuccess => _status == Status.success;
-  bool get isFailure => _status == Status.failure;
+  bool get isInitial => status == Status.initial;
+  bool get isWaiting => status == Status.waiting;
+  bool get isSuccess => status == Status.success;
+  bool get isFailure => status == Status.failure;
 
   @override
-  List<Object?> get props => [_status, data, error];
+  List<Object?> get props => [status, data, error];
+
+  @override
+  T copyWith({Status? status, TData? data, TError? error});
 }
