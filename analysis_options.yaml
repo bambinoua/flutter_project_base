@@ -12,8 +12,7 @@
 # https://dart.dev/guides/language/analysis-options
 include: package:flutter_lints/flutter.yaml
 
-analyzer:
-  exclude: [build/**]
+analyzer:  
   language:
     strict-casts: false
     strict-raw-types: true
@@ -22,11 +21,18 @@ analyzer:
     implicit-casts: true
   errors:
     dead_code: error
+    invalid_assignment: warning
+    invalid_annotation_target: warning
+    todo: ignore
     unused_element: error
     unused_import: error
     unused_local_variable: error
-    unsafe_html: ignore    
-    invalid_annotation_target: ignore
+    unsafe_html: ignore
+  exclude: 
+    - build/**
+    - lib/src/generated/**
+    - lib/**.freezed.dart
+    - lib/**.g.dart
 
 linter:
   # The lint rules applied to this project can be customized in the
