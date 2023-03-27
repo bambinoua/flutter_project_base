@@ -35,7 +35,8 @@ export 'src/data/paging.dart';
 export 'src/data/query.dart';
 export 'src/material/formfield.dart';
 export 'src/material/functions.dart';
-export 'src/material/scaffold_messenger.dart' show ScaffoldMessengerOfContext;
+export 'src/material/scaffold_messenger.dart'
+    show ScaffoldMessengerOfContext, ThemeOfContext;
 export 'src/material/text_input_formatters.dart';
 export 'src/material/web/html_view_factory.dart' show DivHtmlElement;
 export 'src/material/widgets/internet_connectivity_bar.dart';
