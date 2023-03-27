@@ -127,23 +127,23 @@ class MaterialBannerRepository {
 }
 
 extension ScaffoldMessengerOfContext on BuildContext {
-  ThemeData get theme => Theme.of(this);
+  SnackBarRepository get snackbar => SnackBarRepository(this);
 
-  static SnackBarRepository? _snackBarRepository;
-  static MaterialBannerRepository? _materialBannerRepository;
-
-  SnackBarRepository get snackbar {
-    _snackBarRepository ??= SnackBarRepository(this);
-    return _snackBarRepository!;
-  }
-
-  MaterialBannerRepository get banner {
-    _materialBannerRepository ??= MaterialBannerRepository(this);
-    return _materialBannerRepository!;
-  }
+  MaterialBannerRepository get banner => MaterialBannerRepository(this);
 
   ScaffoldMessengerState get _scaffoldMessenger => ScaffoldMessenger.of(this);
 
   void clearSnackBars() => _scaffoldMessenger.clearSnackBars();
+  void hideCurrentSnackBar() => _scaffoldMessenger.hideCurrentSnackBar();
+  void removeCurrentSnackBar() => _scaffoldMessenger.removeCurrentSnackBar();
+
   void clearMaterialBanners() => _scaffoldMessenger.clearMaterialBanners();
+  void hideCurrentMaterialBanner() =>
+      _scaffoldMessenger.hideCurrentMaterialBanner();
+  void removeCurrentMaterialBanner() =>
+      _scaffoldMessenger.removeCurrentMaterialBanner();
+}
+
+extension ThemeOfContext on BuildContext {
+  ThemeData get theme => Theme.of(this);
 }
