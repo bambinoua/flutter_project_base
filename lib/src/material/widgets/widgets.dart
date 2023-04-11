@@ -381,3 +381,220 @@ class IfElseWrapper extends StatelessWidget {
 }
 
 bool _alwaysReturnsFalse() => false;
+
+/// A set of toggle buttons working as [Radio] widget.
+class ToggleRadio<T> extends StatefulWidget {
+  const ToggleRadio({
+    Key? key,
+    required this.items,
+    this.focusNodes,
+    this.constraints,
+    this.tapTargetSize,
+    this.value,
+    this.isExpanded = false,
+    this.renderBorder = true,
+    this.onChanged,
+  })  : assert(!isExpanded || constraints == null),
+        assert(items.length > 0),
+        super(key: key);
+
+  /// The toggle button widgets.
+  final List<ToggleRadioItem<T>> items;
+
+  /// The initial value.
+  final T? value;
+
+  /// The callback that is called when a button is tapped.
+  ///
+  /// The index parameter of the callback is the index of the button that is
+  /// tapped or otherwise activated.
+  ///
+  /// When the callback is null, all toggle buttons will be disabled.
+  final ValueChanged<T>? onChanged;
+
+  /// The list of [FocusNode]s, corresponding to each toggle button.
+  ///
+  /// Focus is used to determine which widget should be affected by keyboard
+  /// events. The focus tree keeps track of which widget is currently focused
+  /// on by the user.
+  ///
+  /// If not null, the length of focusNodes has to match the length of
+  /// [items].
+  final List<FocusNode>? focusNodes;
+
+  /// Defines the button's size.
+  ///
+  /// Typically used to constrain the button's minimum size.
+  ///
+  /// If this property is null, then
+  /// BoxConstraints(minWidth: 48.0, minHeight: 48.0) is be used.
+  final BoxConstraints? constraints;
+
+  /// Configures the minimum size of the area within which the buttons may
+  /// be pressed.
+  ///
+  /// If the [tapTargetSize] is larger than [constraints], the buttons will
+  /// include a transparent margin that responds to taps.
+  ///
+  /// Defaults to [ThemeData.materialTapTargetSize].
+  final MaterialTapTargetSize? tapTargetSize;
+
+  /// Set this widget to horizontally fill its parent.
+  final bool isExpanded;
+
+  /// Whether or not to render a border around each toggle button.
+  ///
+  /// When true, a border with [borderWidth], [borderRadius] and the
+  /// appropriate border color will render. Otherwise, no border will be
+  /// rendered.
+  final bool renderBorder;
+
+  @override
+  State<ToggleRadio<T>> createState() => _ToggleRadioState<T>();
+}
+
+class _ToggleRadioState<T> extends State<ToggleRadio<T>> {
+  late final List<bool> _isSelected;
+
+  late BoxConstraints _constraints;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelected = List.generate(widget.items.length,
+        (index) => widget.items[index].value == widget.value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final haveItemsFocusNodes =
+        widget.items.every((item) => item.focusNode != null);
+    final focusNodes = haveItemsFocusNodes
+        ? widget.items.map((item) => item.focusNode!).toList()
+        : widget.focusNodes;
+
+    if (focusNodes?.isNotEmpty ?? false) {
+      assert(focusNodes!.length == widget.items.length);
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _constraints = constraints;
+        return ToggleButtons(
+          constraints: widget.constraints,
+          tapTargetSize: widget.tapTargetSize,
+          focusNodes: focusNodes,
+          renderBorder: widget.renderBorder,
+          isSelected: _isSelected,
+          onPressed: widget.onChanged != null
+              ? (index) {
+                  setState(() {
+                    for (var i = 0; i < _isSelected.length; i++) {
+                      _isSelected[i] = i == index;
+                    }
+                  });
+                  widget.onChanged?.call(widget.items[index].value);
+                }
+              : null,
+          children: widget.items,
+        );
+      },
+    );
+  }
+}
+
+/// An item in a menu created by a [ToggleRadio].
+///
+/// The type `T` is the type of the value the item represents. All the items
+/// in a given menu must represent values with consistent types.
+class ToggleRadioItem<T> extends StatelessWidget {
+  const ToggleRadioItem({
+    Key? key,
+    this.focusNode,
+    this.title,
+    this.titleColor,
+    this.icon,
+    this.iconColor,
+    this.width,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 8),
+    required this.value,
+  })  : assert(title != null || icon != null, 'Missing title or icon property'),
+        super(key: key);
+
+  final String? title;
+  final Color? titleColor;
+  final IconData? icon;
+  final Color? iconColor;
+  final FocusNode? focusNode;
+  final double? width;
+  final EdgeInsetsGeometry contentPadding;
+  final T value;
+
+  @override
+  Widget build(BuildContext context) {
+    final parentState =
+        context.findAncestorStateOfType<_ToggleRadioState<T>>()!;
+    final totalDividersWidth = parentState.widget.renderBorder
+        ? parentState.widget.items.length + 1
+        : 0;
+    final itemWidth = (parentState._constraints.maxWidth - totalDividersWidth) /
+        parentState.widget.items.length;
+
+    return IfElseWrapper(
+      wrapIf: () => parentState.widget.isExpanded,
+      ifBuilder: (context, child) {
+        return SizedBox(
+          width: itemWidth,
+          child: child,
+        );
+      },
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: width ?? double.infinity),
+        child: Padding(
+          padding: contentPadding,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) Icon(icon, color: iconColor),
+              if (title != null) ...[
+                if (icon != null) UtilityWidgets.horizontalGap08,
+                Text(title!),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// class ToggleRadioFormField<T> extends FormField<T> {
+//   ToggleRadioFormField({
+//     super.key,
+//     required List<ToggleRadioItem<T>> items,
+//     List<FocusNode>? focusNodes,
+//     BoxConstraints? constraints,
+//     MaterialTapTargetSize? tapTargetSize,
+//     T? initialValue,
+//     bool isExpanded = false,
+//     bool renderBorder = true,
+//     ValueChanged<T>? onChanged,
+//     FormFieldSetter<T>? onSaved,
+//     FormFieldValidator<T>? validator,
+//   }) : super(
+//           builder: (state) => ToggleRadio(
+//             key: key,
+//             items: items,
+//             focusNodes: focusNodes,
+//             constraints: constraints,
+//             tapTargetSize: tapTargetSize,
+//             value: initialValue,
+//             isExpanded: isExpanded,
+//             renderBorder: renderBorder,
+//             onChanged: onChanged,
+//           ),
+//           initialValue: initialValue,
+//           validator: validator,
+//           onSaved: onSaved,
+//         );
+// }
