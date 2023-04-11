@@ -343,3 +343,41 @@ class DismissibleKeyboard extends StatelessWidget {
     );
   }
 }
+
+/// Whether wrap the child with some other widget(s).
+class IfElseWrapper extends StatelessWidget {
+  const IfElseWrapper({
+    Key? key,
+    this.wrapIf = _alwaysReturnsFalse,
+    required this.ifBuilder,
+    this.elseBuilder,
+    required this.child,
+  }) : super(key: key);
+
+  /// Switches between wrapping the [child] with a [ifBuilder] or [elseBuilder].
+  final bool Function() wrapIf;
+
+  /// The widget to use when [wrapIf] return `true`.
+  final TransitionBuilder ifBuilder;
+
+  /// The widget to use when [wrapIf] return `false`.
+  ///
+  /// If this builder is omitted then the [child] widget is built.
+  final TransitionBuilder? elseBuilder;
+
+  /// The widget below this widget in the tree.
+  ///
+  /// {@macro flutter.widgets.ProxyWidget.child}
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return wrapIf()
+        ? ifBuilder(context, child)
+        : elseBuilder != null
+            ? elseBuilder!(context, child)
+            : child;
+  }
+}
+
+bool _alwaysReturnsFalse() => false;
