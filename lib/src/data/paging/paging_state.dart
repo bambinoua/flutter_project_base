@@ -26,7 +26,7 @@ class PagingState<Key, Value> extends Equatable {
   final PagingConfig config;
 
   /// Loaded pages of data in the list.
-  final List<Page<Key, Value>> pages;
+  final List<LoadResultPage<Key, Value>> pages;
 
   /// Number of placeholders before the first loaded item if placeholders are
   /// enabled, otherwise 0.
@@ -59,7 +59,7 @@ class PagingState<Key, Value> extends Equatable {
 
   /// Coerces an index in the list, including placeholders, to closest loaded
   /// page in [pages].
-  Page<Key, Value>? closestPageToPosition(int anchorPosition) {
+  LoadResultPage<Key, Value>? closestPageToPosition(int anchorPosition) {
     if (pages.isEmpty) return null;
 
     return _anchorPositionToPagedIndices(anchorPosition, (pageIndex, index) {

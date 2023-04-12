@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
 import '../../core/extensions.dart';
@@ -8,10 +7,10 @@ class LoadResult<Key, Value> {
   const LoadResult._();
 
   /// Invalid result object for [PagingSource.load].
-  const factory LoadResult.invalid() = _LoadResultInvalid._;
+  const factory LoadResult.invalid() = LoadResultInvalid._;
 
   /// Error result object for [PagingSource.load].
-  const factory LoadResult.error(Exception error) = _LoadResultError._;
+  const factory LoadResult.error(Exception error) = LoadResultError._;
 
   /// Success result object for [PagingSource.load].
   const factory LoadResult.page({
@@ -20,25 +19,9 @@ class LoadResult<Key, Value> {
     Key? nextKey,
     int itemsBefore,
     int itemsAfter,
-  }) = _LoadResultPage._;
+  }) = LoadResultPage._;
 
   static const int countUndefined = Int.min32bitValue;
-
-  void when({
-    required ValueSetter<Page<Key, Value>> page,
-    required ValueSetter<Error<Key, Value>> error,
-    required ValueSetter<Invalid<Key, Value>> invalid,
-  }) {
-    if (this is Page) {
-      page(this as Page<Key, Value>);
-    }
-    if (this is Error) {
-      error(this as Error<Key, Value>);
-    }
-    if (this is Invalid) {
-      invalid(this as Invalid<Key, Value>);
-    }
-  }
 }
 
 /// Invalid result object for [PagingSource.load]
@@ -57,8 +40,8 @@ class LoadResult<Key, Value> {
 ///
 /// Returning [Invalid] will trigger Paging to [invalidate] this [PagingSource]
 /// and terminate any future attempts to [load] from this [PagingSource]
-class _LoadResultInvalid<Key, Value> extends LoadResult<Key, Value> {
-  const _LoadResultInvalid._() : super._();
+class LoadResultInvalid<Key, Value> extends LoadResult<Key, Value> {
+  const LoadResultInvalid._() : super._();
 }
 
 /// Error result object for [PagingSource.load].
@@ -68,8 +51,8 @@ class _LoadResultInvalid<Key, Value> extends LoadResult<Key, Value> {
 /// [LoadState.Error], and may be retried.
 ///
 /// * Sample: androidx.paging.samples.pageKeyedPagingSourceSample
-class _LoadResultError<Key, Value> extends LoadResult<Key, Value> {
-  const _LoadResultError._(this.throwable) : super._();
+class LoadResultError<Key, Value> extends LoadResult<Key, Value> {
+  const LoadResultError._(this.throwable) : super._();
 
   /// Instance of exception.
   final Exception throwable;
@@ -78,8 +61,8 @@ class _LoadResultError<Key, Value> extends LoadResult<Key, Value> {
 /// Success result object for [PagingSource.load].
 ///
 /// * Sample: androidx.paging.samples.pageIndexedPage
-class _LoadResultPage<Key, Value> extends LoadResult<Key, Value> {
-  const _LoadResultPage._({
+class LoadResultPage<Key, Value> extends LoadResult<Key, Value> {
+  const LoadResultPage._({
     required this.data,
     this.prevKey,
     this.nextKey,
@@ -106,12 +89,3 @@ class _LoadResultPage<Key, Value> extends LoadResult<Key, Value> {
   /// Optional count of items after the loaded data.
   final int itemsAfter;
 }
-
-/// Synonym of [LoadResultPage<Key, Value>].
-typedef Page<Key, Value> = _LoadResultPage<Key, Value>;
-
-/// Synonym of [LoadResultError<Key, Value>].
-typedef Error<Key, Value> = _LoadResultError<Key, Value>;
-
-/// Synonym of [LoadResultInvalid<Key, Value>].
-typedef Invalid<Key, Value> = _LoadResultInvalid<Key, Value>;
