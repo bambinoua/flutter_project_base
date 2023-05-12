@@ -17,8 +17,6 @@ analyzer:
     strict-casts: false
     strict-raw-types: true
     strict-inference: false
-  strong-mode:
-    implicit-casts: true
   errors:
     dead_code: error
     invalid_assignment: warning
