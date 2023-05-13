@@ -101,8 +101,6 @@ class MaterialBannerRepository {
   ) {
     final theme = Theme.of(context);
     return MaterialBanner(
-      elevation: 6,
-      contentTextStyle: theme.textTheme.bodyMedium,
       backgroundColor: backgroundColor,
       leading: Icon(
         icon,
@@ -112,7 +110,7 @@ class MaterialBannerRepository {
       content: Text(message),
       actions: [
         IconButton(
-          tooltip: 'Close',
+          tooltip: closeTooltip,
           icon: Icon(
             Icons.close,
             color: theme.colorScheme.onPrimary,
