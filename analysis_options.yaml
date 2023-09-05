@@ -12,11 +12,12 @@
 # https://dart.dev/guides/language/analysis-options
 include: package:flutter_lints/flutter.yaml
 
-analyzer:  
+analyzer:
   language:
     strict-casts: false
     strict-raw-types: true
     strict-inference: false
+  strong-mode:
   errors:
     dead_code: error
     invalid_assignment: warning
@@ -26,7 +27,7 @@ analyzer:
     unused_import: error
     unused_local_variable: error
     unsafe_html: ignore
-  exclude: 
+  exclude:
     - build/**
     - lib/src/generated/**
     - lib/**.freezed.dart
