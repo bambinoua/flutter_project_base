@@ -1,4 +1,6 @@
-import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../core.dart';
 
 part 'authentication.freezed.dart';
 

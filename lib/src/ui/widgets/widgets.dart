@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project_base/src/material/scaffold_messenger.dart';
+import 'package:flutter_project_base/src/ui/scaffold_messenger.dart';
 
 import '../../core/contracts.dart';
 

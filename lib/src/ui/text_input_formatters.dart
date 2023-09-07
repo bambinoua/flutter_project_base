@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 /// Provides text input formatters.
 abstract class TextInputFormatters {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project_base/flutter_project_base.dart';
+import 'package:flutter_project_base/src/services/internet_connectivity.dart';
+import 'package:flutter_project_base/ui.dart';
 
 const _kAnimationDuration = Duration(milliseconds: 400);
 
