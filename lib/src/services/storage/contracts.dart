@@ -87,7 +87,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     }
     try {
       final decodedValue = json.decode(jsonValue) as V;
-      return _builder != null ? _builder!(decodedValue) : decodedValue as T;
+      return _builder != null ? _builder(decodedValue) : decodedValue as T;
     } on FormatException {
       rethrow;
     }
@@ -175,5 +175,5 @@ class StorageItem<T> implements Cloneable<StorageItem<T>> {
 
   @override
   String toString() => 'StorageItem (key: $key, value: $value, '
-      'priority: ${describeEnum(priority)})';
+      'priority: ${priority.name})';
 }

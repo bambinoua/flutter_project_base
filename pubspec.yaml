@@ -1,10 +1,10 @@
 name: flutter_project_base
 description: Set of interfaces and classes for any flutter project.
-version: 0.0.1
+version: 0.0.2
 repository: https://github.com/bambinoua/flutter_project_base.git
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.2.3 <4.0.0"
   flutter: ">=3.0.0"
 
 dependencies:
@@ -12,28 +12,28 @@ dependencies:
     sdk: flutter
   charcode: ^1.3.1
   collection: ^1.17.2
-  connectivity_plus: ^4.0.0
-  device_info_plus: ^9.0.0
+  connectivity_plus: ^5.0.2
+  device_info_plus: ^9.1.1
   dio: ^4.0.6
   equatable: ^2.0.5
   flutter_bloc: ^8.1.1
   freezed_annotation: ^2.2.0
-  get_it: ^7.6.4
-  google_fonts: ^5.1.0
-  hydrated_bloc: ^9.0.0
-  injectable: ^2.3.0
+  get_it: ^7.6.6
+  google_fonts: ^6.1.0
+  hydrated_bloc: ^9.1.3
+  injectable: ^2.3.2
   intl: ^0.18.0
-  js: ^0.6.4
+  js: ^0.6.7
   json_annotation: ^4.7.0
-  logging: ^1.1.0
-  mask_text_input_formatter: ^2.4.0
-  meta: ^1.9.1
-  path_provider: ^2.0.11
-  provider: ^6.0.4
+  logging: ^1.2.0
+  mask_text_input_formatter: ^2.8.0
+  meta: ^1.10.0
+  path_provider: ^2.1.2
+  provider: ^6.1.1
   rxdart: ^0.27.6
-  shared_preferences: ^2.2.1
-  universal_html: ^2.2.3
-  uuid: ^3.0.7
+  shared_preferences: ^2.2.2
+  universal_html: ^2.2.4
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

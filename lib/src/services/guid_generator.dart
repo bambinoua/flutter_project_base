@@ -1,3 +1,4 @@
+import 'package:uuid/data.dart';
 import 'package:uuid/uuid.dart';
 
 import '../core/domain_driven_design.dart';
@@ -20,26 +21,26 @@ abstract class BaseGuidGenerator implements IdentityGenerator<UuidValue> {
 
 /// Generates a time-based GUID of version 1.
 class GuidV1Generator extends BaseGuidGenerator {
-  factory GuidV1Generator({Map<String, dynamic>? options}) {
+  factory GuidV1Generator({GlobalOptions? options}) {
     _instance ??= GuidV1Generator._(options: options);
     return _instance!;
   }
 
-  GuidV1Generator._({Map<String, dynamic>? options})
-      : super._(Uuid(options: options));
+  GuidV1Generator._({GlobalOptions? options})
+      : super._(Uuid(goptions: options));
 
   static GuidV1Generator? _instance;
 }
 
 /// Generates a GUID of version 4.
 class GuidV4Generator extends BaseGuidGenerator {
-  factory GuidV4Generator({Map<String, dynamic>? options}) {
+  factory GuidV4Generator({GlobalOptions? options}) {
     _instance ??= GuidV4Generator._(options: options);
     return _instance!;
   }
 
-  GuidV4Generator._({Map<String, dynamic>? options})
-      : super._(Uuid(options: options));
+  GuidV4Generator._({GlobalOptions? options})
+      : super._(Uuid(goptions: options));
 
   static GuidV4Generator? _instance;
 }

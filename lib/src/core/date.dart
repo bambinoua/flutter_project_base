@@ -17,7 +17,7 @@ class Date extends DateTime {
   /// var dentistAppointment = Date(2017, 9, 7);
   /// ```
   Date(int year, [int month = DateTime.january, int day = 1])
-      : super(year, month, day, 0, 0, 0, 0, 0);
+      : super(year, month, day);
 
   /// Constructs a [Date] instance with current date in the local time zone.
   ///
@@ -69,7 +69,13 @@ class Date extends DateTime {
   /// Returns the week number to which this [Date] belongs.
   ///
   /// The value may vary from 1 to 52/53.
-  int get weekNumber => (ordinalDay - weekday + 10) ~/ 7;
+  int get weekNumber {
+    int number = (ordinalDay - weekday + 10) ~/ 7;
+    if (number > 52 && weekday < DateTime.thursday) {
+      number = 52;
+    }
+    return number;
+  }
 
   /// Returns the number of week in this `year`.
   int get lastWeekNumber => Date(year, DateTime.december, 31).weekNumber;
