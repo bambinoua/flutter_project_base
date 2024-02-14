@@ -158,9 +158,6 @@ abstract class ValueObject<T> extends Equatable
 abstract class DTO extends BaseSerializable {
   /// Creates an instance of [DTO].
   const DTO();
-
-  @override
-  JsonMap toJson() => const {};
 }
 
 /// Signature for a function which creates a value of type T
