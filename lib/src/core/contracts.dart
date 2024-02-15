@@ -24,11 +24,7 @@ abstract class BaseSerializable extends Serializable<JsonMap> {
   const BaseSerializable();
 
   @override
-  JsonMap toJson() {
-    return toJsonMap()
-      ..removeWhere(removeWhere)
-      ..map(map);
-  }
+  JsonMap toJson() => (toJsonMap()..removeWhere(removeWhere)).map(map);
 
   /// Returns a [Map] which represents this object.
   @protected
@@ -54,8 +50,6 @@ abstract class BaseSerializable extends Serializable<JsonMap> {
       value = mapDateTime(value);
     } else if (value is Color) {
       value = mapColor(value);
-    } else if (value is Serializable) {
-      value = value.toJson();
     }
     return MapEntry(key, value);
   }
