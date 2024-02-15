@@ -13,4 +13,5 @@ export 'src/core/domain_driven_design.dart';
 export 'src/core/errors.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/extensions.dart';
+export 'src/core/json.dart';
 export 'src/core/math.dart';
