@@ -47,16 +47,45 @@ abstract class BaseSerializable extends Serializable<JsonMap> {
   @protected
   MapEntry<String, dynamic> map(String key, dynamic value) {
     if (value is Enum) {
-      value = value.index;
+      value = mapEnum(value);
+    } else if (value is bool) {
+      value = mapBoolean(value);
     } else if (value is DateTime) {
-      value = value.millisecondsSinceEpoch;
+      value = mapDateTime(value);
     } else if (value is Color) {
-      value = value.value;
+      value = mapColor(value);
     } else if (value is Serializable) {
       value = value.toJson();
     }
     return MapEntry(key, value);
   }
+
+  /// Maps the `bool` [value] to required type bool or integer.
+  ///
+  /// For example, SQLite does not support booleans so the value must be
+  /// converted to integer.
+  ///
+  /// Default returned value is `bool`.
+  @protected
+  dynamic mapBoolean(bool value) => value;
+
+  /// Maps the `DateTime` [value] to integer or String.
+  ///
+  /// Default returned value `integer` Unix timestamp.
+  @protected
+  dynamic mapDateTime(DateTime value) => value.millisecondsSinceEpoch;
+
+  /// Maps the `Color` [value] to integer or String.
+  ///
+  /// Default returned value `integer` number.
+  @protected
+  dynamic mapColor(Color value) => value.value;
+
+  /// Maps the `Enum` [value] to integer or String.
+  ///
+  /// Default returned value `integer` number.
+  @protected
+  dynamic mapEnum(Enum value) => value.index;
 }
 
 /// Interface provides a method that it is legal for make a field-for-field
