@@ -12,8 +12,12 @@ class TextFieldHelper<T> implements Disposable {
     bool skipTraversal = false,
     bool canRequestFocus = true,
     String? initialText,
+    String? debugLabel,
   })  : focusNode = FocusNode(
-            skipTraversal: skipTraversal, canRequestFocus: canRequestFocus),
+          debugLabel: debugLabel,
+          skipTraversal: skipTraversal,
+          canRequestFocus: canRequestFocus,
+        ),
         controller = TextEditingController(text: initialText);
 
   /// An object that can be used by a [TextField] widget to obtain the
