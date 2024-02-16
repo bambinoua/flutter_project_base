@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 import '../core/basic_types.dart';
 import '../core/contracts.dart';
@@ -9,7 +8,6 @@ import '../core/domain_driven_design.dart';
 import '../core/extensions.dart';
 
 /// Data query order used in ORDER BY clause.
-@immutable
 class QueryOrder extends Equatable implements Serializable {
   const QueryOrder._(
     this.column, {
@@ -43,7 +41,6 @@ class QueryOrder extends Equatable implements Serializable {
 }
 
 /// Data query filter used in WHERE clause.
-@immutable
 class QueryFilter<T extends Object> extends Equatable implements Serializable {
   const QueryFilter._(
     this.column,
@@ -86,7 +83,6 @@ class QueryFilter<T extends Object> extends Equatable implements Serializable {
 }
 
 /// Provides base interface for data query filter.
-@immutable
 class DataQuery extends ValueObject<DataQuery> {
   DataQuery({
     List<String>? columns,
@@ -101,7 +97,11 @@ class DataQuery extends ValueObject<DataQuery> {
         _where = Helper.safeList(where),
         _orderBy = Helper.safeList(orderBy);
 
-  DataQuery.single(int id) : this(where: [QueryFilter.equal('id', id)]);
+  /// Create a data query which requests all columns from underlying SQL engine.
+  static final allColumns = DataQuery(columns: const ['*']);
+
+  /// Create a data query which requests a single entity by its [id].
+  DataQuery.entity(int id) : this(where: [QueryFilter.equal('id', id)]);
 
   /// Returns empty data query.
   static DataQuery get empty => DataQuery();
