@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../packages.dart';
 
 /// Converts the boolean value into integer JSON representation and vise versa.
@@ -31,4 +33,15 @@ class JsonDateTimeStringConverter extends JsonConverter<DateTime, String> {
 
   @override
   String toJson(DateTime object) => object.toIso8601String();
+}
+
+/// Converts the binary data string JSON representation and vise versa.
+class JsonBlocConverter extends JsonConverter<Uint8List, List<int>> {
+  const JsonBlocConverter();
+
+  @override
+  Uint8List fromJson(List<int> json) => Uint8List.fromList(json);
+
+  @override
+  List<int> toJson(Uint8List object) => object.toList();
 }
