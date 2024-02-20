@@ -1,17 +1,13 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 import '../contracts.dart';
 
 /// BLoC statuses.
-enum Status implements Comparable<Status> {
+enum Status {
   initial,
   waiting,
   success,
-  failure;
-
-  @override
-  int compareTo(Status other) => index.compareTo(other.index);
+  failure,
 }
 
 /// Provides a base event for BLoC pattern.
@@ -37,7 +33,6 @@ abstract class BlocState<T extends BlocState<T, TData, TError>, TData, TError>
   }) : assert(data == null || error == null);
 
   /// Status of the this state.
-  @protected
   final Status status;
 
   /// Payload of this state.
