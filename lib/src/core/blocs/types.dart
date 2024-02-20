@@ -4,7 +4,15 @@ import 'package:meta/meta.dart';
 import '../contracts.dart';
 
 /// BLoC statuses.
-enum Status { initial, waiting, success, failure }
+enum Status implements Comparable<Status> {
+  initial,
+  waiting,
+  success,
+  failure;
+
+  @override
+  int compareTo(Status other) => index.compareTo(other.index);
+}
 
 /// Provides a base event for BLoC pattern.
 ///
