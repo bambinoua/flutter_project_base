@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import '../../core/extensions.dart';
 
 @sealed
-class LoadResult<Key, Value> {
+sealed class LoadResult<Key, Value> {
   const LoadResult._();
 
   /// Invalid result object for [PagingSource.load].
