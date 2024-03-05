@@ -7,7 +7,7 @@ import 'load_result.dart';
 /// When [maxSize] is set to [maxSizeUnbounded], the maximum number of items
 /// loaded is unbounded, and pages will never be dropped.
 class PagingConfig {
-  PagingConfig({
+  const PagingConfig({
     this.pageSize = 1,
     this.initialLoadSize = 1,
     this.maxSize = maxSizeUnbounded,
@@ -19,33 +19,24 @@ class PagingConfig {
         assert(initialLoadSize >= 1),
         assert(prefetchDistance >= 0),
         assert(jumpThreshold == LoadResult.countUndefined || jumpThreshold > 0),
-        assert(() {
-          if (!enablePlaceholders && prefetchDistance == 0) {
-            throw ArgumentError(
-                'Placeholders and prefetch are the only ways to trigger '
-                'loading of more data in PagingData, so either placeholders '
-                'must be enabled, or prefetch distance must be > 0.');
-          }
-          return true;
-        }()),
-        assert(() {
-          if (maxSize != maxSizeUnbounded &&
-              maxSize < pageSize + prefetchDistance * 2) {
-            throw ArgumentError(
-                'Maximum size must be at least pageSize + 2 * prefetchDistance,'
-                'pageSize=$pageSize, prefetchDist=$prefetchDistance, '
-                'maxSize=$maxSize');
-          }
-          return true;
-        }());
+        assert(
+            enablePlaceholders || prefetchDistance > 0,
+            'Placeholders and prefetch are the only ways to trigger '
+            'loading of more data in PagingData, so either placeholders '
+            'must be enabled, or prefetch distance must be > 0.'),
+        assert(
+            maxSize == maxSizeUnbounded ||
+                maxSize >= pageSize + prefetchDistance * 2,
+            'Maximum size must be at least pageSize + 2 * prefetchDistance,'
+            'pageSize=$pageSize, prefetchDist=$prefetchDistance, '
+            'maxSize=$maxSize');
 
-  factory PagingConfig.standard({int pageSize = defaultPageSize}) {
-    return PagingConfig(
-      pageSize: pageSize,
-      initialLoadSize: pageSize * defaultInitialPageMultiplier,
-      prefetchDistance: pageSize,
-    );
-  }
+  const PagingConfig.standard({int pageSize = defaultPageSize})
+      : this(
+          pageSize: pageSize,
+          initialLoadSize: pageSize * defaultInitialPageMultiplier,
+          prefetchDistance: pageSize,
+        );
 
   static const int defaultPageSize = 30;
   static const int defaultInitialPageMultiplier = 3;
