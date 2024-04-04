@@ -50,15 +50,14 @@ abstract class StorageKey<T> extends ChangeNotifier
 /// Base class for web [StorageKey].
 abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   BaseStorageKey(
-    String name,
+    super.name,
     T initialValue,
-    BaseStorage storage, {
+    super.storage, {
     ConvertibleBuilder<T, V>? builder,
   })  : assert(name.isNotEmpty),
         _initialValue = initialValue,
         _value = initialValue,
-        _builder = builder,
-        super(name, storage);
+        _builder = builder;
 
   /// Builds an instance of type T from type V.
   final ConvertibleBuilder<T, V>? _builder;

@@ -52,16 +52,12 @@ class UtilityWidgets {
 /// interaction with the stream.
 class StreamBuilderWithCallback<T> extends StreamBuilder<T> {
   const StreamBuilderWithCallback({
-    Key? key,
-    T? initialData,
-    Stream<T>? stream,
-    required AsyncWidgetBuilder<T> builder,
+    super.key,
+    super.initialData,
+    super.stream,
+    required super.builder,
     required this.onData,
-  }) : super(
-            key: key,
-            initialData: initialData,
-            stream: stream,
-            builder: builder);
+  });
 
   /// Called back when StreamBuilder has a data.
   final ValueChanged<T> onData;
@@ -76,10 +72,10 @@ class StreamBuilderWithCallback<T> extends StreamBuilder<T> {
 /// Inherited widget which composes the path to the specific widget in the widget tree.
 class WidgetPathProvider extends InheritedWidget {
   const WidgetPathProvider({
-    Key? key,
-    required Widget child,
+    super.key,
+    required super.child,
     this.userId = '',
-  }) : super(key: key, child: child);
+  });
 
   /// Optional user identifier. Usually it is authenticated user identifier.
   final String userId;
@@ -154,7 +150,7 @@ class _PathSegmentIdentifier extends Equatable with Emptiable {
 /// A value key which is used to persist the widget path.
 @immutable
 class PathKey extends ValueKey<String> {
-  const PathKey(String value) : super(value);
+  const PathKey(super.value);
 }
 
 /// Mixin for implementing [WidgetPathProvider] for widget path generating.
@@ -181,14 +177,13 @@ mixin WidgetPathProviderMixin<T extends StatefulWidget> on State<T> {
 /// Custom `dual ring` circular progress indicator.
 class DualRingProgressIndicator extends StatefulWidget {
   const DualRingProgressIndicator({
-    Key? key,
+    super.key,
     this.duration = const Duration(seconds: 1),
     this.color = const Color(0xff3b82f6),
     this.diameter = 36.0,
     this.text,
   })  : assert(duration != Duration.zero),
-        assert(diameter > 0),
-        super(key: key);
+        assert(diameter > 0);
 
   /// The duration of progress animation.
   final Duration duration;
@@ -288,7 +283,7 @@ class _DualRingPainter extends CustomPainter {
 
 /// Container with shadow.
 class ShadowedContainer extends StatelessWidget {
-  const ShadowedContainer({Key? key, required this.child}) : super(key: key);
+  const ShadowedContainer({super.key, required this.child});
 
   /// The [child] contained by the container.
   final Widget child;
@@ -317,10 +312,10 @@ class ShadowedContainer extends StatelessWidget {
 /// child widget.
 class DismissibleKeyboard extends StatelessWidget {
   const DismissibleKeyboard({
-    Key? key,
+    super.key,
     this.enabled = true,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Whether tap is enabled.
   final bool enabled;
@@ -347,12 +342,12 @@ class DismissibleKeyboard extends StatelessWidget {
 /// Whether wrap the child with some other widget(s).
 class IfElseWrapper extends StatelessWidget {
   const IfElseWrapper({
-    Key? key,
+    super.key,
     this.wrapIf = _alwaysReturnsFalse,
     required this.ifBuilder,
     this.elseBuilder,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Switches between wrapping the [child] with a [ifBuilder] or [elseBuilder].
   final bool Function() wrapIf;
@@ -385,7 +380,7 @@ bool _alwaysReturnsFalse() => false;
 /// A set of toggle buttons working as [Radio] widget.
 class ToggleRadio<T> extends StatefulWidget {
   const ToggleRadio({
-    Key? key,
+    super.key,
     required this.items,
     this.focusNodes,
     this.constraints,
@@ -395,8 +390,7 @@ class ToggleRadio<T> extends StatefulWidget {
     this.renderBorder = true,
     this.onChanged,
   })  : assert(!isExpanded || constraints == null),
-        assert(items.length > 0),
-        super(key: key);
+        assert(items.length > 0);
 
   /// The toggle button widgets.
   final List<ToggleRadioItem<T>> items;
@@ -509,7 +503,7 @@ class _ToggleRadioState<T> extends State<ToggleRadio<T>> {
 /// in a given menu must represent values with consistent types.
 class ToggleRadioItem<T> extends StatelessWidget {
   const ToggleRadioItem({
-    Key? key,
+    super.key,
     this.focusNode,
     this.title,
     this.titleColor,
@@ -518,8 +512,7 @@ class ToggleRadioItem<T> extends StatelessWidget {
     this.width,
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 8),
     required this.value,
-  })  : assert(title != null || icon != null, 'Missing title or icon property'),
-        super(key: key);
+  }) : assert(title != null || icon != null, 'Missing title or icon property');
 
   final String? title;
   final Color? titleColor;

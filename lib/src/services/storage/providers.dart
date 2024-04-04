@@ -91,7 +91,7 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
 
   /// Removes item from inner controller storage.
   void removeKey(StorageItem<T> item) {
-    _items.remove(item);
+    _items.remove(item.key);
   }
 
   /// Removes keys which are not marked as `not removable`.

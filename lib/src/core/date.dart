@@ -16,8 +16,7 @@ class Date extends DateTime {
   /// ```
   /// var dentistAppointment = Date(2017, 9, 7);
   /// ```
-  Date(int year, [int month = DateTime.january, int day = 1])
-      : super(year, month, day);
+  Date(super.year, [super.month, super.day]);
 
   /// Constructs a [Date] instance with current date in the local time zone.
   ///

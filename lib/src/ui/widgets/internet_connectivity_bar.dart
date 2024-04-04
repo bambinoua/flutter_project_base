@@ -8,10 +8,10 @@ final _connectivity = InternetConnectivity();
 
 class InternetConnectivityBar extends StatefulWidget {
   const InternetConnectivityBar({
-    Key? key,
+    super.key,
     this.onStateChange,
     required this.child,
-  }) : super(key: key);
+  });
 
   /// Callbacks when Internet connection state has changed.
   final ValueChanged<bool>? onStateChange;

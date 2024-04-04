@@ -108,10 +108,10 @@ class PageStateBucket implements Disposable {
 /// [PageStateStorage] is used to save and restore values that can outlive the widget.
 class PageStateStorage extends InheritedWidget {
   const PageStateStorage({
-    Key? key,
+    super.key,
     required this.bucket,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   /// The storage bucket to use by wrapped widget subtree.
   final PageStateBucket bucket;
@@ -161,9 +161,7 @@ class PageStateStorage extends InheritedWidget {
 }
 
 class PageStateKey extends ValueKey<String> {
-  const PageStateKey(String value)
-      : assert(value.length > 0),
-        super(value);
+  const PageStateKey(super.value) : assert(value.length > 0);
 }
 
 @immutable
