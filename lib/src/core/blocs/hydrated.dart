@@ -5,7 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 /// Base hydrated [Bloc] which saves its state apart for authenticated user.
 abstract class BaseHydratedBloc<TEvent, TState>
-    extends HydratedBloc<TEvent, TState> with StateSubscriptionMixin<TState> {
+    extends HydratedBloc<TEvent, TState> with BlocSubscriptionsMixin<TState> {
   /// Abstract constructor. This constructor provides an initial [state] and
   /// optional [authId] (usually user identifier) which is used to change a
   /// [storagePrefix].
@@ -29,7 +29,7 @@ abstract class BaseHydratedBloc<TEvent, TState>
 
 /// Base hydrated [Cubit] which saves its state apart for authenticated user.
 abstract class BaseHydratedCubit<TState> extends HydratedCubit<TState>
-    with StateSubscriptionMixin<TState> {
+    with BlocSubscriptionsMixin<TState> {
   /// Abstract constructor. This constructor provides an initial [state] and
   /// optional [authId] (usually user identifier) which is used to change a
   /// [storagePrefix].
@@ -51,9 +51,9 @@ abstract class BaseHydratedCubit<TState> extends HydratedCubit<TState>
   String toString() => '$runtimeType {storage: $storagePrefix}';
 }
 
-/// Mixes additional [key] string to modifyc [storagePrefix].
+/// Mixes additional [key] string to modify [storagePrefix].
 @optionalTypeArgs
-mixin KeyedStoragePrefix<TState> on HydratedMixin<TState> {
+mixin HydratedBlocStoragePrefix<TState> on HydratedMixin<TState> {
   /// A string key that is unique across the entire app which affects
   /// the [storagePrefix]. It is used for storage uniqueness.
   String get key;
@@ -76,7 +76,7 @@ mixin KeyedStoragePrefix<TState> on HydratedMixin<TState> {
 
 /// Mixin which is a helper to handle stream subscriptions.
 @optionalTypeArgs
-mixin StateSubscriptionMixin<TState> on BlocBase<TState> {
+mixin BlocSubscriptionsMixin<TState> on BlocBase<TState> {
   final _subscriptions = <StreamSubscription<TState>>[];
 
   void addSubscription(StreamSubscription<TState> subscription) {
