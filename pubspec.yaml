@@ -1,6 +1,6 @@
 name: flutter_project_base
 description: Set of interfaces and classes for any flutter project.
-version: 0.0.3
+version: 0.0.4
 repository: https://github.com/bambinoua/flutter_project_base.git
 
 environment:
