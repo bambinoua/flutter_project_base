@@ -6,7 +6,6 @@ export 'src/ui/scaffold_messenger.dart'
     show ScaffoldMessengerOfContext, ThemeOfContext;
 export 'src/ui/text_input_formatters.dart';
 export 'src/ui/web/context_menu.dart';
-export 'src/ui/web/html_view_factory.dart' show DivHtmlElement;
 export 'src/ui/widgets/capture.dart';
 export 'src/ui/widgets/extensions.dart';
 export 'src/ui/widgets/inner_shadow.dart' show InnerShadow;

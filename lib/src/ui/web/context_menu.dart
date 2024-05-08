@@ -2,15 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 
-import '../../../ui.dart';
-
 const _contextMenu = 'contextmenu';
 
-/// The widget provides a context menu base on [showMenu] for web platform.
+/// The widget provides a context menu based on [showMenu] for web platform.
 class WebContextMenu<T> extends StatefulWidget {
   const WebContextMenu({
     super.key,
-    required this.wrappingHtmlElement,
+    this.wrappingHtmlElementId = '',
+    this.wrappingHtmlElementClass = '',
     required this.itemBuilder,
     this.onOpened,
     this.onSelected,
@@ -18,8 +17,11 @@ class WebContextMenu<T> extends StatefulWidget {
     required this.child,
   }) : assert(kIsWeb, 'WebContextMenu is only available on web platform');
 
-  /// The HTML element which wraps the target for context menu.
-  final HtmlElement wrappingHtmlElement;
+  /// The `id` attribute of HTML element which wraps the target for context menu.
+  final String wrappingHtmlElementId;
+
+  /// The `class` attribute of HTML element which wraps the target for context menu.
+  final String wrappingHtmlElementClass;
 
   /// Called when the button is pressed to create the items to show in the menu.
   final PopupMenuItemBuilder<T> itemBuilder;
@@ -68,12 +70,22 @@ class _WebContextMenuState<T> extends State<WebContextMenu<T>> {
       onSecondaryTapDown: _onSecondaryTapDown,
       child: Stack(
         children: [
-          HtmlElementView(
-            viewType: DivHtmlElement(
-              id: widget.wrappingHtmlElement.id,
-              className: widget.wrappingHtmlElement.className,
-              unifyIdAttribute: false,
-            ).toString(),
+          HtmlElementView.fromTagName(
+            tagName: 'div',
+            onElementCreated: (element) {
+              final htmlElement = element as HtmlElement;
+              htmlElement
+                ..style.width = '100%'
+                ..style.height = '100%'
+                ..style.position = 'relative'
+                ..style.overflow = 'hidden';
+              if (widget.wrappingHtmlElementId.isNotEmpty) {
+                htmlElement.id = widget.wrappingHtmlElementId;
+              }
+              if (widget.wrappingHtmlElementClass.isNotEmpty) {
+                htmlElement.className = widget.wrappingHtmlElementClass;
+              }
+            },
           ),
           widget.child,
         ],
@@ -83,8 +95,8 @@ class _WebContextMenuState<T> extends State<WebContextMenu<T>> {
 
   dynamic _pointerEventListener(Event event) {
     final target = event.target as HtmlElement;
-    final wrapper = widget.wrappingHtmlElement;
-    if (target.id == wrapper.id && target.className == wrapper.className) {
+    if (target.id == widget.wrappingHtmlElementId &&
+        target.className == widget.wrappingHtmlElementClass) {
       event.preventDefault();
     }
   }
