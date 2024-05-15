@@ -33,7 +33,7 @@ abstract class ApplicationService {}
 /// These are services that typically talk to external resources and are not
 /// part of the primary problem domain. The common examples that I see for
 /// this are emailing and logging.
-abstract class InfrastructureService implements Disposable {}
+abstract class InfrastructureService {}
 
 /// Defines an entity with a single primary key with `id` property.
 ///
@@ -65,13 +65,13 @@ abstract class IdentityGenerator<T> implements DomainService {
 ///
 //! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
 //! inheritated objects as @immutable
-abstract class Entity extends Identity<int> with EquatableMixin {
+abstract class Entity<T> extends Identity<T> with EquatableMixin {
   /// Creates an instance of reference entity.
-  Entity({this.id});
+  Entity({this.id}) : assert(T == int || T == String);
 
   /// Entity unique identifier.
   @override
-  int? id;
+  T? id;
 
   /// Returns `true` if entity is transient, i.e. new.
   bool get isTransient => id == null;
@@ -80,7 +80,7 @@ abstract class Entity extends Identity<int> with EquatableMixin {
   List<Object?> get props => [id];
 }
 
-/// Provides meta property for mixin'ed object.
+/// Provides a meta property for mixin'ed object.
 mixin MetaEntityMixin {
   /// Custom data for this object.
   MetaEntity get meta;
@@ -107,10 +107,10 @@ class MetaEntity {
   /// Primarily shown in the user interface.
   final String displayName;
 
-  /// [displayName] in plural.
+  /// The [displayName] in plural.
   final String displayNamePlural;
 
-  /// Type of the entity you want this to apply.
+  /// The type of the entity you want this to apply.
   final Type entityType;
 }
 
@@ -121,7 +121,7 @@ class MetaEntity {
 /// example may be an order and its line-items, these will be separate
 /// objects, but it's useful to treat the order (together with its line
 /// items) as a single aggregate
-abstract class AggregateRoot extends Entity {
+abstract class AggregateRoot<T> extends Entity<T> {
   AggregateRoot({super.id});
 }
 
