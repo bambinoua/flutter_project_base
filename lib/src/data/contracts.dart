@@ -6,11 +6,11 @@ import 'query.dart';
 
 /// The [DataService] interface defines the contract by which app retrieve data.
 ///  * TSource is a type of table schema or name to be handled.
-///  * TQueryable is a type of returned collection of entities.
-///  * TSingle is a type of single entity in collection.
-///  * TValue is a type of value to be inserted or updated.
+///  * TQueryable is a type of returned collection of values.
+///  * TInput is a type of inserted/updated value.
+///  * TOutput is a type of returned value.
 @injectable
-abstract class DataService<TSource, TQueryable, TSingle, TValue>
+abstract interface class DataService<TSource, TQueryable, TInput, TOutput>
     implements InfrastructureService, Disposable {
   /// Fetches the snapthot (usually list of rows) from underlaying `source`.
   /// ```
@@ -31,7 +31,7 @@ abstract class DataService<TSource, TQueryable, TSingle, TValue>
   /// };
   /// int id = await db.insert('source', value);
   /// ```
-  Future<TSingle> insert(TSource source, {required TValue value});
+  Future<TOutput> insert(TSource source, {required TInput value});
 
   /// Updates `source` with `values`, a map from column names to new column
   /// values. null is a valid value that will be translated to NULL.
@@ -43,8 +43,8 @@ abstract class DataService<TSource, TQueryable, TSingle, TValue>
   /// int count = await db.update('source', item.toMap(),
   ///    where: [QueryFilter('id', 1]);
   /// ```
-  Future<TSingle> update(TSource source,
-      {required TValue value, List<QueryFilter>? where});
+  Future<TOutput> update(TSource source,
+      {required TInput value, List<QueryFilter>? where});
 
   /// Deletes rows from `source`.
   ///
@@ -59,9 +59,9 @@ abstract class DataService<TSource, TQueryable, TSingle, TValue>
 }
 
 /// Represents an SQL database service.
-abstract class SqlDataService<TConnection, TSource, TQueryable, TEntity, TValue>
-    extends DataService<TSource, TQueryable, TEntity, TValue>
-    with DataConnection<TConnection, TSource, TQueryable, TEntity, TValue> {
+abstract class SqlDataService<TConnection, TSource, TQueryable, TInput, TOutput>
+    extends DataService<TSource, TQueryable, TInput, TOutput>
+    with DataConnection<TConnection, TSource, TQueryable, TInput, TOutput> {
   /// Executes a raw SQL SELECT query and returns a list
   /// of the rows that were found.
   ///
@@ -69,17 +69,17 @@ abstract class SqlDataService<TConnection, TSource, TQueryable, TEntity, TValue>
   /// List<Map> snapshot = await database.query('SELECT * FROM test WHERE id = ?',
   ///    parameters: [1]);
   /// ```
-  Future<List<TValue>> query(String sql, {List<Object?>? parameters});
+  Future<List<TOutput>> query(String sql, {List<Object?>? parameters});
 }
 
-/// Represents a remote database service.
-abstract class RemoteDataService<TConnection, TSource, TQueryable, TEntity,
-        TValue> extends DataService<TSource, TQueryable, TEntity, TValue>
-    with DataConnection<TConnection, TSource, TQueryable, TEntity, TValue> {}
+/// Represents an REST API web data service.
+abstract class WebDataService<TConnection, TSource, TQueryable, TInput, TOutput>
+    extends DataService<TSource, TQueryable, TInput, TOutput>
+    with DataConnection<TConnection, TSource, TQueryable, TInput, TOutput> {}
 
 /// Provides a connection for [DataService]s which require it.
-mixin DataConnection<TConnection, TSource, TQueryable, TEntity, TValue>
-    on DataService<TSource, TQueryable, TEntity, TValue> {
-  /// Declares a connection if [DataService] requires it.
+mixin DataConnection<TConnection, TSource, TQueryable, TInput, TOutput>
+    on DataService<TSource, TQueryable, TInput, TOutput> {
+  /// The connection for underlying instance of [DataService].
   TConnection get connection;
 }
