@@ -292,7 +292,7 @@ class ShadowedContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.background,
+        color: context.theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: MediaQuery.platformBrightnessOf(context) == Brightness.light
