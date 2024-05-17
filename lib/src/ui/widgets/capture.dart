@@ -39,7 +39,14 @@ final class WidgetToImage {
         child: renderRepaintBoundary,
       ),
       configuration: ViewConfiguration(
-        size: logicalSize,
+        physicalConstraints: BoxConstraints(
+          maxWidth: flutterView.physicalSize.width,
+          maxHeight: flutterView.physicalSize.height,
+        ),
+        logicalConstraints: BoxConstraints(
+          maxWidth: logicalSize.width,
+          maxHeight: logicalSize.height,
+        ),
         devicePixelRatio: pixelRatio,
       ),
     );

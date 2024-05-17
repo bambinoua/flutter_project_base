@@ -11,7 +11,7 @@ class SnackBarRepository {
     context._scaffoldMessenger.clearSnackBars();
     return context._scaffoldMessenger.showSnackBar(_snackBarBuilder(
       message,
-      context.theme.colorScheme.background,
+      context.theme.colorScheme.surface,
       Icons.info_outline,
       closeTooltip,
     ));
@@ -64,7 +64,7 @@ class MaterialBannerRepository {
     context.clearMaterialBanners();
     return context._scaffoldMessenger.showMaterialBanner(_materialBannerBuilder(
       message,
-      context.theme.colorScheme.background,
+      context.theme.colorScheme.surface,
       Icons.info_outline,
       closeTooltip,
     ));
