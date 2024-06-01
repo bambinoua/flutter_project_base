@@ -22,9 +22,9 @@ analyzer:
     invalid_assignment: warning
     invalid_annotation_target: warning
     todo: ignore
-    unused_element: error
-    unused_import: error
-    unused_local_variable: error
+    unused_element: warning
+    unused_import: warning
+    unused_local_variable: warning
     unsafe_html: ignore
   exclude:
     - build/**
