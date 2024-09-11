@@ -29,8 +29,8 @@ final class WidgetToImage {
         ? View.of(context)
         : ui.PlatformDispatcher.instance.views.first;
     final logicalSize = flutterView.physicalSize / flutterView.devicePixelRatio;
-    final widgetSize = flutterView.physicalSize;
-    assert(logicalSize.aspectRatio == widgetSize.aspectRatio);
+    final physicalSize = flutterView.physicalSize;
+    assert(logicalSize.aspectRatio == physicalSize.aspectRatio);
 
     final renderRepaintBoundary = RenderRepaintBoundary();
     final renderView = RenderView(
@@ -40,8 +40,8 @@ final class WidgetToImage {
       ),
       configuration: ViewConfiguration(
         physicalConstraints: BoxConstraints(
-          maxWidth: flutterView.physicalSize.width,
-          maxHeight: flutterView.physicalSize.height,
+          maxWidth: physicalSize.width,
+          maxHeight: physicalSize.height,
         ),
         logicalConstraints: BoxConstraints(
           maxWidth: logicalSize.width,
@@ -75,13 +75,14 @@ final class WidgetToImage {
       ..flushCompositingBits()
       ..flushPaint();
 
-    if (buildDelay.inMicroseconds > 0) await Future.delayed(buildDelay);
+    if (buildDelay.inMicroseconds > 0) {
+      await Future.delayed(buildDelay);
+    }
 
     ui.Image? image;
     try {
       image = await renderRepaintBoundary.toImage(pixelRatio: pixelRatio);
       final byteData = await image.toByteData(format: format);
-      assert(byteData != null);
       return byteData!.buffer.asUint8List();
     } on Exception {
       return Uint8List(0);
