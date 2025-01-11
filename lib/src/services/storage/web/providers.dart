@@ -19,10 +19,13 @@ enum WebStorageType {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-class WebStorage implements BaseStorage {
+final class WebStorage implements BaseStorage {
   const WebStorage._(this._type);
 
+  /// The web local storage.
   static const WebStorage local = WebStorage._(WebStorageType.local);
+
+  /// The web session storage.
   static const WebStorage session = WebStorage._(WebStorageType.session);
 
   /// The type of used web storage.
@@ -52,9 +55,7 @@ class WebStorage implements BaseStorage {
   }
 
   @override
-  void clear() {
-    _storage.clear();
-  }
+  void clear() => _storage.clear();
 
   @override
   List<String> get keys => _storage.keys.toList();

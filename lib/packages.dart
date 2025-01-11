@@ -7,6 +7,7 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:freezed_annotation/freezed_annotation.dart';
 export 'package:get_it/get_it.dart' hide Disposable;
 export 'package:google_fonts/google_fonts.dart';
+export 'package:hive_ce/hive.dart' show HiveCipher;
 export 'package:hydrated_bloc/hydrated_bloc.dart';
 export 'package:injectable/injectable.dart';
 export 'package:json_annotation/json_annotation.dart';

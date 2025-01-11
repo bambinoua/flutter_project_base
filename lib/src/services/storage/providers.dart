@@ -1,14 +1,18 @@
+import 'package:hive_ce/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/basic_types.dart';
 import 'contracts.dart';
 
 /// Provides implementation of [SharedPreferences] storage.
-class SharedPreferencesStorage implements BaseStorage {
+///
+/// All data is stored as a [String].
+final class SharedPreferencesStorage implements BaseStorage {
   const SharedPreferencesStorage._(this._sharedPreferences);
 
   static SharedPreferencesStorage? _instance;
 
+  /// Returns this singleton.
   static SharedPreferencesStorage get instance {
     assert(
         _instance != null,
@@ -17,11 +21,10 @@ class SharedPreferencesStorage implements BaseStorage {
     return _instance!;
   }
 
-  /// Initializes the storage.
+  /// Initializes this storage.
   static Future<SharedPreferencesStorage> init() async {
-    _instance ??=
-        SharedPreferencesStorage._(await SharedPreferences.getInstance());
-    return _instance!;
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return _instance ??= SharedPreferencesStorage._(sharedPreferences);
   }
 
   final SharedPreferences _sharedPreferences;
@@ -45,17 +48,69 @@ class SharedPreferencesStorage implements BaseStorage {
   }
 
   @override
-  void clear() {
-    _sharedPreferences.clear();
-  }
+  void clear() => _sharedPreferences.clear();
 
   @override
-  List<String> get keys {
-    return _sharedPreferences.getKeys().toList();
-  }
+  List<String> get keys => _sharedPreferences.getKeys().toList();
 
   @override
   int get length => keys.length;
+}
+
+/// Provides implementation of [Hive] storage.
+///
+/// All data is stored as a [String].
+final class HiveStorage implements BaseStorage {
+  const HiveStorage._(this._box);
+
+  static late final HiveStorage? _instance;
+
+  /// Returns this singleton.
+  static HiveStorage get instance {
+    assert(_instance != null,
+        'You forgot to call `HiveStorage.init()` on app initialization');
+    return _instance!;
+  }
+
+  /// Initializes this storage.
+  static Future<HiveStorage> init(String path, String name,
+      {HiveCipher? encryptionCipher}) async {
+    assert(name.isNotEmpty);
+    Hive.init(path);
+    final box = await Hive.openBox<String>(name,
+        collection: 'storage', encryptionCipher: encryptionCipher);
+    return _instance ??= HiveStorage._(box);
+  }
+
+  /// The interval hive box.
+  final Box<String> _box;
+
+  @override
+  String? getItem(String key) {
+    assert(key.isNotEmpty);
+    return _box.get(key);
+  }
+
+  @override
+  void putItem(String key, String value) {
+    assert(key.isNotEmpty);
+    _box.put(key, value);
+  }
+
+  @override
+  void removeItem(String key) {
+    assert(key.isNotEmpty);
+    _box.delete(key);
+  }
+
+  @override
+  void clear() => _box.clear();
+
+  @override
+  List<String> get keys => _box.keys.toList().cast<String>();
+
+  @override
+  int get length => _box.length;
 }
 
 /// Creates a persistent key which stores its value in Shared Preferences
@@ -68,7 +123,7 @@ class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.
-mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
+base mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Contains all storage items.
   final Map<String, StorageItem<T>> _items = {};
 
@@ -99,7 +154,7 @@ mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
 }
 
 /// Provides implementation of in-memory storage.
-class MemoryStorage implements BaseStorage {
+final class MemoryStorage implements BaseStorage {
   factory MemoryStorage() => _instance;
 
   static final MemoryStorage _instance = MemoryStorage();
