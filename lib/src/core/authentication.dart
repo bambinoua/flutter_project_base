@@ -17,9 +17,12 @@ class AuthenticationState<T> with _$AuthenticationState<T> {
   const AuthenticationState._();
 
   const factory AuthenticationState.waiting() = AuthWaiting;
+
   const factory AuthenticationState.unauthenticated() = AuthUnauthenticated;
+
   const factory AuthenticationState.authenticated([T? data]) =
       AuthAuthenticated;
+
   const factory AuthenticationState.failure([ApplicationException? error]) =
       AuthFailure;
 
