@@ -55,10 +55,10 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     super.name,
     T initialValue,
     super.storage, {
-    ConvertibleBuilder<T, V>? builder,
+    ConvertibleBuilder<T, V>? valueBuilder,
   })  : assert(name.isNotEmpty),
         _initialValue = initialValue,
-        _builder = builder,
+        _valueBuilder = valueBuilder,
         _value = initialValue;
 
   static const _primitiveTypes = <Type>[
@@ -80,7 +80,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   final T _initialValue;
 
   /// Builds an instance of type T from type V.
-  final ConvertibleBuilder<T, V>? _builder;
+  final ConvertibleBuilder<T, V>? _valueBuilder;
 
   /// Current value.
   late T _value;
@@ -103,7 +103,9 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     }
     try {
       final decodedValue = json.decode(jsonValue) as V;
-      return _builder != null ? _builder(decodedValue) : decodedValue as T;
+      return _valueBuilder != null
+          ? _valueBuilder(decodedValue)
+          : decodedValue as T;
     } on FormatException {
       rethrow;
     }

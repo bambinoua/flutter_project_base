@@ -67,13 +67,14 @@ final class WebStorage implements BaseStorage {
 /// Creates persistent key which stores its value in web local storage.
 class WebLocalStorageKey<T, V> extends BaseStorageKey<T, V> {
   WebLocalStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? builder})
-      : super(name, initialValue, WebStorage.local, builder: builder);
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, WebStorage.local, valueBuilder: valueBuilder);
 }
 
 /// Creates persistent key which stores its value in web session storage.
 class WebSessionStorageKey<T, V> extends BaseStorageKey<T, V> {
   WebSessionStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? builder})
-      : super(name, initialValue, WebStorage.session, builder: builder);
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, WebStorage.session,
+            valueBuilder: valueBuilder);
 }

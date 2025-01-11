@@ -117,9 +117,9 @@ final class HiveStorage implements BaseStorage {
 /// on Android or NSUserDefaults on iOS.
 class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
   SharedPreferencesStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? builder})
+      {ConvertibleBuilder<T, V>? valueBuilder})
       : super(name, initialValue, SharedPreferencesStorage.instance,
-            builder: builder);
+            valueBuilder: valueBuilder);
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.
@@ -193,6 +193,14 @@ final class MemoryStorage implements BaseStorage {
 /// Creates a memory storage key.
 class MemoryStorageKey<T, V> extends BaseStorageKey<T, V> {
   MemoryStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? builder})
-      : super(name, initialValue, MemoryStorage(), builder: builder);
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, MemoryStorage(), valueBuilder: valueBuilder);
+}
+
+/// Creates a [Hive] storage key.
+class HiveStorageKey<T, V> extends BaseStorageKey<T, V> {
+  HiveStorageKey(String name, T initialValue,
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, HiveStorage.instance,
+            valueBuilder: valueBuilder);
 }
