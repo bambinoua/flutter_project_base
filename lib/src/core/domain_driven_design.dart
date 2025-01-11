@@ -62,16 +62,13 @@ abstract class IdentityGenerator<T> implements DomainService {
 /// rather by a thread of continuity and identity. Essentially, entities
 /// have Id's and are stored in a database. An entity is generally mapped
 /// to a table in a relational database.
-///
-//! Use [EquatableMixin] instead extending of [Equatable] avoids annotating
-//! inheritated objects as @immutable
 abstract class Entity<T> extends Identity<T> with EquatableMixin {
   /// Creates an instance of reference entity.
   Entity({this.id}) : assert(T == int || T == String);
 
   /// Entity unique identifier.
   @override
-  T? id;
+  final T? id;
 
   /// Returns `true` if entity is transient, i.e. new.
   bool get isTransient => id == null;
