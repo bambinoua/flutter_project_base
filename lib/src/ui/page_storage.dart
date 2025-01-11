@@ -16,11 +16,11 @@ class WebPageStorageBucket implements Disposable {
   WebPageStorageBucket({this.name = 'storage'})
       : assert(name.isNotEmpty),
         _memoryStorage = MemoryStorageKey(name, <String, dynamic>{},
-            builder: (data) => data),
+            valueBuilder: (data) => data),
         _localStorage = WebLocalStorageKey(name, <String, dynamic>{},
-            builder: (data) => data),
+            valueBuilder: (data) => data),
         _sessionStorage = WebSessionStorageKey(name, <String, dynamic>{},
-            builder: (data) => data) {
+            valueBuilder: (data) => data) {
     _memoryStorage.addListener(_memoryStorageChangeListener);
   }
 
@@ -32,28 +32,28 @@ class WebPageStorageBucket implements Disposable {
   final BaseStorageKey<JsonMap, JsonMap> _sessionStorage;
 
   /// Registers a memory storage key.
-  void registerMemoryKey<T>(String key, T initialValue) {
-    final storageKey = MemoryStorageKey<T, T>(name, initialValue);
+  void registerMemoryKey<T>(MemoryStorageKey<T, T> storageKey) {
     final storageValue = _memoryStorage.value;
     storageValue.putIfAbsent(name, () => storageKey);
     _memoryStorage.value = storageValue;
   }
 
   /// Registers a web session storage key.
-  void registerSessionKey<T, V>(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder}) {
-    final storageKey =
-        WebSessionStorageKey<T, V>(name, initialValue, builder: valueBuilder);
+  void registerSessionKey<T, V>(WebSessionStorageKey<T, V> storageKey) {
     final storageValue = _sessionStorage.value;
     storageValue.putIfAbsent(name, () => storageKey);
     _sessionStorage.value = storageValue;
   }
 
   /// Registers a web local storage key.
-  void registerPersistentKey<T, V>(String key, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder}) {
-    final storageKey =
-        WebLocalStorageKey(name, initialValue, builder: valueBuilder);
+  void registerLocalKey<T, V>(WebLocalStorageKey<T, V> storageKey) {
+    final storageValue = _localStorage.value;
+    storageValue.putIfAbsent(name, () => storageKey);
+    _localStorage.value = storageValue;
+  }
+
+  /// Registers a hive storage key.
+  void registerHiveKey<T, V>(HiveStorageKey<T, V> storageKey) {
     final storageValue = _localStorage.value;
     storageValue.putIfAbsent(name, () => storageKey);
     _localStorage.value = storageValue;
