@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
-import '../../core/contracts.dart';
 
 /// The Storage interface provides access to a particular mobile, memory,
 /// domain's session or local storage. It allows, for example, the addition,
@@ -35,7 +34,10 @@ abstract class BaseStorage {
 /// Provices interface for building values which cen be persisted in undrlyiing storage.
 abstract class StorageKey<T> extends ChangeNotifier
     implements ValueListenable<T> {
-  StorageKey(this.name, this.storage);
+  StorageKey(
+    this.name,
+    this.storage,
+  ) : assert(name.isNotEmpty);
 
   /// Name of this storage key.
   final String name;
@@ -56,14 +58,29 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     ConvertibleBuilder<T, V>? builder,
   })  : assert(name.isNotEmpty),
         _initialValue = initialValue,
-        _value = initialValue,
-        _builder = builder;
+        _builder = builder,
+        _value = initialValue;
 
-  /// Builds an instance of type T from type V.
-  final ConvertibleBuilder<T, V>? _builder;
+  static const _primitiveTypes = <Type>[
+    String,
+    bool,
+    num,
+    int,
+    double,
+    List<String>,
+    List<bool>,
+    List<num>,
+    List<int>,
+    List<double>,
+    Map<String, String>,
+    Map<String, dynamic>,
+  ];
 
   /// Default value if storage does not contains value yet.
   final T _initialValue;
+
+  /// Builds an instance of type T from type V.
+  final ConvertibleBuilder<T, V>? _builder;
 
   /// Current value.
   late T _value;
@@ -98,15 +115,22 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
         if (object is DateTime) {
           throw FormatException(
             'Could not encode the `DateTime` directly. Please convert it to '
-            '`String` value calling `toIso8601String()` method, or to '
-            '`int` value calling `millisecondsSinceEpoch` property',
+            '`String` value using `toIso8601String()` method, or to '
+            '`int` value using `millisecondsSinceEpoch` property.',
             object.toString(),
           );
         }
         if (object is Enum) {
           throw FormatException(
             'Could not encode the `Enum` directly. Please convert it to '
-            '`int` value calling `index` property',
+            '`int` value using `index` property or `String` value using `name` property.',
+            object.toString(),
+          );
+        }
+        if (!_primitiveTypes.contains(object.runtimeType)) {
+          throw FormatException(
+            'Could not encode the [object] directly. Please convert it to primitive type'
+            'or use method `toJson()` for encoded class.',
             object.toString(),
           );
         }
@@ -132,30 +156,19 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   }
 }
 
-/// Specifies a priority setting that is used to decide whether
-/// to evict a storafe entry.
-enum StorageItemPriority {
-  /// Indicates that there is no priority for removing the storage item.
-  session,
-
-  ///Indicates that a storage item should never be removed from the storage.
-  persistent
-}
-
-/// A key that uses as parameter for [BaseStorage].
-@immutable
-class StorageItem<T> implements Cloneable<StorageItem<T>> {
+/// Represents an individual storage entry in the [BaseStorage].
+class StorageItem<T> {
   /// Construct a [StorageItem] with optional persistence.
   const StorageItem(
     this.key,
     this.value, {
     this.priority = StorageItemPriority.session,
-  });
+  }) : assert(key != '');
 
-  /// An unique identifier for a key.
+  /// A unique identifier for this storage entry.
   final String key;
 
-  /// An data of any type for this key.
+  /// A data of type T for this storage entry.
   final T value;
 
   /// Priority setting that is used to determine whether to evict
@@ -163,16 +176,33 @@ class StorageItem<T> implements Cloneable<StorageItem<T>> {
   final StorageItemPriority priority;
 
   @override
-  StorageItem<T> copyWith({
-    T? value,
-  }) =>
-      StorageItem<T>(
-        key,
-        value ?? this.value,
-        priority: priority,
-      );
+  int get hashCode => Object.hash(key, value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StorageItem &&
+          key == other.key &&
+          value == other.value &&
+          priority == other.priority;
 
   @override
   String toString() => 'StorageItem (key: $key, value: $value, '
       'priority: ${priority.name})';
+}
+
+/// Specifies a priority setting that is used to decide whether
+/// to evict a storafe entry.
+enum StorageItemPriority {
+  /// Indicates that there is no priority for removing the storage item.
+  session,
+
+  ///Indicates that a storage item should never be removed from the storage.
+  persistent;
+
+  /// Whether the priority is session.
+  bool get isSession => this == StorageItemPriority.session;
+
+  /// Whether the priority is persistent.
+  bool get isPersistent => this == StorageItemPriority.persistent;
 }
