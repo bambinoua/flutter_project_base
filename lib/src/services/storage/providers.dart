@@ -113,47 +113,9 @@ final class HiveStorage implements BaseStorage {
   int get length => _box.length;
 }
 
-/// Creates a persistent key which stores its value in Shared Preferences
-/// on Android or NSUserDefaults on iOS.
-class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
-  SharedPreferencesStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, SharedPreferencesStorage.instance,
-            valueBuilder: valueBuilder);
-}
-
-/// Storage controller mixin allows to manipulate by priority of cache items.
-base mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
-  /// Contains all storage items.
-  final Map<String, StorageItem<T>> _items = {};
-
-  /// Returns list of storage items which will not be evicted after
-  /// session close.
-  List<StorageItem<T>> get persistentKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.persistent)
-      .toList();
-
-  /// Returns list of storage items which will be evicted after
-  /// session close.
-  List<StorageItem<T>> get sessionKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.session)
-      .toList();
-
-  /// Puts item into inner controller storage.
-  void saveKey(StorageItem<T> item) {
-    _items[item.key] = item;
-  }
-
-  /// Removes item from inner controller storage.
-  void removeKey(StorageItem<T> item) {
-    _items.remove(item.key);
-  }
-
-  /// Removes keys which are not marked as `not removable`.
-  void removeSessionKeys();
-}
-
 /// Provides implementation of in-memory storage.
+///
+/// All data is stored as a [String].
 final class MemoryStorage implements BaseStorage {
   factory MemoryStorage() => _instance;
 
@@ -190,17 +152,59 @@ final class MemoryStorage implements BaseStorage {
   int get length => _storage.length;
 }
 
+/// Creates a persistent key which stores its value in Shared Preferences
+/// on Android or NSUserDefaults on iOS.
+final class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
+  SharedPreferencesStorageKey(String name, T initialValue,
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, SharedPreferencesStorage.instance,
+            valueBuilder: valueBuilder);
+}
+
+/// Creates a persistent key which stores its value in [Hive] database.
+final class HiveStorageKey<T, V> extends BaseStorageKey<T, V> {
+  HiveStorageKey(String name, T initialValue,
+      {ConvertibleBuilder<T, V>? valueBuilder})
+      : super(name, initialValue, HiveStorage.instance,
+            valueBuilder: valueBuilder);
+}
+
 /// Creates a memory storage key.
-class MemoryStorageKey<T, V> extends BaseStorageKey<T, V> {
+///
+/// This key is similar to memory cache.
+final class MemoryStorageKey<T, V> extends BaseStorageKey<T, V> {
   MemoryStorageKey(String name, T initialValue,
       {ConvertibleBuilder<T, V>? valueBuilder})
       : super(name, initialValue, MemoryStorage(), valueBuilder: valueBuilder);
 }
 
-/// Creates a [Hive] storage key.
-class HiveStorageKey<T, V> extends BaseStorageKey<T, V> {
-  HiveStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, HiveStorage.instance,
-            valueBuilder: valueBuilder);
+/// Storage controller mixin allows to manipulate by priority of cache items.
+base mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
+  /// Contains all storage items.
+  final Map<String, StorageItem<T>> _items = {};
+
+  /// Returns list of storage items which will not be evicted after
+  /// session close.
+  List<StorageItem<T>> get persistentKeys => _items.values
+      .where((item) => item.priority == StorageItemPriority.persistent)
+      .toList();
+
+  /// Returns list of storage items which will be evicted after
+  /// session close.
+  List<StorageItem<T>> get sessionKeys => _items.values
+      .where((item) => item.priority == StorageItemPriority.session)
+      .toList();
+
+  /// Puts item into inner controller storage.
+  void saveKey(StorageItem<T> item) {
+    _items[item.key] = item;
+  }
+
+  /// Removes item from inner controller storage.
+  void removeKey(StorageItem<T> item) {
+    _items.remove(item.key);
+  }
+
+  /// Removes keys which are not marked as `not removable`.
+  void removeSessionKeys();
 }
