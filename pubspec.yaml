@@ -37,7 +37,9 @@ dependencies:
   uuid: ^4.5.0
 
 ignored_advisories:
- - GHSA-4rgh-jx4f-qfcq  
+ - GHSA-4rgh-jx4f-qfcq
+ - GHSA-9324-jv53-9cc8
+ - GHSA-jwpw-q68h-r678
 
 dev_dependencies:
   flutter_test:
