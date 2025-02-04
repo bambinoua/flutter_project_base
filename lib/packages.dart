@@ -1,4 +1,4 @@
-library packages;
+library;
 
 export 'package:collection/collection.dart';
 export 'package:device_info_plus/device_info_plus.dart';

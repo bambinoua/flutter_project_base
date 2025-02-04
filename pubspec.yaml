@@ -4,7 +4,7 @@ version: 0.0.5
 repository: https://github.com/bambinoua/flutter_project_base.git
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: ">=3.5.4 <4.0.0"
 
 dependencies:
   flutter:
@@ -15,23 +15,24 @@ dependencies:
   device_info_plus: ^10.0.2
   dio: ^4.0.6
   equatable: ^2.0.5
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.0.0
+  freezed: ^2.5.8
   freezed_annotation: ^2.4.4
-  get_it: ^7.7.0
+  get_it: ^8.0.3
   google_fonts: ^6.2.1
   hive_ce: ^2.9.0
-  hydrated_bloc: ^9.1.5
+  hydrated_bloc: ^10.0.0
   injectable: ^2.4.4
   intl: ^0.19.0
   js: ^0.6.7
   json_annotation: ^4.9.0
   logging: ^1.2.0
   mask_text_input_formatter: ^2.9.0
-  meta: ^1.12.0
+  meta: ^1.15.0
   path_provider: ^2.1.4
   provider: ^6.1.2
   rxdart: ^0.28.0
-  shared_preferences: ^2.3.2
+  shared_preferences: ^2.5.1
   universal_html: ^2.2.4
   uuid: ^4.5.0
 
@@ -41,13 +42,14 @@ ignored_advisories:
 dev_dependencies:
   flutter_test:
     sdk: flutter #! depends on js: 0.6.5, meta: 1.8.0
+  build_runner: ^2.4.14
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

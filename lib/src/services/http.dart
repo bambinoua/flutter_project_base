@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 
 import '../core/exceptions.dart';
 
-
 enum HttpMethod { head, get, post, put, patch, delete }
 
 enum HttpBodyType { json, plain, stream, bytes }
@@ -231,7 +230,6 @@ class DioHttpClient implements BaseHttpClient {
             }
           }
           break;
-        default:
       }
       throw HttpClientException(message: e.message, code: e.type.name);
     } finally {

@@ -159,19 +159,16 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 }
 
 /// Represents an individual storage entry in the [BaseStorage].
-class StorageItem<T> {
+class StorageItem<T> extends ValueNotifier<T> {
   /// Construct a [StorageItem] with optional persistence.
-  const StorageItem(
+  StorageItem(
     this.key,
-    this.value, {
+    super.value, {
     this.priority = StorageItemPriority.session,
   }) : assert(key != '');
 
   /// A unique identifier for this storage entry.
   final String key;
-
-  /// A data of type T for this storage entry.
-  final T value;
 
   /// Priority setting that is used to determine whether to evict
   /// a storage entry.

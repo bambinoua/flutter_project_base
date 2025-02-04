@@ -204,9 +204,27 @@ class Helper {
       final grade = index / length;
       return Color.fromARGB(
           255,
-          (startColor.red * (1 - grade) + grade * endColor.red).round(),
-          (startColor.green * (1 - grade) + grade * endColor.green).round(),
-          (startColor.blue * (1 - grade) + grade * endColor.blue).round());
+          (startColor.ri * (1 - grade) + grade * endColor.ri).round(),
+          (startColor.gi * (1 - grade) + grade * endColor.gi).round(),
+          (startColor.bi * (1 - grade) + grade * endColor.bi).round());
     });
   }
+}
+
+extension ColorComponents on Color {
+  /// The integer of the alpha channel component.
+  int get ai => _floatToInt8(a);
+
+  /// The integer of the red color component.
+  int get ri => _floatToInt8(r);
+
+  /// The integer of the green color component.
+  int get gi => _floatToInt8(g);
+
+  /// The integer of the blue color component.
+  int get bi => _floatToInt8(b);
+}
+
+int _floatToInt8(double value) {
+  return (value * 255.0).round() & 0xff;
 }

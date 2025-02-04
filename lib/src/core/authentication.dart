@@ -4,32 +4,39 @@ import '../../core.dart';
 
 part 'authentication.freezed.dart';
 
-enum AuthenticationStatus {
-  unauthenticated,
-  authenticated,
+enum AuthStatus {
+  signedOut,
+  signedIn,
   failure,
   waiting,
 }
 
 /// All available authentication states.
 @freezed
-class AuthenticationState<T> with _$AuthenticationState<T> {
-  const AuthenticationState._();
+class AuthState<T> with _$AuthState<T> {
+  /// The `waiting` state.
+  const factory AuthState.waiting() = AuthWaiting;
 
-  const factory AuthenticationState.waiting() = AuthWaiting;
+  /// The `signed out` state.
+  const factory AuthState.signedOut() = AuthSignedOut;
 
-  const factory AuthenticationState.unauthenticated() = AuthUnauthenticated;
+  /// The `signed in` state.
+  const factory AuthState.signedIn([T? data]) = AuthSignedIn;
 
-  const factory AuthenticationState.authenticated([T? data]) =
-      AuthAuthenticated;
+  /// The `failure` state.
+  const factory AuthState.failure([ApplicationException? error]) = AuthFailure;
 
-  const factory AuthenticationState.failure([ApplicationException? error]) =
-      AuthFailure;
-
+  /// Indicates whether state is `waiting`.
   bool get isWaiting => this is AuthWaiting;
+
+  /// Indicates whether state is `failure`.
   bool get isFailure => this is AuthFailure;
-  bool get isAutenticated => this is AuthAuthenticated;
-  bool get isUnautenticated => this is AuthUnauthenticated;
+
+  /// Indicates whether state is `signed in`.
+  bool get isSignedIn => this is AuthSignedIn;
+
+  /// Indicates whether state is `signed out`.
+  bool get isSignedOut => this is AuthSignedOut;
 }
 
 /// Provides interface for authentication process.

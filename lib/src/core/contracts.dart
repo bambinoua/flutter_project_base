@@ -73,7 +73,7 @@ abstract class BaseSerializable extends Serializable<JsonMap> {
   ///
   /// Default returned value `integer` number.
   @protected
-  dynamic mapColor(Color value) => value.value;
+  dynamic mapColor(Color value) => value;
 
   /// Maps the `Enum` [value] to integer or String.
   ///

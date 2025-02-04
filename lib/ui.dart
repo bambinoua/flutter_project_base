@@ -1,4 +1,4 @@
-library ui;
+library;
 
 export 'src/ui/formfield.dart';
 export 'src/ui/functions.dart';

@@ -1,4 +1,4 @@
-library core;
+library;
 
 export 'src/core/authentication.dart';
 export 'src/core/basic_types.dart';

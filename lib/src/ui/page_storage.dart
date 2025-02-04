@@ -1,151 +1,88 @@
-import 'package:collection/collection.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_project_base/packages.dart';
 import 'package:flutter_project_base/services.dart';
-import 'package:meta/meta.dart';
-
-import '../core/basic_types.dart';
-import '../core/contracts.dart';
 
 /// A storage bucket associated with a page in an app.
 ///
 /// Useful for storing per-page state that persists across navigations from one
 /// page to another.
 @experimental
-class WebPageStorageBucket implements Disposable {
-  WebPageStorageBucket({this.name = 'storage'})
-      : assert(name.isNotEmpty),
-        _memoryStorage = MemoryStorageKey(name, <String, dynamic>{},
-            valueBuilder: (data) => data),
-        _localStorage = WebLocalStorageKey(name, <String, dynamic>{},
-            valueBuilder: (data) => data),
-        _sessionStorage = WebSessionStorageKey(name, <String, dynamic>{},
-            valueBuilder: (data) => data) {
-    _memoryStorage.addListener(_memoryStorageChangeListener);
-  }
+abstract class StorageBucket extends ChangeNotifier {
+  StorageBucket(this.name, this.storage) : assert(name != '');
 
   /// Keeps the name of this storage.
   final String name;
 
-  final BaseStorageKey<JsonMap, JsonMap> _memoryStorage;
-  final BaseStorageKey<JsonMap, JsonMap> _localStorage;
-  final BaseStorageKey<JsonMap, JsonMap> _sessionStorage;
+  /// The underlying storage.
+  final BaseStorage storage;
 
-  /// Registers a memory storage key.
-  void registerMemoryKey<T>(MemoryStorageKey<T, T> storageKey) {
-    final storageValue = _memoryStorage.value;
-    storageValue.putIfAbsent(name, () => storageKey);
-    _memoryStorage.value = storageValue;
-  }
-
-  /// Registers a web session storage key.
-  void registerSessionKey<T, V>(WebSessionStorageKey<T, V> storageKey) {
-    final storageValue = _sessionStorage.value;
-    storageValue.putIfAbsent(name, () => storageKey);
-    _sessionStorage.value = storageValue;
-  }
-
-  /// Registers a web local storage key.
-  void registerLocalKey<T, V>(WebLocalStorageKey<T, V> storageKey) {
-    final storageValue = _localStorage.value;
-    storageValue.putIfAbsent(name, () => storageKey);
-    _localStorage.value = storageValue;
-  }
-
-  /// Registers a hive storage key.
-  void registerHiveKey<T, V>(HiveStorageKey<T, V> storageKey) {
-    final storageValue = _localStorage.value;
-    storageValue.putIfAbsent(name, () => storageKey);
-    _localStorage.value = storageValue;
-  }
+  /// Registers a stprage item.
+  void registerStorageItem<T>(StorageItem<T> storageItem) {}
 
   /// Retursn the current flattened identifier of the this widget in the specified `context`.
   String _getIdentifier(BuildContext context) =>
-      _computePath(context).keys.map((key) => key.value).join('.');
+      _computeIdentifier(context).keys.map((key) => key.value).join('.');
 
-  _WebPageIdentifier _computePath(BuildContext context) =>
-      _WebPageIdentifier(_allKeys(context).reversed.toList());
-
-  List<WebPageKey> _allKeys(BuildContext context) {
-    final keys = <WebPageKey>[];
+  _StorageIdentifier _computeIdentifier(BuildContext context) {
+    final keys = <PageStorageKey<dynamic>>[];
     if (_maybeAddKey(context, keys)) {
       context.visitAncestorElements((element) => _maybeAddKey(element, keys));
     }
-    return keys;
+    return _StorageIdentifier(keys.reversed.toList());
   }
 
-  static bool _maybeAddKey(BuildContext context, List<WebPageKey> keys) {
+  static bool _maybeAddKey(
+      BuildContext context, List<PageStorageKey<dynamic>> keys) {
     final widget = context.widget;
     final key = widget.key;
-    if (key is WebPageKey) {
+    if (key is PageStorageKey) {
       keys.add(key);
     }
-    return widget is! WebPageStorage;
-  }
-
-  void _memoryStorageChangeListener() {
-    final memoryMap = <String, dynamic>{};
-    final persistentMap = _localStorage.value;
-    final sessionMap = <String, dynamic>{};
-
-    // Save memory items
-    if (memoryMap.isNotEmpty) {
-      final oldMap = _memoryStorage.value;
-      final newMap = mergeMaps(oldMap, persistentMap);
-      _localStorage.value = newMap;
-    }
-
-    // Save persistent items
-    if (persistentMap.isNotEmpty) {
-      final oldMap = _localStorage.value;
-      final newMap = mergeMaps(oldMap, persistentMap);
-      _localStorage.value = newMap;
-    }
-
-    // Save session items
-    if (sessionMap.isNotEmpty) {
-      final oldMap = _sessionStorage.value;
-      final newMap = mergeMaps(oldMap, sessionMap);
-      _sessionStorage.value = newMap;
-    }
-  }
-
-  @override
-  void dispose() {
-    _memoryStorage.dispose();
-    _localStorage.dispose();
-    _sessionStorage.dispose();
+    return widget is! GlobalStorage;
   }
 
   @override
   String toString() => 'WebPageStorageBucket {name: $name}';
 }
 
+class HiveStorageBucket extends StorageBucket {
+  HiveStorageBucket(String name) : super(name, HiveStorage.instance);
+}
+
+class WebLocalStorageBucket extends StorageBucket {
+  WebLocalStorageBucket(String name) : super(name, WebStorage.local);
+}
+
+class WebSessionStorageBucket extends StorageBucket {
+  WebSessionStorageBucket(String name) : super(name, WebStorage.session);
+}
+
 /// Establish a subtree in which widgets can opt into persisting states after
 /// being destroyed.
 ///
-/// [WebPageStorage] is used to save and restore values that can outlive the widget.
-class WebPageStorage extends InheritedWidget {
-  const WebPageStorage({
+/// [GlobalStorage] is used to save and restore values that can outlive the widget.
+class GlobalStorage<T extends StorageBucket> extends InheritedWidget {
+  const GlobalStorage({
     super.key,
     required this.bucket,
     required super.child,
   });
 
   /// The storage bucket to use by wrapped widget subtree.
-  final WebPageStorageBucket bucket;
+  final T bucket;
 
   /// The bucket from the closest instance of this class that encloses the given context.
   ///
   /// Typical usage is as follows:
   ///
   /// ```dart
-  /// PageStateBucket bucket = PageStateStorage.of(context);
+  /// final <T extends StorageBucket> storage = GlobalStorage.of(context);
   /// ```
   ///
-  static WebPageStorageBucket of(BuildContext context) {
+  static T of<T extends StorageBucket>(BuildContext context) {
     final inheritedElement =
-        context.getElementForInheritedWidgetOfExactType<WebPageStorage>();
+        context.getElementForInheritedWidgetOfExactType<GlobalStorage>();
     assert(() {
       if (inheritedElement == null) {
         throw FlutterError.fromParts([
@@ -159,7 +96,7 @@ class WebPageStorage extends InheritedWidget {
       }
       return true;
     }());
-    return (inheritedElement?.widget as WebPageStorage).bucket;
+    return (inheritedElement?.widget as GlobalStorage<T>).bucket;
   }
 
   /// The identifier from the closest instance of this class that encloses the given context.
@@ -167,30 +104,31 @@ class WebPageStorage extends InheritedWidget {
       of(context)._getIdentifier(context);
 
   @override
-  bool updateShouldNotify(WebPageStorage oldWidget) =>
+  bool updateShouldNotify(GlobalStorage oldWidget) =>
       bucket != oldWidget.bucket;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) =>
       '$_className {bucket: ${bucket.name}}';
 
-  static const _className = 'WebPageStorage';
+  static const _className = 'GlobalStorage';
 }
 
 @immutable
-class WebPageKey extends ValueKey<String> {
-  const WebPageKey(super.value) : assert(value.length > 0);
-}
+class _StorageIdentifier {
+  const _StorageIdentifier(this.keys);
 
-@immutable
-class _WebPageIdentifier extends Equatable with Emptiable {
-  const _WebPageIdentifier(this.keys);
-
-  final List<WebPageKey> keys;
+  final List<PageStorageKey<dynamic>> keys;
 
   @override
-  bool get isEmpty => keys.isEmpty;
+  bool operator ==(Object other) =>
+      identical(other, this) ||
+      other is _StorageIdentifier &&
+          listEquals<PageStorageKey<dynamic>>(other.keys, keys);
 
   @override
-  List<Object?> get props => [keys];
+  int get hashCode => Object.hashAll(keys);
+
+  @override
+  String toString() => 'StorageIdentifier {${keys.join(":")}}';
 }

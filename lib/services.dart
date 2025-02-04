@@ -1,4 +1,4 @@
-library services;
+library;
 
 export 'src/services/guid_generator.dart';
 export 'src/services/http.dart';
