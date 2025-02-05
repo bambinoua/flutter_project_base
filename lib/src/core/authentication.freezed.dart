@@ -21,7 +21,7 @@ mixin _$AuthState<T> {
     required TResult Function() waiting,
     required TResult Function() signedOut,
     required TResult Function(T? data) signedIn,
-    required TResult Function(ApplicationException? error) failure,
+    required TResult Function(Exception? error) failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -29,7 +29,7 @@ mixin _$AuthState<T> {
     TResult? Function()? waiting,
     TResult? Function()? signedOut,
     TResult? Function(T? data)? signedIn,
-    TResult? Function(ApplicationException? error)? failure,
+    TResult? Function(Exception? error)? failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -37,7 +37,7 @@ mixin _$AuthState<T> {
     TResult Function()? waiting,
     TResult Function()? signedOut,
     TResult Function(T? data)? signedIn,
-    TResult Function(ApplicationException? error)? failure,
+    TResult Function(Exception? error)? failure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -133,7 +133,7 @@ class _$AuthWaitingImpl<T> implements AuthWaiting<T> {
     required TResult Function() waiting,
     required TResult Function() signedOut,
     required TResult Function(T? data) signedIn,
-    required TResult Function(ApplicationException? error) failure,
+    required TResult Function(Exception? error) failure,
   }) {
     return waiting();
   }
@@ -144,7 +144,7 @@ class _$AuthWaitingImpl<T> implements AuthWaiting<T> {
     TResult? Function()? waiting,
     TResult? Function()? signedOut,
     TResult? Function(T? data)? signedIn,
-    TResult? Function(ApplicationException? error)? failure,
+    TResult? Function(Exception? error)? failure,
   }) {
     return waiting?.call();
   }
@@ -155,7 +155,7 @@ class _$AuthWaitingImpl<T> implements AuthWaiting<T> {
     TResult Function()? waiting,
     TResult Function()? signedOut,
     TResult Function(T? data)? signedIn,
-    TResult Function(ApplicationException? error)? failure,
+    TResult Function(Exception? error)? failure,
     required TResult orElse(),
   }) {
     if (waiting != null) {
@@ -250,7 +250,7 @@ class _$AuthSignedOutImpl<T> implements AuthSignedOut<T> {
     required TResult Function() waiting,
     required TResult Function() signedOut,
     required TResult Function(T? data) signedIn,
-    required TResult Function(ApplicationException? error) failure,
+    required TResult Function(Exception? error) failure,
   }) {
     return signedOut();
   }
@@ -261,7 +261,7 @@ class _$AuthSignedOutImpl<T> implements AuthSignedOut<T> {
     TResult? Function()? waiting,
     TResult? Function()? signedOut,
     TResult? Function(T? data)? signedIn,
-    TResult? Function(ApplicationException? error)? failure,
+    TResult? Function(Exception? error)? failure,
   }) {
     return signedOut?.call();
   }
@@ -272,7 +272,7 @@ class _$AuthSignedOutImpl<T> implements AuthSignedOut<T> {
     TResult Function()? waiting,
     TResult Function()? signedOut,
     TResult Function(T? data)? signedIn,
-    TResult Function(ApplicationException? error)? failure,
+    TResult Function(Exception? error)? failure,
     required TResult orElse(),
   }) {
     if (signedOut != null) {
@@ -396,7 +396,7 @@ class _$AuthSignedInImpl<T> implements AuthSignedIn<T> {
     required TResult Function() waiting,
     required TResult Function() signedOut,
     required TResult Function(T? data) signedIn,
-    required TResult Function(ApplicationException? error) failure,
+    required TResult Function(Exception? error) failure,
   }) {
     return signedIn(data);
   }
@@ -407,7 +407,7 @@ class _$AuthSignedInImpl<T> implements AuthSignedIn<T> {
     TResult? Function()? waiting,
     TResult? Function()? signedOut,
     TResult? Function(T? data)? signedIn,
-    TResult? Function(ApplicationException? error)? failure,
+    TResult? Function(Exception? error)? failure,
   }) {
     return signedIn?.call(data);
   }
@@ -418,7 +418,7 @@ class _$AuthSignedInImpl<T> implements AuthSignedIn<T> {
     TResult Function()? waiting,
     TResult Function()? signedOut,
     TResult Function(T? data)? signedIn,
-    TResult Function(ApplicationException? error)? failure,
+    TResult Function(Exception? error)? failure,
     required TResult orElse(),
   }) {
     if (signedIn != null) {
@@ -483,7 +483,7 @@ abstract class _$$AuthFailureImplCopyWith<T, $Res> {
           $Res Function(_$AuthFailureImpl<T>) then) =
       __$$AuthFailureImplCopyWithImpl<T, $Res>;
   @useResult
-  $Res call({ApplicationException? error});
+  $Res call({Exception? error});
 }
 
 /// @nodoc
@@ -505,7 +505,7 @@ class __$$AuthFailureImplCopyWithImpl<T, $Res>
       freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
-              as ApplicationException?,
+              as Exception?,
     ));
   }
 }
@@ -516,7 +516,7 @@ class _$AuthFailureImpl<T> implements AuthFailure<T> {
   const _$AuthFailureImpl([this.error]);
 
   @override
-  final ApplicationException? error;
+  final Exception? error;
 
   @override
   String toString() {
@@ -549,7 +549,7 @@ class _$AuthFailureImpl<T> implements AuthFailure<T> {
     required TResult Function() waiting,
     required TResult Function() signedOut,
     required TResult Function(T? data) signedIn,
-    required TResult Function(ApplicationException? error) failure,
+    required TResult Function(Exception? error) failure,
   }) {
     return failure(error);
   }
@@ -560,7 +560,7 @@ class _$AuthFailureImpl<T> implements AuthFailure<T> {
     TResult? Function()? waiting,
     TResult? Function()? signedOut,
     TResult? Function(T? data)? signedIn,
-    TResult? Function(ApplicationException? error)? failure,
+    TResult? Function(Exception? error)? failure,
   }) {
     return failure?.call(error);
   }
@@ -571,7 +571,7 @@ class _$AuthFailureImpl<T> implements AuthFailure<T> {
     TResult Function()? waiting,
     TResult Function()? signedOut,
     TResult Function(T? data)? signedIn,
-    TResult Function(ApplicationException? error)? failure,
+    TResult Function(Exception? error)? failure,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -619,10 +619,9 @@ class _$AuthFailureImpl<T> implements AuthFailure<T> {
 }
 
 abstract class AuthFailure<T> implements AuthState<T> {
-  const factory AuthFailure([final ApplicationException? error]) =
-      _$AuthFailureImpl<T>;
+  const factory AuthFailure([final Exception? error]) = _$AuthFailureImpl<T>;
 
-  ApplicationException? get error;
+  Exception? get error;
 
   /// Create a copy of AuthState
   /// with the given fields replaced by the non-null parameter values.

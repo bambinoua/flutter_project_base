@@ -4,6 +4,9 @@ import '../../core.dart';
 
 part 'authentication.freezed.dart';
 
+/// All available authentication statuses.
+///
+/// They can be use for example in Blocs.
 enum AuthStatus {
   signedOut,
   signedIn,
@@ -13,7 +16,7 @@ enum AuthStatus {
 
 /// All available authentication states.
 @freezed
-class AuthState<T> with _$AuthState<T> {
+final class AuthState<T> with _$AuthState<T> {
   /// The `waiting` state.
   const factory AuthState.waiting() = AuthWaiting;
 
@@ -24,19 +27,7 @@ class AuthState<T> with _$AuthState<T> {
   const factory AuthState.signedIn([T? data]) = AuthSignedIn;
 
   /// The `failure` state.
-  const factory AuthState.failure([ApplicationException? error]) = AuthFailure;
-
-  /// Indicates whether state is `waiting`.
-  bool get isWaiting => this is AuthWaiting;
-
-  /// Indicates whether state is `failure`.
-  bool get isFailure => this is AuthFailure;
-
-  /// Indicates whether state is `signed in`.
-  bool get isSignedIn => this is AuthSignedIn;
-
-  /// Indicates whether state is `signed out`.
-  bool get isSignedOut => this is AuthSignedOut;
+  const factory AuthState.failure([Exception? error]) = AuthFailure;
 }
 
 /// Provides interface for authentication process.
