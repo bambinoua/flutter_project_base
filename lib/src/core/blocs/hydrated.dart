@@ -9,7 +9,7 @@ abstract class BaseHydratedBloc<TEvent, TState>
   /// Abstract constructor. This constructor provides an initial [state] and
   /// optional [authId] (usually user identifier) which is used to change a
   /// [storagePrefix].
-  BaseHydratedBloc(super.state, {int? authId}) {
+  BaseHydratedBloc(super.state, {super.storage, int? authId}) {
     authenticationId ??= authId;
   }
 
@@ -33,7 +33,8 @@ abstract class BaseHydratedCubit<TState> extends HydratedCubit<TState>
   /// Abstract constructor. This constructor provides an initial [state] and
   /// optional [authId] (usually user identifier) which is used to change a
   /// [storagePrefix].
-  BaseHydratedCubit(super.state, {int? authId}) {
+  BaseHydratedCubit(TState state, {Storage? storage, int? authId})
+      : super(state, storage) {
     authenticationId ??= authId;
   }
 
