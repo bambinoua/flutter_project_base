@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import 'contracts.dart';
-
 /// Specifies a priority setting that is used to decide whether
 /// to evict a cache entry.
 enum CacheItemPriority {
@@ -14,7 +12,8 @@ enum CacheItemPriority {
 
 /// Represents a set of eviction and expiration details for a specific
 /// cache entry.
-class CacheItemPolicy implements Cloneable<CacheItemPolicy> {
+@immutable
+class CacheItemPolicy {
   /// Initializes a new instance of the CacheItemPolicy class.
   const CacheItemPolicy({
     this.priority = CacheItemPriority.standard,
@@ -40,26 +39,38 @@ class CacheItemPolicy implements Cloneable<CacheItemPolicy> {
   /// an entry is removed from the cache.
   final VoidCallback? onRemove;
 
-  @override
-  CacheItemPolicy copyWith({
-    DateTime? expiredAt,
-    Duration? expiredAfter,
-    VoidCallback? onRemove,
-  }) =>
-      CacheItemPolicy(
-        priority: priority,
-        expiredAt: expiredAt ?? this.expiredAt,
-        expiredAfter: expiredAfter ?? this.expiredAfter,
-        onRemove: onRemove ?? this.onRemove,
-      );
+  /// Indicates whether this policy is *expired at*.
+  bool get isExpiredAt => expiredAt != null;
+
+  /// Indicates whether this policy is *expired after*.
+  bool get isExpiredAfter => expiredAfter != null;
 
   @override
-  String toString() =>
-      'CacheItemPolicy (priority: $priority, expiredAd: $expiredAt)';
+  int get hashCode => Object.hash(priority, expiredAt, expiredAfter, onRemove);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CacheItemPolicy &&
+          priority == other.priority &&
+          expiredAt == other.expiredAt &&
+          expiredAfter == other.expiredAfter &&
+          onRemove == other.onRemove;
+
+  @override
+  String toString() {
+    final props = {
+      'priority': priority.name,
+      if (isExpiredAt) 'expiredAt': expiredAt,
+      if (isExpiredAfter) 'expiredAfter': expiredAfter,
+    };
+    return 'CacheItemPolicy $props';
+  }
 }
 
 /// Represents an individual cache entry in the cache.
-class CacheItem<T> implements Cloneable<CacheItem<T>> {
+@immutable
+class CacheItem<T> {
   /// Initializes a new CacheItem instance using the specified
   /// `key` and a `value` of the cache entry.
   const CacheItem({
@@ -82,21 +93,32 @@ class CacheItem<T> implements Cloneable<CacheItem<T>> {
   /// Gets or sets a unique identifier for a CacheItem instance.
   final String key;
 
-  /// Gets or sets a cache item policy.
-  final CacheItemPolicy policy;
-
   ///Gets or sets the data for a CacheItem instance.
   final T value;
 
-  @override
-  CacheItem<T> copyWith({T? value}) => CacheItem<T>(
-        key: key,
-        value: value ?? this.value,
-        policy: policy,
-      );
+  /// Gets or sets a cache item policy.
+  final CacheItemPolicy policy;
 
   @override
-  String toString() => 'CacheItem (key: $key, value: $value)';
+  int get hashCode => Object.hash(key, value, policy);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CacheItem &&
+          key == other.key &&
+          value == other.value &&
+          policy == other.policy;
+
+  @override
+  String toString() {
+    final props = {
+      'key': key,
+      'value': value,
+      'policy': policy,
+    };
+    return 'CacheItem $props';
+  }
 }
 
 /// The primary purpose of Cache interface is to accept a key from the calling
@@ -104,8 +126,6 @@ class CacheItem<T> implements Cloneable<CacheItem<T>> {
 /// point of interaction with the entire cache collection. All configuration
 /// and initialization of the pool is left up to an implementing library.
 abstract class Cache {
-  Cache._();
-
   /// Deletes all items in the cache pool.
   ///
   /// Returns `true` if the pool was successfully cleared. `false` if there was
