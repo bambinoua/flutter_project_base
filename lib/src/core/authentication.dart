@@ -16,7 +16,7 @@ enum AuthStatus {
 
 /// All available authentication states.
 @freezed
-final class AuthState<T> with _$AuthState<T> {
+class AuthState<T> with _$AuthState<T> {
   /// The `waiting` state.
   const factory AuthState.waiting() = AuthWaiting;
 
