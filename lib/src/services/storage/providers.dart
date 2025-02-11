@@ -192,7 +192,7 @@ base mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Returns list of storage items which will be evicted after
   /// session close.
   List<StorageItem<T>> get sessionKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.session)
+      .where((item) => item.priority == StorageItemPriority.sessional)
       .toList();
 
   /// Puts item into inner controller storage.

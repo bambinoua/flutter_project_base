@@ -67,13 +67,8 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
     num,
     int,
     double,
-    List<String>,
-    List<bool>,
-    List<num>,
-    List<int>,
-    List<double>,
-    Map<String, String>,
-    Map<String, dynamic>,
+    List,
+    Map,
   ];
 
   /// Default value if storage does not contains value yet.
@@ -164,7 +159,7 @@ class StorageItem<T> extends ValueNotifier<T> {
   StorageItem(
     this.key,
     super.value, {
-    this.priority = StorageItemPriority.session,
+    this.priority = StorageItemPriority.persistent,
   }) : assert(key != '');
 
   /// A unique identifier for this storage entry.
@@ -194,13 +189,13 @@ class StorageItem<T> extends ValueNotifier<T> {
 /// to evict a storafe entry.
 enum StorageItemPriority {
   /// Indicates that there is no priority for removing the storage item.
-  session,
+  sessional,
 
   ///Indicates that a storage item should never be removed from the storage.
   persistent;
 
   /// Whether the priority is session.
-  bool get isSession => this == StorageItemPriority.session;
+  bool get isSession => this == StorageItemPriority.sessional;
 
   /// Whether the priority is persistent.
   bool get isPersistent => this == StorageItemPriority.persistent;
