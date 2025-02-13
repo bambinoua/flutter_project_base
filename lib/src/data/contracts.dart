@@ -1,15 +1,13 @@
-import 'package:injectable/injectable.dart';
-
 import '../core/contracts.dart';
 import '../core/domain_driven_design.dart';
 import 'query.dart';
 
 /// The [DataService] interface defines the contract by which app retrieve data.
-///  * TSource is a type of table schema or name to be handled.
+///
+///  * TSource is a type of table schema or name.
 ///  * TQueryable is a type of returned collection of values.
 ///  * TInput is a type of inserted/updated value.
 ///  * TOutput is a type of returned value.
-@injectable
 abstract interface class DataService<TSource, TQueryable, TInput, TOutput>
     implements InfrastructureService, Disposable {
   /// Fetches the snapthot (usually list of rows) from underlaying `source`.
@@ -59,6 +57,8 @@ abstract interface class DataService<TSource, TQueryable, TInput, TOutput>
 }
 
 /// Represents an SQL database service.
+///
+/// * TConnection is a connection string or object
 abstract class SqlDataService<TConnection, TSource, TQueryable, TInput, TOutput>
     extends DataService<TSource, TQueryable, TInput, TOutput>
     with DataConnection<TConnection, TSource, TQueryable, TInput, TOutput> {
@@ -77,7 +77,7 @@ abstract class WebDataService<TConnection, TSource, TQueryable, TInput, TOutput>
     extends DataService<TSource, TQueryable, TInput, TOutput>
     with DataConnection<TConnection, TSource, TQueryable, TInput, TOutput> {}
 
-/// Provides a connection for [DataService]s which require it.
+/// Provides a connection for a [DataService]s which require it.
 mixin DataConnection<TConnection, TSource, TQueryable, TInput, TOutput>
     on DataService<TSource, TQueryable, TInput, TOutput> {
   /// The connection for underlying instance of [DataService].
