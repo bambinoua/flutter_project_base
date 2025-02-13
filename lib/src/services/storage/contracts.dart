@@ -4,60 +4,58 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
 
-/// The Storage interface provides access to a particular mobile, memory,
-/// domain's session or local storage. It allows, for example, the addition,
-/// modification, or deletion of stored data items.
-abstract class BaseStorage {
+/// The abstract interface which provides a base operations for store [key]/[value] pairs.
+abstract class KeyValueStorage {
   /// When invoked, will empty all keys out of the storage.
   void clear();
 
-  /// Retrieves the value of the item from the storage associated with this
-  /// object's `key`, or `null` if the key does not exist.
-  String? getItem(String key);
+  /// Retrieves the value from the storage associated with the specified [key],
+  /// or `null` if the key does not exist.
+  String? get(String key);
 
-  /// Returns list of item keys of this storage.
+  /// Returns a list of keys of this storage.
   List<String> get keys;
 
-  /// Returns number of data items stored in this storage.
+  /// Returns number of values stored in this storage.
   int get length;
 
-  /// Adds the passed storage item to the storage, or update that `key`
+  /// Adds the passed [value] to the storage with the [key], or update that [key]
   /// if it already exists.
-  void putItem(String key, String value);
+  void put(String key, String value);
 
-  /// Removes the `key` from the given storage object if it exists.
+  /// Removes the [key] from the given storage object if it exists.
+  ///
   /// If there is no item associated with the given key, this method
   /// will do nothing.
-  void removeItem(String key);
+  void remove(String key);
 }
 
-/// Provices interface for building values which cen be persisted in undrlyiing storage.
-abstract class StorageKey<T> extends ChangeNotifier
+/// Provides and interface for values which can be persisted in undrlyiing [KeyValueStorage] storage.
+abstract class StorableValue<T> extends ChangeNotifier
     implements ValueListenable<T> {
-  StorageKey(
-    this.name,
+  StorableValue(
+    this.key,
     this.storage,
-  ) : assert(name.isNotEmpty);
+  ) : assert(key.isNotEmpty);
 
-  /// Name of this storage key.
-  final String name;
+  /// The unique value's key.
+  final String key;
 
   /// Underlying storage interface.
-  final BaseStorage storage;
+  final KeyValueStorage storage;
 
   /// Removes this key from storage.
   void remove();
 }
 
-/// Base class for web [StorageKey].
-abstract class BaseStorageKey<T, V> extends StorageKey<T> {
-  BaseStorageKey(
-    super.name,
-    T initialValue,
+/// Base implementation of the [StorableValue].
+abstract class BaseStorableValue<TOut, TIn> extends StorableValue<TOut> {
+  BaseStorableValue(
+    super.key,
+    TOut initialValue,
     super.storage, {
-    ConvertibleBuilder<T, V>? valueBuilder,
-  })  : assert(name.isNotEmpty),
-        _initialValue = initialValue,
+    ConvertibleBuilder<TOut, TIn>? valueBuilder,
+  })  : _initialValue = initialValue,
         _valueBuilder = valueBuilder,
         _value = initialValue;
 
@@ -72,20 +70,20 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
   ];
 
   /// Default value if storage does not contains value yet.
-  final T _initialValue;
+  final TOut _initialValue;
 
   /// Builds an instance of type T from type V.
-  final ConvertibleBuilder<T, V>? _valueBuilder;
+  final ConvertibleBuilder<TOut, TIn>? _valueBuilder;
 
   /// Current value.
-  late T _value;
+  late TOut _value;
 
   /// Current encoded value.
   String? _encodedValue;
 
   @override
-  T get value {
-    final jsonValue = storage.getItem(name);
+  TOut get value {
+    final jsonValue = storage.get(key);
     // There is no stored value yet so return the default one.
     if (jsonValue == null) {
       return _initialValue;
@@ -97,16 +95,16 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
       return _initialValue;
     }
     try {
-      final decodedValue = json.decode(jsonValue) as V;
+      final decodedValue = json.decode(jsonValue) as TIn;
       return _valueBuilder != null
           ? _valueBuilder(decodedValue)
-          : decodedValue as T;
+          : decodedValue as TOut;
     } on FormatException {
       rethrow;
     }
   }
 
-  set value(T newValue) {
+  set value(TOut newValue) {
     try {
       final encodedValue = json.encode(newValue, toEncodable: (object) {
         if (object is DateTime) {
@@ -133,7 +131,7 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
         }
         return object;
       });
-      storage.putItem(name, encodedValue);
+      storage.put(key, encodedValue);
       if (_value != newValue) {
         _value = newValue;
         _encodedValue = encodedValue;
@@ -146,20 +144,20 @@ abstract class BaseStorageKey<T, V> extends StorageKey<T> {
 
   @override
   void remove() {
-    storage.removeItem(name);
+    storage.remove(key);
     _value = _initialValue;
     _encodedValue = null;
     notifyListeners();
   }
 }
 
-/// Represents an individual storage entry in the [BaseStorage].
+/// Represents an individual storage entry in the [KeyValueStorage].
 class StorageItem<T> extends ValueNotifier<T> {
   /// Construct a [StorageItem] with optional persistence.
   StorageItem(
     this.key,
     super.value, {
-    this.priority = StorageItemPriority.persistent,
+    this.priority = StoragePriority.persistent,
   }) : assert(key != '');
 
   /// A unique identifier for this storage entry.
@@ -167,7 +165,7 @@ class StorageItem<T> extends ValueNotifier<T> {
 
   /// Priority setting that is used to determine whether to evict
   /// a storage entry.
-  final StorageItemPriority priority;
+  final StoragePriority priority;
 
   @override
   int get hashCode => Object.hash(key, value);
@@ -186,17 +184,17 @@ class StorageItem<T> extends ValueNotifier<T> {
 }
 
 /// Specifies a priority setting that is used to decide whether
-/// to evict a storafe entry.
-enum StorageItemPriority {
+/// to evict a storage entry.
+enum StoragePriority {
   /// Indicates that there is no priority for removing the storage item.
   sessional,
 
   ///Indicates that a storage item should never be removed from the storage.
   persistent;
 
-  /// Whether the priority is session.
-  bool get isSession => this == StorageItemPriority.sessional;
+  /// Whether the priority is sessional.
+  bool get isSessional => this == StoragePriority.sessional;
 
   /// Whether the priority is persistent.
-  bool get isPersistent => this == StorageItemPriority.persistent;
+  bool get isPersistent => this == StoragePriority.persistent;
 }

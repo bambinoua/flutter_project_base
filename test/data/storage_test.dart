@@ -6,14 +6,14 @@ void main() {
     final memory = MemoryStorage();
     const key = 'test.key';
 
-    var value = memory.getItem(key) ?? '1';
+    var value = memory.get(key) ?? '1';
     expect(value.runtimeType, String);
     expect(value, '1');
 
     value = '2';
-    memory.putItem(key, value);
+    memory.put(key, value);
 
-    value = memory.getItem(key)!;
+    value = memory.get(key)!;
     expect(value.runtimeType, String);
     expect(value, '2');
   });

@@ -15,7 +15,7 @@ abstract class StorageBucket extends ChangeNotifier {
   final String name;
 
   /// The underlying storage.
-  final BaseStorage storage;
+  final KeyValueStorage storage;
 
   /// Registers a stprage item.
   void registerStorageItem<T>(StorageItem<T> storageItem) {}

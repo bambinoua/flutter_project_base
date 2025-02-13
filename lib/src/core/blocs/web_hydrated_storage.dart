@@ -29,12 +29,12 @@ class WebHydratedStorage implements Storage {
 
   @override
   Future<void> delete(String key) async {
-    storage.removeItem(key);
+    storage.remove(key);
   }
 
   @override
   dynamic read(String key) {
-    final encodedValue = storage.getItem(key) ?? '';
+    final encodedValue = storage.get(key) ?? '';
     final value = encodedValue.isNotEmpty
         ? <String, dynamic>{...json.decode(encodedValue)}
         : null;
@@ -44,6 +44,6 @@ class WebHydratedStorage implements Storage {
   @override
   Future<void> write(String key, value) async {
     final encodedValue = json.encode(value);
-    storage.putItem(key, encodedValue);
+    storage.put(key, encodedValue);
   }
 }

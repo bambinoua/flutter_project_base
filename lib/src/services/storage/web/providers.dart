@@ -19,7 +19,7 @@ enum WebStorageType {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-final class WebStorage implements BaseStorage {
+final class WebStorage implements KeyValueStorage {
   const WebStorage._(this._type);
 
   /// The web local storage.
@@ -37,19 +37,19 @@ final class WebStorage implements BaseStorage {
       : html.window.localStorage;
 
   @override
-  String? getItem(String key) {
+  String? get(String key) {
     assert(key.isNotEmpty);
     return _storage[key];
   }
 
   @override
-  void putItem(String key, String value) {
+  void put(String key, String value) {
     assert(key.isNotEmpty);
     _storage.update(key, (oldValue) => value, ifAbsent: () => value);
   }
 
   @override
-  void removeItem(String key) {
+  void remove(String key) {
     assert(key.isNotEmpty);
     _storage.remove(key);
   }
@@ -64,17 +64,19 @@ final class WebStorage implements BaseStorage {
   int get length => keys.length;
 }
 
-/// Creates persistent key which stores its value in web local storage.
-final class WebLocalStorageKey<T, V> extends BaseStorageKey<T, V> {
-  WebLocalStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, WebStorage.local, valueBuilder: valueBuilder);
+/// Creates a value which is stored in web browser local storage.
+final class WebLocalStorageValue<TOut, TIn>
+    extends BaseStorableValue<TOut, TIn> {
+  WebLocalStorageValue(String key, TOut initialValue,
+      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+      : super(key, initialValue, WebStorage.local, valueBuilder: valueBuilder);
 }
 
-/// Creates persistent key which stores its value in web session storage.
-final class WebSessionStorageKey<T, V> extends BaseStorageKey<T, V> {
-  WebSessionStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, WebStorage.session,
+/// Creates a value which is stored in web browser session storage.
+final class WebSessionStorageValue<TOut, TIn>
+    extends BaseStorableValue<TOut, TIn> {
+  WebSessionStorageValue(String key, TOut initialValue,
+      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+      : super(key, initialValue, WebStorage.session,
             valueBuilder: valueBuilder);
 }

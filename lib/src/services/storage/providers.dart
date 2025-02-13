@@ -7,7 +7,7 @@ import 'contracts.dart';
 /// Provides implementation of [SharedPreferences] storage.
 ///
 /// All data is stored as a [String].
-final class SharedPreferencesStorage implements BaseStorage {
+final class SharedPreferencesStorage implements KeyValueStorage {
   const SharedPreferencesStorage._(this._sharedPreferences);
 
   static SharedPreferencesStorage? _instance;
@@ -30,19 +30,19 @@ final class SharedPreferencesStorage implements BaseStorage {
   final SharedPreferences _sharedPreferences;
 
   @override
-  String? getItem(String key) {
+  String? get(String key) {
     assert(key.isNotEmpty);
     return _sharedPreferences.getString(key);
   }
 
   @override
-  void putItem(String key, String value) {
+  void put(String key, String value) {
     assert(key.isNotEmpty);
     _sharedPreferences.setString(key, value);
   }
 
   @override
-  void removeItem(String key) {
+  void remove(String key) {
     assert(key.isNotEmpty);
     _sharedPreferences.remove(key);
   }
@@ -60,7 +60,7 @@ final class SharedPreferencesStorage implements BaseStorage {
 /// Provides implementation of [Hive] storage.
 ///
 /// All data is stored as a [String].
-final class HiveStorage implements BaseStorage {
+final class HiveStorage implements KeyValueStorage {
   const HiveStorage._(this._box);
 
   static late final HiveStorage? _instance;
@@ -86,19 +86,19 @@ final class HiveStorage implements BaseStorage {
   final Box<String> _box;
 
   @override
-  String? getItem(String key) {
+  String? get(String key) {
     assert(key.isNotEmpty);
     return _box.get(key);
   }
 
   @override
-  void putItem(String key, String value) {
+  void put(String key, String value) {
     assert(key.isNotEmpty);
     _box.put(key, value);
   }
 
   @override
-  void removeItem(String key) {
+  void remove(String key) {
     assert(key.isNotEmpty);
     _box.delete(key);
   }
@@ -116,7 +116,7 @@ final class HiveStorage implements BaseStorage {
 /// Provides implementation of in-memory storage.
 ///
 /// All data is stored as a [String].
-final class MemoryStorage implements BaseStorage {
+final class MemoryStorage implements KeyValueStorage {
   factory MemoryStorage() => _instance;
 
   static final MemoryStorage _instance = MemoryStorage();
@@ -125,19 +125,19 @@ final class MemoryStorage implements BaseStorage {
   final Map<String, String> _storage = <String, String>{};
 
   @override
-  String? getItem(String key) {
+  String? get(String key) {
     assert(key.isNotEmpty);
     return _storage[key];
   }
 
   @override
-  void putItem(String key, String value) {
+  void put(String key, String value) {
     assert(key.isNotEmpty);
     _storage[key] = value;
   }
 
   @override
-  void removeItem(String key) {
+  void remove(String key) {
     assert(key.isNotEmpty);
     _storage.remove(key);
   }
@@ -152,30 +152,29 @@ final class MemoryStorage implements BaseStorage {
   int get length => _storage.length;
 }
 
-/// Creates a persistent key which stores its value in Shared Preferences
-/// on Android or NSUserDefaults on iOS.
-final class SharedPreferencesStorageKey<T, V> extends BaseStorageKey<T, V> {
-  SharedPreferencesStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, SharedPreferencesStorage.instance,
+/// Creates a value which is stored in Shared Preferences on Android or NSUserDefaults on iOS.
+final class SharedPreferencesValue<TOut, TIn>
+    extends BaseStorableValue<TOut, TIn> {
+  SharedPreferencesValue(String key, TOut initialValue,
+      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+      : super(key, initialValue, SharedPreferencesStorage.instance,
             valueBuilder: valueBuilder);
 }
 
-/// Creates a persistent key which stores its value in [Hive] database.
-final class HiveStorageKey<T, V> extends BaseStorageKey<T, V> {
-  HiveStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, HiveStorage.instance,
+/// Creates a value which is stored in [Hive] database.
+final class HiveStorableValue<TOut, TIn> extends BaseStorableValue<TOut, TIn> {
+  HiveStorableValue(String key, TOut initialValue,
+      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+      : super(key, initialValue, HiveStorage.instance,
             valueBuilder: valueBuilder);
 }
 
-/// Creates a memory storage key.
-///
-/// This key is similar to memory cache.
-final class MemoryStorageKey<T, V> extends BaseStorageKey<T, V> {
-  MemoryStorageKey(String name, T initialValue,
-      {ConvertibleBuilder<T, V>? valueBuilder})
-      : super(name, initialValue, MemoryStorage(), valueBuilder: valueBuilder);
+/// Creates a value which is stored in memory.
+final class MemoryStorableValue<TOut, TIn>
+    extends BaseStorableValue<TOut, TIn> {
+  MemoryStorableValue(String key, TOut initialValue,
+      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+      : super(key, initialValue, MemoryStorage(), valueBuilder: valueBuilder);
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.
@@ -186,13 +185,13 @@ base mixin SharedPreferencesStorageMixin<T> on SharedPreferencesStorage {
   /// Returns list of storage items which will not be evicted after
   /// session close.
   List<StorageItem<T>> get persistentKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.persistent)
+      .where((item) => item.priority == StoragePriority.persistent)
       .toList();
 
   /// Returns list of storage items which will be evicted after
   /// session close.
   List<StorageItem<T>> get sessionKeys => _items.values
-      .where((item) => item.priority == StorageItemPriority.sessional)
+      .where((item) => item.priority == StoragePriority.sessional)
       .toList();
 
   /// Puts item into inner controller storage.
