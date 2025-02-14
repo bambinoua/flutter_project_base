@@ -7,7 +7,7 @@ import 'contracts.dart';
 /// Provides implementation of [SharedPreferences] storage.
 ///
 /// All data is stored as a [String].
-final class SharedPreferencesStorage implements KeyValueStorage {
+final class SharedPreferencesStorage extends PreferenceStorage {
   const SharedPreferencesStorage._(this._sharedPreferences);
 
   static SharedPreferencesStorage? _instance;
@@ -60,26 +60,26 @@ final class SharedPreferencesStorage implements KeyValueStorage {
 /// Provides implementation of [Hive] storage.
 ///
 /// All data is stored as a [String].
-final class HiveStorage implements KeyValueStorage {
-  const HiveStorage._(this._box);
+final class HivePreferencesStorage extends PreferenceStorage {
+  const HivePreferencesStorage._(this._box);
 
-  static late final HiveStorage? _instance;
+  static late final HivePreferencesStorage? _instance;
 
   /// Returns this singleton.
-  static HiveStorage get instance {
+  static HivePreferencesStorage get instance {
     assert(_instance != null,
         'You forgot to call `HiveStorage.init()` on app initialization');
     return _instance!;
   }
 
   /// Initializes this storage.
-  static Future<HiveStorage> init(String path, String name,
+  static Future<HivePreferencesStorage> init(String path, String name,
       {HiveCipher? encryptionCipher}) async {
     assert(name.isNotEmpty);
     Hive.init(path);
     final box = await Hive.openBox<String>(name,
         collection: 'storage', encryptionCipher: encryptionCipher);
-    return _instance ??= HiveStorage._(box);
+    return _instance ??= HivePreferencesStorage._(box);
   }
 
   /// The interval hive box.
@@ -113,68 +113,20 @@ final class HiveStorage implements KeyValueStorage {
   int get length => _box.length;
 }
 
-/// Provides implementation of in-memory storage.
-///
-/// All data is stored as a [String].
-final class MemoryStorage implements KeyValueStorage {
-  factory MemoryStorage() => _instance;
-
-  static final MemoryStorage _instance = MemoryStorage();
-
-  /// Memory map.
-  final Map<String, String> _storage = <String, String>{};
-
-  @override
-  String? get(String key) {
-    assert(key.isNotEmpty);
-    return _storage[key];
-  }
-
-  @override
-  void put(String key, String value) {
-    assert(key.isNotEmpty);
-    _storage[key] = value;
-  }
-
-  @override
-  void remove(String key) {
-    assert(key.isNotEmpty);
-    _storage.remove(key);
-  }
-
-  @override
-  void clear() => _storage.clear();
-
-  @override
-  List<String> get keys => _storage.keys.toList();
-
-  @override
-  int get length => _storage.length;
-}
-
 /// Creates a value which is stored in Shared Preferences on Android or NSUserDefaults on iOS.
-final class SharedPreferencesValue<TOut, TIn>
-    extends BaseStorableValue<TOut, TIn> {
-  SharedPreferencesValue(String key, TOut initialValue,
-      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+final class SharedPreferencesValue<T, S> extends BasePreferenceValue<T, S> {
+  SharedPreferencesValue(String key, T initialValue,
+      {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, SharedPreferencesStorage.instance,
             valueBuilder: valueBuilder);
 }
 
 /// Creates a value which is stored in [Hive] database.
-final class HiveStorableValue<TOut, TIn> extends BaseStorableValue<TOut, TIn> {
-  HiveStorableValue(String key, TOut initialValue,
-      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
-      : super(key, initialValue, HiveStorage.instance,
+final class HiveStorableValue<T, S> extends BasePreferenceValue<T, S> {
+  HiveStorableValue(String key, T initialValue,
+      {ConvertibleBuilder<T, S>? valueBuilder})
+      : super(key, initialValue, HivePreferencesStorage.instance,
             valueBuilder: valueBuilder);
-}
-
-/// Creates a value which is stored in memory.
-final class MemoryStorableValue<TOut, TIn>
-    extends BaseStorableValue<TOut, TIn> {
-  MemoryStorableValue(String key, TOut initialValue,
-      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
-      : super(key, initialValue, MemoryStorage(), valueBuilder: valueBuilder);
 }
 
 /// Storage controller mixin allows to manipulate by priority of cache items.

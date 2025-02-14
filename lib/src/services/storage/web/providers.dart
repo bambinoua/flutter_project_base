@@ -19,7 +19,7 @@ enum WebStorageType {
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
-final class WebStorage implements KeyValueStorage {
+final class WebStorage extends PreferenceStorage {
   const WebStorage._(this._type);
 
   /// The web local storage.
@@ -65,18 +65,16 @@ final class WebStorage implements KeyValueStorage {
 }
 
 /// Creates a value which is stored in web browser local storage.
-final class WebLocalStorageValue<TOut, TIn>
-    extends BaseStorableValue<TOut, TIn> {
-  WebLocalStorageValue(String key, TOut initialValue,
-      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+final class WebLocalStorageValue<T, S> extends BasePreferenceValue<T, S> {
+  WebLocalStorageValue(String key, T initialValue,
+      {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, WebStorage.local, valueBuilder: valueBuilder);
 }
 
 /// Creates a value which is stored in web browser session storage.
-final class WebSessionStorageValue<TOut, TIn>
-    extends BaseStorableValue<TOut, TIn> {
-  WebSessionStorageValue(String key, TOut initialValue,
-      {ConvertibleBuilder<TOut, TIn>? valueBuilder})
+final class WebSessionStorageValue<T, S> extends BasePreferenceValue<T, S> {
+  WebSessionStorageValue(String key, T initialValue,
+      {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, WebStorage.session,
             valueBuilder: valueBuilder);
 }

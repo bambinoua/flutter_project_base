@@ -4,36 +4,48 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
 
-/// The abstract interface which provides a base operations for store [key]/[value] pairs.
-abstract class KeyValueStorage {
+/// Represents a storage of keys and values.
+abstract class KeyValueStorage<K, V> {
   /// When invoked, will empty all keys out of the storage.
   void clear();
 
+  /// Indicates whether this storage contains a [key].
+  bool containsKey(String key);
+
   /// Retrieves the value from the storage associated with the specified [key],
   /// or `null` if the key does not exist.
-  String? get(String key);
+  V? get(K key);
 
   /// Returns a list of keys of this storage.
-  List<String> get keys;
+  List<K> get keys;
 
   /// Returns number of values stored in this storage.
   int get length;
 
   /// Adds the passed [value] to the storage with the [key], or update that [key]
   /// if it already exists.
-  void put(String key, String value);
+  void put(K key, V value);
 
   /// Removes the [key] from the given storage object if it exists.
   ///
   /// If there is no item associated with the given key, this method
   /// will do nothing.
-  void remove(String key);
+  void remove(K key);
 }
 
-/// Provides and interface for values which can be persisted in undrlyiing [KeyValueStorage] storage.
-abstract class StorableValue<T> extends ChangeNotifier
+/// An abstract interface for preferences storage.
+abstract class PreferenceStorage implements KeyValueStorage<String, String> {
+  const PreferenceStorage();
+
+  @override
+  bool containsKey(String key) => keys.contains(key);
+}
+
+/// Provides and interface for values which can be persisted in undrlyiing
+/// [PreferenceStorage] storage.
+abstract class PreferenceValue<T> extends ChangeNotifier
     implements ValueListenable<T> {
-  StorableValue(
+  PreferenceValue(
     this.key,
     this.storage,
   ) : assert(key.isNotEmpty);
@@ -42,19 +54,19 @@ abstract class StorableValue<T> extends ChangeNotifier
   final String key;
 
   /// Underlying storage interface.
-  final KeyValueStorage storage;
+  final PreferenceStorage storage;
 
   /// Removes this key from storage.
   void remove();
 }
 
-/// Base implementation of the [StorableValue].
-abstract class BaseStorableValue<TOut, TIn> extends StorableValue<TOut> {
-  BaseStorableValue(
+/// Base implementation of the [PreferenceValue].
+abstract class BasePreferenceValue<T, S> extends PreferenceValue<T> {
+  BasePreferenceValue(
     super.key,
-    TOut initialValue,
+    T initialValue,
     super.storage, {
-    ConvertibleBuilder<TOut, TIn>? valueBuilder,
+    ConvertibleBuilder<T, S>? valueBuilder,
   })  : _initialValue = initialValue,
         _valueBuilder = valueBuilder,
         _value = initialValue;
@@ -70,19 +82,19 @@ abstract class BaseStorableValue<TOut, TIn> extends StorableValue<TOut> {
   ];
 
   /// Default value if storage does not contains value yet.
-  final TOut _initialValue;
+  final T _initialValue;
 
   /// Builds an instance of type T from type V.
-  final ConvertibleBuilder<TOut, TIn>? _valueBuilder;
+  final ConvertibleBuilder<T, S>? _valueBuilder;
 
   /// Current value.
-  late TOut _value;
+  late T _value;
 
   /// Current encoded value.
   String? _encodedValue;
 
   @override
-  TOut get value {
+  T get value {
     final jsonValue = storage.get(key);
     // There is no stored value yet so return the default one.
     if (jsonValue == null) {
@@ -94,17 +106,18 @@ abstract class BaseStorableValue<TOut, TIn> extends StorableValue<TOut> {
       remove();
       return _initialValue;
     }
+
     try {
-      final decodedValue = json.decode(jsonValue) as TIn;
+      final decodedValue = json.decode(jsonValue) as S;
       return _valueBuilder != null
           ? _valueBuilder(decodedValue)
-          : decodedValue as TOut;
+          : decodedValue as T;
     } on FormatException {
       rethrow;
     }
   }
 
-  set value(TOut newValue) {
+  set value(T newValue) {
     try {
       final encodedValue = json.encode(newValue, toEncodable: (object) {
         if (object is DateTime) {
