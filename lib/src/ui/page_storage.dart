@@ -1,13 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_project_base/packages.dart';
-import 'package:flutter_project_base/services.dart';
+
+import '../../services.dart';
 
 /// A storage bucket associated with a page in an app.
 ///
 /// Useful for storing per-page state that persists across navigations from one
 /// page to another.
-@experimental
 abstract class StorageBucket extends ChangeNotifier {
   StorageBucket(this.name, this.storage) : assert(name != '');
 
@@ -15,7 +14,7 @@ abstract class StorageBucket extends ChangeNotifier {
   final String name;
 
   /// The underlying storage.
-  final KeyValueStorage storage;
+  final KeyValueStorage<String, dynamic> storage;
 
   /// Registers a stprage item.
   void registerStorageItem<T>(StorageItem<T> storageItem) {}
@@ -47,7 +46,7 @@ abstract class StorageBucket extends ChangeNotifier {
 }
 
 class HiveStorageBucket extends StorageBucket {
-  HiveStorageBucket(String name) : super(name, HiveStorage.instance);
+  HiveStorageBucket(String name) : super(name, HivePreferencesStorage.instance);
 }
 
 class WebLocalStorageBucket extends StorageBucket {

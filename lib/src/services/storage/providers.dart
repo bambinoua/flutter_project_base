@@ -114,7 +114,7 @@ final class HivePreferencesStorage extends PreferenceStorage {
 }
 
 /// Creates a value which is stored in Shared Preferences on Android or NSUserDefaults on iOS.
-final class SharedPreferencesValue<T, S> extends BasePreferenceValue<T, S> {
+final class SharedPreferencesValue<T, S> extends PreferenceValue<T, S> {
   SharedPreferencesValue(String key, T initialValue,
       {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, SharedPreferencesStorage.instance,
@@ -122,7 +122,7 @@ final class SharedPreferencesValue<T, S> extends BasePreferenceValue<T, S> {
 }
 
 /// Creates a value which is stored in [Hive] database.
-final class HiveStorableValue<T, S> extends BasePreferenceValue<T, S> {
+final class HiveStorableValue<T, S> extends PreferenceValue<T, S> {
   HiveStorableValue(String key, T initialValue,
       {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, HivePreferencesStorage.instance,

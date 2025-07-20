@@ -65,14 +65,14 @@ final class WebStorage extends PreferenceStorage {
 }
 
 /// Creates a value which is stored in web browser local storage.
-final class WebLocalStorageValue<T, S> extends BasePreferenceValue<T, S> {
+final class WebLocalStorageValue<T, S> extends PreferenceValue<T, S> {
   WebLocalStorageValue(String key, T initialValue,
       {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, WebStorage.local, valueBuilder: valueBuilder);
 }
 
 /// Creates a value which is stored in web browser session storage.
-final class WebSessionStorageValue<T, S> extends BasePreferenceValue<T, S> {
+final class WebSessionStorageValue<T, S> extends PreferenceValue<T, S> {
   WebSessionStorageValue(String key, T initialValue,
       {ConvertibleBuilder<T, S>? valueBuilder})
       : super(key, initialValue, WebStorage.session,

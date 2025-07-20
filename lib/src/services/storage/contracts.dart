@@ -4,13 +4,22 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/basic_types.dart';
 
+/// The list of all primitive types which can be serialized.
+const primitiveTypes = <Type>[
+  Null,
+  String,
+  bool,
+  num,
+  int,
+  double,
+  List,
+  Map,
+];
+
 /// Represents a storage of keys and values.
 abstract class KeyValueStorage<K, V> {
   /// When invoked, will empty all keys out of the storage.
   void clear();
-
-  /// Indicates whether this storage contains a [key].
-  bool containsKey(String key);
 
   /// Retrieves the value from the storage associated with the specified [key],
   /// or `null` if the key does not exist.
@@ -36,50 +45,26 @@ abstract class KeyValueStorage<K, V> {
 /// An abstract interface for preferences storage.
 abstract class PreferenceStorage implements KeyValueStorage<String, String> {
   const PreferenceStorage();
-
-  @override
-  bool containsKey(String key) => keys.contains(key);
 }
 
-/// Provides and interface for values which can be persisted in undrlyiing
-/// [PreferenceStorage] storage.
-abstract class PreferenceValue<T> extends ChangeNotifier
+/// An abstract preference value.
+abstract class PreferenceValue<T, S> extends ChangeNotifier
     implements ValueListenable<T> {
   PreferenceValue(
     this.key,
-    this.storage,
-  ) : assert(key.isNotEmpty);
+    T initialValue,
+    this._storage, {
+    ConvertibleBuilder<T, S>? valueBuilder,
+  })  : assert(key.isNotEmpty),
+        _initialValue = initialValue,
+        _valueBuilder = valueBuilder,
+        _value = initialValue;
 
   /// The unique value's key.
   final String key;
 
   /// Underlying storage interface.
-  final PreferenceStorage storage;
-
-  /// Removes this key from storage.
-  void remove();
-}
-
-/// Base implementation of the [PreferenceValue].
-abstract class BasePreferenceValue<T, S> extends PreferenceValue<T> {
-  BasePreferenceValue(
-    super.key,
-    T initialValue,
-    super.storage, {
-    ConvertibleBuilder<T, S>? valueBuilder,
-  })  : _initialValue = initialValue,
-        _valueBuilder = valueBuilder,
-        _value = initialValue;
-
-  static const _primitiveTypes = <Type>[
-    String,
-    bool,
-    num,
-    int,
-    double,
-    List,
-    Map,
-  ];
+  final PreferenceStorage _storage;
 
   /// Default value if storage does not contains value yet.
   final T _initialValue;
@@ -88,30 +73,22 @@ abstract class BasePreferenceValue<T, S> extends PreferenceValue<T> {
   final ConvertibleBuilder<T, S>? _valueBuilder;
 
   /// Current value.
-  late T _value;
-
-  /// Current encoded value.
-  String? _encodedValue;
+  T? _value;
 
   @override
   T get value {
-    final jsonValue = storage.get(key);
-    // There is no stored value yet so return the default one.
-    if (jsonValue == null) {
-      return _initialValue;
+    if (_value != null && !kIsWeb) {
+      return _value!;
     }
-    // The stored value was changed from outsied. For example it is possible
-    // in Web browser. If so remove this value from storage and return default one.
-    if (jsonValue != _encodedValue) {
-      remove();
+
+    final jsonValue = _storage.get(key);
+    if (jsonValue == null) {
       return _initialValue;
     }
 
     try {
       final decodedValue = json.decode(jsonValue) as S;
-      return _valueBuilder != null
-          ? _valueBuilder(decodedValue)
-          : decodedValue as T;
+      return _valueBuilder?.call(decodedValue) ?? decodedValue as T;
     } on FormatException {
       rethrow;
     }
@@ -135,19 +112,18 @@ abstract class BasePreferenceValue<T, S> extends PreferenceValue<T> {
             object.toString(),
           );
         }
-        if (!_primitiveTypes.contains(object.runtimeType)) {
+        if (!primitiveTypes.contains(object.runtimeType)) {
           throw FormatException(
-            'Could not encode the [object] directly. Please convert it to primitive type'
+            'Could not encode the [`$object``] directly. Please convert it to primitive type'
             'or use method `toJson()` for encoded class.',
             object.toString(),
           );
         }
         return object;
       });
-      storage.put(key, encodedValue);
+      _storage.put(key, encodedValue);
       if (_value != newValue) {
         _value = newValue;
-        _encodedValue = encodedValue;
         notifyListeners();
       }
     } on FormatException {
@@ -155,11 +131,10 @@ abstract class BasePreferenceValue<T, S> extends PreferenceValue<T> {
     }
   }
 
-  @override
+  /// Removes this key from storage.
   void remove() {
-    storage.remove(key);
-    _value = _initialValue;
-    _encodedValue = null;
+    _value = null;
+    _storage.remove(key);
     notifyListeners();
   }
 }
